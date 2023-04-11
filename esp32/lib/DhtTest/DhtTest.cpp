@@ -20,7 +20,6 @@
 DHT dht(DhtTest::DHT_PIN, DHTTYPE);
 
 void DhtTest::setup() {
-  Serial.begin(9600);
   Serial.println("DHTxx test!");
 
   dht.begin();

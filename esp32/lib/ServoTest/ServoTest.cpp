@@ -3,7 +3,6 @@
 Servo servo;
 
 void ServoTest::setup() {
-	Serial.begin(9600);
 	servo.attach(servo_pin);
 }
 

@@ -9,8 +9,6 @@ MQUnifiedsensor mq135(
 );
 
 void Mq135Test::setup() {
-  Serial.begin(9600); // sets the serial port to 9600
-
   mq135.init();
   mq135.setRegressionMethod(1); //_PPM =  a*ratio^b
   mq135.setA(110.47);

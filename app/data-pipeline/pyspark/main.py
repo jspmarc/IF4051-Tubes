@@ -1,6 +1,9 @@
 from data_pipeline.data_pipeline import DataPipeline
 from data_pipeline.stream_handler import StreamHandler
 
+import os
+import logging
+
 if __name__ == "__main__":
     """
     To add more topic and handler, add the topic and handler to the dictionary below.
@@ -11,12 +14,25 @@ if __name__ == "__main__":
         'mq135': StreamHandler.mq135_process
     }
 
-    data_pipeline = DataPipeline('Air Conditioning Pipeline')
-    data_pipeline.register_stream_handlers(topic_handler_dict)
+    logging_file = 'logs/data-pipeline.log'
+    os.makedirs(os.path.dirname(logging_file), exist_ok=True)
+
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logging_file, 
+                        filemode='w', 
+                        format='%(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
 
     try:
+        data_pipeline = DataPipeline('Air Conditioning Pipeline')
+        data_pipeline.register_stream_handlers(topic_handler_dict)
         data_pipeline.run()
     except KeyboardInterrupt:
-        print("Stopping the data pipeline...")
+        pass
+    except Exception as e:
+        logger.error(e)
+    finally:
+        logging.info("Stopping the data pipeline...")
         data_pipeline.stop()
-        print("Data pipeline stopped.")
+        logging.info("Exiting the data pipeline...")
+        exit()

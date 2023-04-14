@@ -10,7 +10,10 @@ class StreamHandler(object):
     """
     
     @staticmethod
-    def dht22_process(stream):
+    def print_histogram_process(stream):
+        """
+        Print the histogram of the stream
+        """
         return stream \
             .filter(lambda message: NumberUtils.is_number(message)) \
             .map(lambda message: ( round(float(message) * 2, 0) / 2, 1 )) \
@@ -19,10 +22,15 @@ class StreamHandler(object):
             .foreachRDD(TemperatureHistrogramUtils.print_histogram)
 
     @staticmethod
+    def dht22_process(stream):
+        """
+        Handler for DHT22 stream
+        """
+        __class__.print_histogram_process(stream) # still dummy
+
+    @staticmethod
     def mq135_process(stream):
-        return stream \
-            .filter(lambda message: NumberUtils.is_number(message)) \
-            .map(lambda message: ( round(float(message) * 2, 0) / 2, 1 )) \
-            .reduceByKeyAndWindow(operator.add, operator.sub, 15, 1) \
-            .transform(lambda rdd: rdd.sortByKey()) \
-            .foreachRDD(TemperatureHistrogramUtils.print_histogram)
+        """
+        Handler for MQ135 stream
+        """
+        __class__.print_histogram_process(stream) # still dummy

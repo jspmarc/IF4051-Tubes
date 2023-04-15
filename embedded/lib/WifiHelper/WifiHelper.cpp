@@ -9,4 +9,6 @@ void WifiHelper::setup(std::string ssid, std::string password) {
 		Serial.print('.');
 		delay(1000);
 	}
+	Serial.println("");
+	Serial.println("Connected to WiFi");
 }

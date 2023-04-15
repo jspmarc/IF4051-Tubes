@@ -1,6 +1,7 @@
 #ifndef WIFI_HELPER_HPP
 #define WIFI_HELPER_HPP
 
+#include <WiFi.h>
 #include <string>
 
 namespace WifiHelper {

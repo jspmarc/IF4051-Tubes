@@ -6,24 +6,17 @@ void ServoTest::setup() {
 	servo.attach(servo_pin);
 }
 
-int16_t pos_deg = 0;      // position in degrees
-
-void ServoTest::loop() {
-	Serial.println("Servo loop start");
-
-	if (pos_deg <= 90) {
-		for (; pos_deg <= 180; pos_deg++) {
-			servo.write(pos_deg);
-			delay(15);
-		}
-		Serial.println("Servo rotated to 180 degree");
-	} else {
-		for (; pos_deg >= 0; pos_deg--) {
-			servo.write(pos_deg);
-			delay(15);
-		}
-		Serial.println("Servo rotated to 0 degree");
+uint16_t ServoTest::loop(int8_t counter) {
+	if (counter == 1) {
+		servo.write(servo_45_deg);
+		return 45;
+	}
+	
+	if (counter == 2) {
+		servo.write(servo_90_deg);
+		return 90;
 	}
 
-	Serial.println("Servo end loop");
+	servo.write(servo_0_deg);
+	return 0;
 }

@@ -11,10 +11,10 @@
 #define WIFI_SSID "tomat"
 #define WIFI_PASS "23101977"
 
+int8_t servo_counter = 0;
+
 void setup() {
   Serial.begin(9600);
-
-  // analogReadResolution(10);
 
   DhtTest::setup();
   Mq135Test::setup();
@@ -33,6 +33,10 @@ void loop() {
 
   auto [rzero, ppm] = Mq135Test::loop(temperature, humidity);
   Serial.printf("rzero: %f\tppm: %f\n", rzero, ppm);
+
+  // auto degree = ServoTest::loop(servo_counter);
+  // servo_counter = servo_counter ? 0 : 2;
+  // Serial.printf("Rotated to %d degree\n", degree);
 
   unsigned long epoch_time = TimeHelper::get_epoch_time();
   Serial.printf("Epoch time: %ld\n", epoch_time);

@@ -14,7 +14,7 @@ class ComponentValue(object):
         Parse the message from the sensor
         """
         json_data = json.loads(json_message)
-        return ComponentValue(created_timestamp=json_data["createdTimestamp"])
+        return ComponentValue(created_timestamp=json_data["created_timestamp"])
 
     @staticmethod
     def get_numeric_by_property(rdd, property_name):
@@ -41,4 +41,4 @@ class ComponentValue(object):
             numeric_value.mean = total_value / numeric_value.count
 
         return numeric_value
-    
+

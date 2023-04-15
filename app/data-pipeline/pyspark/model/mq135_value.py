@@ -20,7 +20,7 @@ class MQ135Value(ComponentValue):
         try:
             json_data = json.loads(json_message)
             mq135 = MQ135Value(co2=float(json_data["co2"]),
-                               created_timestamp=int(json_data["createdTimestamp"]))
+                               created_timestamp=int(json_data["created_timestamp"]))
         except Exception as e:
             print(f"Error parsing message {json_message}. Error: {e}")
         return mq135

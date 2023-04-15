@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 hypercorn = "*"
 websockets = "*"
+paho-mqtt = "*"
 
 [dev-packages]
 

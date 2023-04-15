@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3e0fef35cde6473913fc0627aea68f1160675caedcf90aa97c9b18ca36b1b042"
+            "sha256": "a6763e91506a019eeb83bc06dfa90f38207d89f493784d186a63030308348625"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -133,6 +133,13 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==3.4"
+        },
+        "paho-mqtt": {
+            "hashes": [
+                "sha256:2a8291c81623aec00372b5a85558a372c747cbca8e9934dfe218638b8eefc26f"
+            ],
+            "index": "pypi",
+            "version": "==1.6.1"
         },
         "priority": {
             "hashes": [

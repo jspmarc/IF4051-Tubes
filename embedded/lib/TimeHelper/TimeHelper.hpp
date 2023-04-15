@@ -5,7 +5,7 @@
 
 namespace TimeHelper {
 	void setup();
-	unsigned long get_epoch_time();
+	uint64_t get_epoch_time();
 }
 
 #endif//TIME_HELPER_HPP

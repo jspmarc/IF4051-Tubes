@@ -5,12 +5,13 @@
 #include <tuple>
 
 #define DHTTYPE DHT22
+#ifndef DHT_PIN
+/// Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
+/// Pin 15 can work but DHT must be disconnected during program upload.
+#define DHT_PIN 23
+#endif//DHT_PIN
 
 namespace DhtTest {
-	const uint8_t DHT_PIN = 23;
-	// Feather HUZZAH ESP8266 note: use pins 3, 4, 5, 12, 13 or 14 --
-	// Pin 15 can work but DHT must be disconnected during program upload.
-
 	void setup();
 	std::tuple<float, float> loop();
 }

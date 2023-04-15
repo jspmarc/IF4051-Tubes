@@ -2,7 +2,12 @@
 #define MQ135_TEST_HPP
 
 #include <Arduino.h>
+#include <MQ135.h>
 #include <tuple>
+
+#ifndef MQ135_PIN
+#define MQ135_PIN A0
+#endif//MQ135_PIN
 
 namespace Mq135Test {
 	void setup();

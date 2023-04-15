@@ -1,7 +1,7 @@
 #include "Mq135Test.hpp"
 #include "MQ135.h"
 
-MQ135 mq135 = MQ135(A0);
+MQ135 mq135(MQ135_PIN);
 
 void Mq135Test::setup() {
 }

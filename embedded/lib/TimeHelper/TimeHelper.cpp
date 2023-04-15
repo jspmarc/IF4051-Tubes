@@ -6,7 +6,7 @@ void TimeHelper::setup() {
 	configTime(0, 0, NTP_SERVER);
 }
 
-unsigned long TimeHelper::get_epoch_time() {
+uint64_t TimeHelper::get_epoch_time() {
 	time_t now;
 	struct tm timeinfo;
 	if (!getLocalTime(&timeinfo)) {

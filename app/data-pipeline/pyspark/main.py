@@ -20,7 +20,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, 
                         filename=logging_file, 
                         filemode='w', 
-                        format='%(name)s - %(levelname)s - %(message)s')
+                        format='%(asctime)s|%(name)s|%(levelname)s: %(message)s')
     logger = logging.getLogger(__name__)
 
     try:

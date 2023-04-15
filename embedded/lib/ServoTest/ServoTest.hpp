@@ -16,10 +16,10 @@ namespace ServoTest {
 	const uint8_t servo_90_deg = 110;
 
 	void setup();
-	/// @brief Degree is counter * 45, with max counter = 2
-	/// @param counter 
+	/// @brief Degree is scale * 45, with max scale = 2
+	/// @param scale 
 	/// @return the degree of the servo motor
-	uint16_t loop(uint8_t counter);
+	uint16_t loop(uint8_t scale);
 }
 
 #endif//SERVO_TEST_HPP

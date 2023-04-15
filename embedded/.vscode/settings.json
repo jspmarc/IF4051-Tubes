@@ -5,6 +5,7 @@
 		"*.tcc": "cpp",
 		"algorithm": "cpp",
 		"cmath": "cpp",
-		"tuple": "cpp"
+		"tuple": "cpp",
+		"memory": "cpp"
 	}
 }

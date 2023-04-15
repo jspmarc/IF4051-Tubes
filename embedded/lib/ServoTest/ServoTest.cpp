@@ -1,12 +1,12 @@
 #include "ServoTest.hpp"
 
-Servo servo;
+static Servo servo;
 
 void ServoTest::setup() {
-	servo.attach(servo_pin);
+	servo.attach(SERVO_PIN);
 }
 
-uint16_t ServoTest::loop(int8_t counter) {
+uint16_t ServoTest::loop(uint8_t counter) {
 	if (counter == 1) {
 		servo.write(servo_45_deg);
 		return 45;

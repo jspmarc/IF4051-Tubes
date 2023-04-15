@@ -2,6 +2,7 @@
 #define DHT_TEST_HPP
 
 #include <DHT.h>
+#include <tuple>
 
 #define DHTTYPE DHT22
 
@@ -11,7 +12,7 @@ namespace DhtTest {
 	// Pin 15 can work but DHT must be disconnected during program upload.
 
 	void setup();
-	void loop();
+	std::tuple<float, float> loop();
 }
 
 #endif//DHT_TEST_HPP

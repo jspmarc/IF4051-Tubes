@@ -14,10 +14,10 @@
 void setup() {
   Serial.begin(9600);
 
-  analogReadResolution(10);
+  // analogReadResolution(10);
 
-  // DhtTest::setup();
-  // Mq135Test::setup();
+  DhtTest::setup();
+  Mq135Test::setup();
   // ServoTest::setup();
 
   TimeHelper::setup();
@@ -28,10 +28,14 @@ void loop() {
   // Wait a few seconds between loops
   delay(1000);
 
-  // DhtTest::loop();
-  // Mq135Test::loop();
-  // ServoTest::loop();
+  auto [humidity, temperature] = DhtTest::loop();
+  Serial.printf("Humidity: %.2f%% | Temperature: %.2f°C\n", humidity, temperature);
+
+  auto [rzero, ppm] = Mq135Test::loop(temperature, humidity);
+  Serial.printf("rzero: %f\tppm: %f\n", rzero, ppm);
 
   unsigned long epoch_time = TimeHelper::get_epoch_time();
   Serial.printf("Epoch time: %ld\n", epoch_time);
+
+  Serial.println("=================================");
 }

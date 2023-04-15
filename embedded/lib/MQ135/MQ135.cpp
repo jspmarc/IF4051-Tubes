@@ -50,7 +50,7 @@ float MQ135::getCorrectionFactor(float t, float h) {
 /**************************************************************************/
 float MQ135::getResistance() {
   int val = analogRead(_pin);
-  return ((1023. / (float)val) - 1.) * RLOAD;
+  return ((4095. / (float)val) - 1.) * RLOAD;
 }
 
 /**************************************************************************/
@@ -79,6 +79,10 @@ float MQ135::getPPM() {
   return PARA * pow((getResistance()/RZERO), -PARB);
 }
 
+float MQ135::getPPM(float sensor_resistance) {
+  return PARA * pow((sensor_resistance/RZERO), -PARB);
+}
+
 /**************************************************************************/
 /*!
 @brief  Get the ppm of CO2 sensed (assuming only CO2 in the air), corrected
@@ -103,6 +107,9 @@ float MQ135::getCorrectedPPM(float t, float h) {
 /**************************************************************************/
 float MQ135::getRZero() {
   return getResistance() * pow((ATMOCO2/PARA), (1./PARB));
+}
+float MQ135::getRZero(float sensor_resistance) {
+  return sensor_resistance * pow((ATMOCO2/PARA), (1./PARB));
 }
 
 /**************************************************************************/

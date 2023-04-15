@@ -68,7 +68,7 @@ void servo_task(void *params) {
 
 		// the pointer is null
 		if (!servo_scale) {
-			break;
+			continue;
 		}
 
 		auto degree = ServoTest::loop(*servo_scale);

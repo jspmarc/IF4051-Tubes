@@ -12,12 +12,13 @@ from fastapi.staticfiles import StaticFiles
 
 from router import servo_router, state_router
 from service.mqtt_sevice import MqttService
+from util.constants import Constants
 from util.database import BaseSqlModel, app_state_engine
-from util.helpers import BASE_RESPONSE, hash
+from util.helpers import hash
 from util.settings import Settings, get_settings
 
 
-app = FastAPI(responses=BASE_RESPONSE)
+app = FastAPI(responses=Constants.BASE_RESPONSE)
 
 
 @app.on_event("startup")

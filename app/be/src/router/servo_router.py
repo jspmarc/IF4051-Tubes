@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Body, status
 
-from dto import RotateServoRequest
+from model import RotateServoReqResp
 from service import ServoService
 
 
@@ -15,16 +15,35 @@ servo_router = APIRouter(
     status_code=status.HTTP_204_NO_CONTENT
 )
 def rotate_servo(
-    request: Annotated[RotateServoRequest, Body()],
-    servo_service: Annotated[ServoService, Depends(use_cache=True)],
+    request: Annotated[RotateServoReqResp, Body()],
+    servo_service: Annotated[ServoService, Depends()],
 ):
     servo_service.update_rotation(request.multiple)
-    return request
+
+
+@servo_router.post(
+    "/open",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+def open_servo(
+    servo_service: Annotated[ServoService, Depends()],
+):
+    servo_service.update_rotation(2)
+
+
+@servo_router.post(
+    "/close",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+def close_servo(
+    servo_service: Annotated[ServoService, Depends()],
+):
+    servo_service.update_rotation(0)
 
 
 @servo_router.get(
     "",
-    response_model=RotateServoRequest
+    response_model=RotateServoReqResp
 )
 def get_servo_multiple(
     servo_service: Annotated[ServoService, Depends()],

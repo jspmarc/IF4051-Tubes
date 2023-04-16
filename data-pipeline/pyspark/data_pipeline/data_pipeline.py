@@ -16,7 +16,7 @@ LOG_LEVEL = 'WARN'
 class DataPipeline(object):
     def __init__(self, 
                  app_name: str, 
-                 broker_url: str = "tcp://127.0.0.1:1883", 
+                 broker_url: str = "tcp://mosquitto:1883", 
                  log_level: str = LOG_LEVEL, 
                  checkpoint_dir: str = 'checkpoint',
                  username: str = None,

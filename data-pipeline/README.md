@@ -3,7 +3,9 @@
 Data pipeline using PySpark that listens to MQTT stream.
 
 ## How to Run
-1. Start the container(s):
+1. Change directory (`cd`) to the Docker folder in root project directory
+
+2. Start the container(s):
     - All container
         ```sh
         docker compose up -d --build
@@ -14,7 +16,7 @@ Data pipeline using PySpark that listens to MQTT stream.
         docker compose up -d --build <container_name>
         ```
 
-2. Start the `pyspark`
+3. Start `pyspark`
     1. Attach to container
         ```sh
         docker exec -it pyspark bash
@@ -26,7 +28,7 @@ Data pipeline using PySpark that listens to MQTT stream.
             main.py
         ```
 
-3. To stop the container(s):
+4. To stop the container(s):
     - All container
         ```sh
         docker compose stop

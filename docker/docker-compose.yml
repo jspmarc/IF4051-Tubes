@@ -2,7 +2,6 @@ version: '0.1'
 services:
   pyspark:
     container_name: pyspark
-    network_mode: "host"
     tty: true
     stdin_open: true
     build: 
@@ -11,12 +10,13 @@ services:
       args:
         - USER_NAME=spark
     volumes:
-      - ../pyspark/:/app/pyspark:rw
+      - ../data-pipeline/pyspark/:/app/pyspark:rw
     working_dir: /app/pyspark
 
   mosquitto:
     container_name: mosquitto
-    network_mode: "host"
     image: eclipse-mosquitto
     volumes:
-      - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883"

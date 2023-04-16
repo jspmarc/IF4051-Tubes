@@ -1,4 +1,3 @@
-
 import operator
 
 from utils.number import NumberUtils

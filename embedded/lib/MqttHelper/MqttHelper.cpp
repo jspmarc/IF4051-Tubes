@@ -20,12 +20,12 @@ void MqttHelper::reconnect(PubSubClient &client, const char *mqtt_id, const char
 
 void MqttHelper::publish_dht22_data(PubSubClient &client, float humidity, float temperature, uint64_t timestamp) {
 	char payload[128];
-	sprintf(payload, "{\"humidity\":%.2f,\"temperature\":%.2f,\"timestamp\":%llu}", humidity, temperature, timestamp);
+	sprintf(payload, "{\"humidity\":%.2f,\"temperature\":%.2f,\"created_timestamp\":%llu}", humidity, temperature, timestamp);
 	client.publish(MQTT_DHT22_TOPIC, payload);
 }
 
 void MqttHelper::publish_mq135_data(PubSubClient &client, float co2ppm, uint64_t timestamp) {
 	char payload[128];
-	sprintf(payload, "{\"co2\":%.2f,\"timestamp\":%llu}", co2ppm, timestamp);
+	sprintf(payload, "{\"co2\":%.2f,\"created_timestamp\":%llu}", co2ppm, timestamp);
 	client.publish(MQTT_MQ135_TOPIC, payload);
 }

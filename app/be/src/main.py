@@ -10,8 +10,9 @@ from fastapi import (
 )
 from fastapi.staticfiles import StaticFiles
 
-from router import servo_router
+from router import servo_router, state_router
 from service.mqtt_sevice import MqttService
+from util.database import BaseSqlModel, app_state_engine
 from util.helpers import BASE_RESPONSE, hash
 from util.settings import Settings, get_settings
 
@@ -19,12 +20,17 @@ from util.settings import Settings, get_settings
 app = FastAPI(responses=BASE_RESPONSE)
 
 
+@app.on_event("startup")
+def startup():
+    BaseSqlModel.metadata.create_all(bind=app_state_engine)
+
+
 @app.on_event("shutdown")
 def shutdown():
     MqttService.get_instance(get_settings()).disconnect()
 
 
-@app.post("/token", status_code=status.HTTP_204_NO_CONTENT)
+@app.post("/validate-token", status_code=status.HTTP_204_NO_CONTENT)
 def validate_token(
     settings: Annotated[Settings, Depends(get_settings)],
     x_token: Annotated[str | None, Header()] = None,
@@ -52,6 +58,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 api_router.include_router(servo_router)
+api_router.include_router(state_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

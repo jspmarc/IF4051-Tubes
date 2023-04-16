@@ -10,6 +10,7 @@ hypercorn = "*"
 websockets = "*"
 paho-mqtt = "*"
 python-dotenv = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 

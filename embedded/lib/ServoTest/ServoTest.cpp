@@ -6,13 +6,13 @@ void ServoTest::setup() {
 	servo.attach(SERVO_PIN);
 }
 
-uint16_t ServoTest::loop(uint8_t scale) {
-	if (scale == 1) {
+uint16_t ServoTest::loop(uint8_t multiple) {
+	if (multiple == 1) {
 		servo.write(servo_45_deg);
 		return 45;
 	}
 	
-	if (scale == 2) {
+	if (multiple == 2) {
 		servo.write(servo_90_deg);
 		return 90;
 	}

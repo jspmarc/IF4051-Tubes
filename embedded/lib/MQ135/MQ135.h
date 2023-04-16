@@ -25,7 +25,7 @@ v1.0 - First release
 #define RLOAD 11.0
 /// Calibration resistance at atmospheric CO2 level
 // #define RZERO 76.63 // "original" value
-#define RZERO 95.808075
+#define RZERO 127.269989
 // #define RZERO 386.507751
 // #define RZERO 492.109039
 /// Parameters for calculating ppm of CO2 from sensor resistance

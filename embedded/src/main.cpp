@@ -16,7 +16,7 @@ static PubSubClient mqtt_client(MQTT_HOST, MQTT_PORT, wifi_client);
 static TaskHandle_t main_task_handle;
 void main_task(void *params);
 
-static std::shared_ptr<uint8_t> servo_scale(nullptr);
+static std::shared_ptr<uint8_t> servo_multiple(nullptr);
 void servo_task(void *params);
 static TaskHandle_t servo_task_handle;
 void servo_callback(char *topic, uint8_t *payload, unsigned int length);
@@ -67,12 +67,12 @@ void servo_task(void *params) {
 		delay(100);
 
 		// the pointer is null
-		if (!servo_scale) {
+		if (!servo_multiple) {
 			continue;
 		}
 
-		auto degree = ServoTest::loop(*servo_scale);
-		servo_scale.reset();
+		auto degree = ServoTest::loop(*servo_multiple);
+		servo_multiple.reset();
 		Serial.printf("Rotated servo to %d degree\n", degree);
 	}
 }
@@ -87,5 +87,5 @@ void servo_callback(char *topic, uint8_t *payload, unsigned int length) {
 		return;
 	}
 
-	servo_scale.reset(new uint8_t(counter));
+	servo_multiple.reset(new uint8_t(counter));
 }

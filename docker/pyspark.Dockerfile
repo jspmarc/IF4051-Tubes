@@ -1,15 +1,6 @@
-FROM apache/spark-py
+FROM apache/spark-py:v3.4.0
 
-SHELL ["/bin/bash", "-c"]
+#ADD http://search.maven.org/remotecontent?filepath=org/apache/bahir/spark-streaming-mqtt_2.11/2.4.0/spark-streaming-mqtt_2.11-2.4.0.jar $SPARK_HOME/work-dir/spark-streaming-mqtt_2.12-2.4.0.jar
+#CMD $SPARK_HOME/bin/spark-submit --jars "spark-streaming-mqtt_2.12-2.4.0.jar" --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" /pyspark/main.py
 
-ARG USER_ID=1000
-ARG USER_NAME=pyspark
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-USER root
-
-# RUN /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.bahir:spark-sql-streaming-mqtt_2.11:2.3.1
-# RUN /opt/spark/bin/spark-shell --packages org.apache.bahir:spark-sql-streaming-mqtt_2.11:2.3.1
-
-CMD [ "/bin/bash" ]
+CMD $SPARK_HOME/bin/spark-submit --packages "org.apache.bahir:spark-streaming-mqtt_2.11:2.4.0" --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" /pyspark/main.py

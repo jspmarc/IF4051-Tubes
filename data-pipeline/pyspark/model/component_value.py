@@ -16,7 +16,8 @@ class ComponentValue(object):
         Parse the message from the sensor
         """
         json_data = json.loads(json_message)
-        return ComponentValue(created_timestamp=json_data["created_timestamp"])
+        # return ComponentValue(created_timestamp=json_data["created_timestamp"])
+        return ComponentValue(created_timestamp=json_data["timestamp"])
 
     @staticmethod
     def get_numeric_by_property(rdd, property_name):

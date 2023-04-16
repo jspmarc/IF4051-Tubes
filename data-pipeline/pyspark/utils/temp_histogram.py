@@ -7,5 +7,5 @@ class TemperatureHistrogramUtils(object):
         print("-------------------------------------------")
         for record in c:
             # "draw" our lil' ASCII-based histogram
-            print(str(record[0]) + ': ' + '#'*record[1])
+            print(str(record[0]) + ": " + "#" * record[1])
         print("")

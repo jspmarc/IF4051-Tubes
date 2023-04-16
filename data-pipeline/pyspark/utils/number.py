@@ -6,4 +6,3 @@ class NumberUtils(object):
             return True
         except ValueError:
             return False
-        

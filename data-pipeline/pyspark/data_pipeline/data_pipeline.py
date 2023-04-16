@@ -1,27 +1,29 @@
-'''
+"""
 Modified from:
 1. https://sites.google.com/a/ku.th/big-data/spark-mqtt
 2. https://gist.github.com/kartben/614fea74e9c67df0aae0
-'''
+"""
 
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 
-from mqtt import MQTTUtils # use this for bahir spark/mqtt
+from mqtt import MQTTUtils  # use this for bahir spark/mqtt
 
-from typing import Dict
+from typing import Dict, Callable
 
-LOG_LEVEL = 'WARN'
+LOG_LEVEL = "WARN"
+
 
 class DataPipeline(object):
-    def __init__(self, 
-                 app_name: str, 
-                 broker_url: str = "tcp://mosquitto:1883", 
-                 log_level: str = LOG_LEVEL, 
-                 checkpoint_dir: str = 'checkpoint',
-                 username: str = None,
-                 password: str = None):
-        
+    def __init__(
+        self,
+        app_name: str,
+        broker_url: str = "tcp://mosquitto:1883",
+        log_level: str = LOG_LEVEL,
+        checkpoint_dir: str = "checkpoint",
+        username: str | None = None,
+        password: str | None = None,
+    ):
         self.app_name = app_name
         self.broker_url = broker_url
         self.log_level = log_level
@@ -34,7 +36,7 @@ class DataPipeline(object):
 
         self.ssc = StreamingContext(self.sc, 1)
         self.ssc.checkpoint(self.checkpoint_dir)
-        
+
         self.topics = []
         self.mqtt_streams = dict()
         self.stream_handlers = dict()
@@ -56,13 +58,15 @@ class DataPipeline(object):
         Create a stream for a topic
         returns the stream
         """
-        self.mqtt_streams[topic] = MQTTUtils.createStream(self.ssc, 
-                                            self.broker_url, 
-                                            topic,
-                                            username=self.username, 
-                                            password=self.password)
+        self.mqtt_streams[topic] = MQTTUtils.createStream(
+            self.ssc,
+            self.broker_url,
+            topic,
+            username=self.username,
+            password=self.password,
+        )
         return self.get_stream(topic)
-        
+
     def get_stream(self, topic):
         """
         Get the stream for a topic
@@ -70,7 +74,7 @@ class DataPipeline(object):
         """
         return self.mqtt_streams.get(topic, None)
 
-    def register_stream_handler(self, topic: str, handler: callable) -> None:
+    def register_stream_handler(self, topic: str, handler: Callable) -> None:
         """
         Register a stream handler for a topic
         """
@@ -81,7 +85,7 @@ class DataPipeline(object):
             stream = self.create_stream(topic)
         self.stream_handlers[topic] = handler(stream)
 
-    def register_stream_handlers(self, topic_handler_dict: Dict[str, callable]) -> None:
+    def register_stream_handlers(self, topic_handler_dict: Dict[str, Callable]) -> None:
         """
         Register stream handlers for multiple topics
         """

@@ -1,5 +1,4 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends, Body
 
 from dto.request import RotateServoRequest
@@ -16,13 +15,11 @@ def rotate_servo(
     request: Annotated[RotateServoRequest, Body()],
     servo_service: Annotated[ServoService, Depends(use_cache=True)],
 ):
-    print(servo_service)
     servo_service.update_rotation(request.multiple)
 
 
 @servo_router.get("", status_code=200)
-def get_servo_scale(
+def get_servo_multiple(
     servo_service: Annotated[ServoService, Depends()],
 ):
-    print(servo_service)
-    return {"rotation": servo_service.get_rotation_scale()}
+    return {"rotation": servo_service.get_rotation_multiple()}

@@ -9,6 +9,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 hypercorn = "*"
 websockets = "*"
 paho-mqtt = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

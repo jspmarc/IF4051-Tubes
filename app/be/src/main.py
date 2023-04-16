@@ -2,8 +2,15 @@ from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 
 from router import servo_router
+from service.mqtt_sevice import MqttService
+from util.settings import get_settings
 
 app = FastAPI()
+
+
+@app.on_event("shutdown")
+def shutdown():
+    MqttService.get_instance(get_settings()).disconnect()
 
 
 # noqa: going to need this: https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients

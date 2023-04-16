@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     mqtt_user: str | None = None
     mqtt_pass: str | None = None
 
+    app_state_sqlite_url: str = "sqlite:///./app_state.db"
+
     class Config:
         env_file = ".env"
 

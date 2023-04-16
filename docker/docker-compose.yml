@@ -1,0 +1,22 @@
+version: '0.1'
+services:
+  pyspark:
+    container_name: pyspark
+    tty: true
+    stdin_open: true
+    build: 
+      context: ..
+      dockerfile: ./docker/pyspark.Dockerfile
+      args:
+        - USER_NAME=spark
+    volumes:
+      - ../data-pipeline/pyspark/:/app/pyspark:rw
+    working_dir: /app/pyspark
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    volumes:
+      - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883"

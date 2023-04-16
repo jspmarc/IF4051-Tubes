@@ -1,5 +1,13 @@
 from typing import Annotated
-from fastapi import Depends, FastAPI, HTTPException, Header, WebSocket, APIRouter, status
+from fastapi import (
+    Depends,
+    FastAPI,
+    HTTPException,
+    Header,
+    WebSocket,
+    APIRouter,
+    status,
+)
 from fastapi.staticfiles import StaticFiles
 
 from router import servo_router

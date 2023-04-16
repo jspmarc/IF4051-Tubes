@@ -6,7 +6,9 @@ from service import MqttService
 
 
 class ServoService:
-    def __init__(self, mqtt_service: Annotated[MqttService, Depends(MqttService.get_instance)]):
+    def __init__(
+        self, mqtt_service: Annotated[MqttService, Depends(MqttService.get_instance)]
+    ):
         self.__mqtt_service = mqtt_service
         self.__rotation_multiple = 0
 

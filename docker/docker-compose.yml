@@ -16,11 +16,34 @@ services:
       MQTT_PORT: ${MQTT_PORT}
       MQTT_USER: ${MQTT_USER}
       MQTT_PASS: ${MQTT_PASS}
+    restart: unless-stopped
 
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto
-    volumes:
-      - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.8.1
+    restart: unless-stopped
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka:2.13-2.8.1
     ports:
-      - "1883"
+      - "9092:9092"
+    environment:
+      DOCKER_API_VERSION: 1.22
+      KAFKA_ADVERTISED_HOST_NAME: kafka.docker
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+
+  # For now we are using "central" Mosquitto
+  # mosquitto:
+  #   container_name: mosquitto
+  #   image: eclipse-mosquitto
+  #   volumes:
+  #     - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #   ports:
+  #     - "1883:1883"
+  #   restart: unless-stopped

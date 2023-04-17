@@ -25,19 +25,19 @@ if __name__ == "__main__":
     )
     logger = logging.getLogger(__name__)
 
-    try:
-        mqtt_host = os.getenv("MQTT_HOST", "127.0.0.1")
-        mqtt_port = os.getenv("MQTT_PORT", "1883")
-        mqtt_url = "tcp://" + mqtt_host + ":" + mqtt_port
-        mqtt_user = os.getenv("MQTT_USER")
-        mqtt_pass = os.getenv("MQTT_PASS")
+    mqtt_host = os.getenv("MQTT_HOST", "127.0.0.1")
+    mqtt_port = os.getenv("MQTT_PORT", "1883")
+    mqtt_url = "tcp://" + mqtt_host + ":" + mqtt_port
+    mqtt_user = os.getenv("MQTT_USER")
+    mqtt_pass = os.getenv("MQTT_PASS")
+    data_pipeline = DataPipeline(
+        "Air Conditioning Pipeline",
+        broker_url=mqtt_url,
+        username=mqtt_user,
+        password=mqtt_pass,
+    )
 
-        data_pipeline = DataPipeline(
-            "Air Conditioning Pipeline",
-            broker_url=mqtt_url,
-            username=mqtt_user,
-            password=mqtt_pass,
-        )
+    try:
         data_pipeline.register_stream_handlers(topic_handler_dict)
         data_pipeline.run()
     except KeyboardInterrupt:

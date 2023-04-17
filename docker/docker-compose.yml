@@ -5,6 +5,9 @@ services:
     container_name: pyspark
     build:
       dockerfile: pyspark.Dockerfile
+      args:
+        - USER_NAME=spark
+        - USER_ID=${USER_ID}
     volumes:
       - ../data-pipeline/pyspark/:/pyspark:rw
     working_dir: /pyspark

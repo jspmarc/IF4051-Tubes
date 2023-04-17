@@ -32,8 +32,7 @@ class DHT22Value(ComponentValue):
             dht22 = DHT22Value(
                 temperature=float(json_data["temperature"]),
                 humidity=float(json_data["humidity"]),
-                # created_timestamp=int(json_data["created_timestamp"]),
-                created_timestamp=int(json_data["timestamp"]),
+                created_timestamp=int(json_data["created_timestamp"]),
             )
         except Exception as e:
             print(f"Error parsing message {json_message}. Error: {e}")

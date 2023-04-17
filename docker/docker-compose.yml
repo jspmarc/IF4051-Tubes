@@ -1,22 +1,52 @@
-version: '0.1'
+version: '3.9'
+
 services:
   pyspark:
     container_name: pyspark
-    tty: true
-    stdin_open: true
-    build: 
+    build:
       context: ..
       dockerfile: ./docker/pyspark.Dockerfile
       args:
         - USER_NAME=spark
+        - USER_ID=${USER_ID}
     volumes:
-      - ../data-pipeline/pyspark/:/app/pyspark:rw
-    working_dir: /app/pyspark
+      - ../data-pipeline/pyspark/:/pyspark:rw
+      - ~/.postgresql/root.crt:/home/spark/.postgresql/root.crt
+    working_dir: /pyspark
+    environment:
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USER: ${MQTT_USER}
+      MQTT_PASS: ${MQTT_PASS}
+      DB_URI: ${DB_URI}
+    restart: unless-stopped
 
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto
-    volumes:
-      - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-    ports:
-      - "1883"
+  # zookeeper:
+  #   container_name: zookeeper
+  #   image: zookeeper:3.8.1
+  #   restart: unless-stopped
+
+  # kafka:
+  #   container_name: kafka
+  #   image: wurstmeister/kafka:2.13-2.8.1
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     DOCKER_API_VERSION: 1.22
+  #     KAFKA_ADVERTISED_HOST_NAME: kafka.docker
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - zookeeper
+
+  # For now we are using "central" Mosquitto
+  # mosquitto:
+  #   container_name: mosquitto
+  #   image: eclipse-mosquitto
+  #   volumes:
+  #     - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #   ports:
+  #     - "1883:1883"
+  #   restart: unless-stopped

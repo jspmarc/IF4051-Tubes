@@ -1,4 +1,4 @@
-class NumericValue(object):
+class StatisticsData(object):
     min: float
     max: float
     mean: float
@@ -24,4 +24,4 @@ class NumericValue(object):
 
     def __str__(self):
         return f"Count Unique: {self.count_unique}, Count: {self.count}, Max: {self.max}, \
-                 Min: {self.min}, Mean: {self.mean}, Median: {self.median}"
+Min: {self.min}, Mean: {self.mean}, Median: {self.median}"

@@ -18,7 +18,7 @@ class DataPipeline(object):
     def __init__(
         self,
         app_name: str,
-        broker_url: str = "tcp://mosquitto:1883",
+        broker_url: str = "tcp://127.0.0.1:1883",
         log_level: str = LOG_LEVEL,
         checkpoint_dir: str = "checkpoint",
         username: str | None = None,
@@ -34,7 +34,7 @@ class DataPipeline(object):
         self.sc = SparkContext(appName=self.app_name)
         self.sc.setLogLevel(self.log_level)
 
-        self.ssc = StreamingContext(self.sc, 1)
+        self.ssc = StreamingContext(self.sc, 5)
         self.ssc.checkpoint(self.checkpoint_dir)
 
         self.topics = []

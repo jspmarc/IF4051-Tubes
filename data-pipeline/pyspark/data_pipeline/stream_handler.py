@@ -1,11 +1,9 @@
-import operator
+from threading import Thread
+from typing import Callable, Literal
 
-from utils.number import NumberUtils
-from model.dht22_value import DHT22Value
-from model.mq135_value import MQ135Value
-from model.numeric_value import NumericValue
-
-from typing import Callable
+from model.statistics_data import StatisticsData
+from model.dht22_value import Dht22Value
+from model.mq135_value import Mq135Value
 
 
 class StreamHandler(object):
@@ -14,18 +12,18 @@ class StreamHandler(object):
     """
 
     window_duration = 15
-    slide_duration = 1
+    slide_interval = 5
 
     @staticmethod
-    def get_numeric_values(time, rdd):
+    def get_statistics(time, rdd):
         """
-        Get the numeric values from the stream
+        Get the statistics from an RDD in a given time
         - min
         - max
         - mean
         - median
         """
-        val = NumericValue()
+        val = StatisticsData()
         val.count_unique = rdd.count()
 
         # rdd comes in as list of (temp, freq)
@@ -55,73 +53,67 @@ class StreamHandler(object):
         print(val)
         print()
 
-    @staticmethod
-    def parse_sensor_values(
-        stream, parser: Callable, numeric_extractor: Callable, numeric_handler: Callable
+    @classmethod
+    def process_sensor_data(
+        cls,
+        stream,
+        parser: Callable,
+        statistics_extractor: Callable,
+        statistics_handler: Callable,
+        sensor: Literal["dht22", "mq135"],
     ):
         """
         Parse the sensor values
         stream: pyspark.DStream - the stream to be parsed
         parser: callable - the function to parse the items in the stream into a sensor value
-        numeric_extractor: callable - the function to extract the numeric values from the sensor
+        statistics_extractor: callable - the function to extract statistics from the sensor
                                       value's properties
-        numeric_handler: callable - the function to handle the numeric values
+        statistics_handler: callable - the function to handle the statistics
         """
 
         def foreach_rdd(time, rdd):
-            sensor_value_dict = numeric_extractor(time, rdd)
-            numeric_handler(sensor_value_dict)
+            # save data
+            if sensor == "dht22":
+                t = Thread(target=Dht22Value.rdd_saver, args=[rdd], daemon=True)
+            else:
+                t = Thread(target=Mq135Value.rdd_saver, args=[rdd], daemon=True)
+            t.start()
+
+            sensor_value_dict = statistics_extractor(time, rdd)
+            statistics_handler(sensor_value_dict)
 
         return (
             stream.map(lambda message: (parser(message), 1))
-            .reduceByKeyAndWindow(
-                operator.add,
-                operator.sub,
-                __class__.window_duration,
-                __class__.slide_duration,
+            .window(
+                cls.window_duration,
+                cls.slide_interval,
             )
             .transform(lambda rdd: rdd.sortBy(lambda item: item[0].created_timestamp))
             .foreachRDD(foreach_rdd)
         )
 
-    @staticmethod
-    def to_numeric_values(stream):
-        """
-        Get the numeric values from the stream
-        """
-        return (
-            stream.filter(lambda message: NumberUtils.is_number(message))
-            .map(lambda message: (float(message), 1))
-            .reduceByKeyAndWindow(
-                operator.add,
-                operator.sub,
-                __class__.window_duration,
-                __class__.slide_duration,
-            )
-            .transform(lambda rdd: rdd.sortByKey())
-            .foreachRDD(__class__.get_numeric_values)
-        )
-
-    @staticmethod
-    def dht22_process(stream):
+    @classmethod
+    def dht22_process(cls, stream):
         """
         Handler for DHT22 stream
         """
-        __class__.parse_sensor_values(
+        cls.process_sensor_data(
             stream,
-            DHT22Value.from_json,
-            DHT22Value.get_numeric_values,
-            DHT22Value.handle_numeric_values,
+            Dht22Value.from_json,
+            Dht22Value.get_statistics,
+            Dht22Value.handle_statistics,
+            "dht22",
         )
 
-    @staticmethod
-    def mq135_process(stream):
+    @classmethod
+    def mq135_process(cls, stream):
         """
         Handler for MQ135 stream
         """
-        __class__.parse_sensor_values(
+        cls.process_sensor_data(
             stream,
-            MQ135Value.from_json,
-            MQ135Value.get_numeric_values,
-            MQ135Value.handle_numeric_values,
+            Mq135Value.from_json,
+            Mq135Value.get_statistics,
+            Mq135Value.handle_statistics,
+            "mq135",
         )

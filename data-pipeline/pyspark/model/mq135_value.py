@@ -1,11 +1,12 @@
 from __future__ import annotations
-
 import json
+from typing import Dict
 
 from model.component_value import ComponentValue
+from model.statistics_data import StatisticsData
 
 
-class MQ135Value(ComponentValue):
+class Mq135Value(ComponentValue):
     """
     A class to represent a MQ135 sensor value
     """
@@ -15,7 +16,7 @@ class MQ135Value(ComponentValue):
         super().__init__(created_timestamp=created_timestamp)
 
     @staticmethod
-    def from_json(json_message: str) -> MQ135Value | None:
+    def from_json(json_message: str) -> Mq135Value | None:
         """
         Parse the message from the MQ135 sensor
         """
@@ -23,7 +24,7 @@ class MQ135Value(ComponentValue):
 
         try:
             json_data = json.loads(json_message)
-            mq135 = MQ135Value(
+            mq135 = Mq135Value(
                 co2=float(json_data["co2"]),
                 created_timestamp=int(json_data["created_timestamp"]),
             )
@@ -31,32 +32,28 @@ class MQ135Value(ComponentValue):
             print(f"Error parsing message {json_message}. Error: {e}")
         return mq135
 
-    @staticmethod
-    def get_numeric_values(time, rdd):
+    @classmethod
+    def get_statistics(cls, time, rdd):
         """
-        Get the numeric values from the stream
+        Get the statistics from MQ135 data (CO2 PPM)
         - min
         - max
         - mean
         - median
         """
-        co2_nv = __class__.get_numeric_by_property(rdd, "co2")
+        co2_nv = cls.get_statistics_by_property(rdd, "co2")
 
-        return {"time": time, "co2_numeric_value": co2_nv}
+        return {"time": time, "co2": co2_nv}
 
     @staticmethod
-    def handle_numeric_values(numeric_values: dict) -> None:
+    def handle_statistics(statistics: Dict[str, StatisticsData]) -> None:
         """
-        Get the numeric values from the stream
-        - min
-        - max
-        - mean
-        - median
+        Handle the statistics
         """
         print_string = [
-            f"Time: {numeric_values['time']}",
-            f"CO2:",
-            str(numeric_values["co2_numeric_value"]),
+            f"Time: {statistics['time']}",
+            "CO2:",
+            "\t" + str(statistics["co2"]),
             "",
         ]
         print("\n".join(print_string))

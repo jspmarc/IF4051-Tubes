@@ -1,4 +1,4 @@
-class NumericValue(object):
+class StatisticsData(object):
     min: float
     max: float
     mean: float

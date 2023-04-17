@@ -1,8 +1,9 @@
+import os
+import logging
+
 from data_pipeline.data_pipeline import DataPipeline
 from data_pipeline.stream_handler import StreamHandler
 
-import os
-import logging
 
 if __name__ == "__main__":
     """

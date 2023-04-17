@@ -1,5 +1,5 @@
 import json
-from model.numeric_value import NumericValue
+from model.statistics_data import StatisticsData
 
 
 class ComponentValue(object):
@@ -19,29 +19,29 @@ class ComponentValue(object):
         return ComponentValue(created_timestamp=json_data["created_timestamp"])
 
     @staticmethod
-    def get_numeric_by_property(rdd, property_name):
+    def get_statistics_by_property(rdd, property_name: str):
         """
-        Get the numeric values by property
+        Get the statistics by property
         """
-        numeric_value = NumericValue()
-        numeric_value.count_unique = rdd.count()
+        statistics = StatisticsData()
+        statistics.count_unique = rdd.count()
 
         # rdd comes in as list of (DHT22Value, freq)
         # if rdd is empty
-        if numeric_value.count_unique != 0:
-            numeric_value.count = rdd.map(lambda x: x[1]).reduce(lambda x, y: x + y)
+        if statistics.count_unique != 0:
+            statistics.count = rdd.map(lambda x: x[1]).reduce(lambda x, y: x + y)
 
         # count is the total of freq
         # if there is at least one freq
-        if numeric_value.count != 0:
+        if statistics.count != 0:
             values = rdd.map(lambda x: getattr(x[0], property_name))
 
-            numeric_value.min = values.reduce(lambda x, y: x if x < y else y)
-            numeric_value.max = values.reduce(lambda x, y: x if x > y else y)
+            statistics.min = values.reduce(lambda x, y: x if x < y else y)
+            statistics.max = values.reduce(lambda x, y: x if x > y else y)
 
             total_value = rdd.map(
                 lambda x: x[0].__getattribute__(property_name) * x[1]
             ).reduce(lambda x, y: x + y)
-            numeric_value.mean = total_value / numeric_value.count
+            statistics.mean = total_value / statistics.count
 
-        return numeric_value
+        return statistics

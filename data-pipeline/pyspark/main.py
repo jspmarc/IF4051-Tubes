@@ -1,6 +1,8 @@
 import os
 import logging
 
+from common_python.model import CommonBase
+from utils.db_connector import db_engine
 from data_pipeline.data_pipeline import DataPipeline
 from data_pipeline.stream_handler import StreamHandler
 
@@ -14,6 +16,8 @@ if __name__ == "__main__":
         "dht22": StreamHandler.dht22_process,
         "mq135": StreamHandler.mq135_process,
     }
+
+    CommonBase.metadata.create_all(bind=db_engine)
 
     logging_file = "logs/data-pipeline.log"
     os.makedirs(os.path.dirname(logging_file), exist_ok=True)

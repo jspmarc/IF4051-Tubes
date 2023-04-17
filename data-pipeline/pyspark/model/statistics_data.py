@@ -24,4 +24,4 @@ class StatisticsData(object):
 
     def __str__(self):
         return f"Count Unique: {self.count_unique}, Count: {self.count}, Max: {self.max}, \
-                 Min: {self.min}, Mean: {self.mean}, Median: {self.median}"
+Min: {self.min}, Mean: {self.mean}, Median: {self.median}"

@@ -1,5 +1,5 @@
-import operator
-from typing import Callable
+from threading import Thread
+from typing import Callable, Literal
 
 from model.statistics_data import StatisticsData
 from model.dht22_value import Dht22Value
@@ -60,6 +60,7 @@ class StreamHandler(object):
         parser: Callable,
         statistics_extractor: Callable,
         statistics_handler: Callable,
+        sensor: Literal["dht22", "mq135"],
     ):
         """
         Parse the sensor values
@@ -71,16 +72,21 @@ class StreamHandler(object):
         """
 
         def foreach_rdd(time, rdd):
+            # save data
+            if sensor == "dht22":
+                t = Thread(target=Dht22Value.rdd_saver, args=[rdd], daemon=True)
+            else:
+                t = Thread(target=Mq135Value.rdd_saver, args=[rdd], daemon=True)
+            t.start()
+
             sensor_value_dict = statistics_extractor(time, rdd)
             statistics_handler(sensor_value_dict)
 
         return (
             stream.map(lambda message: (parser(message), 1))
-            .reduceByKeyAndWindow(
-                operator.add,
-                operator.sub,
+            .window(
                 cls.window_duration,
-                cls.slide_duration,
+                cls.slide_interval,
             )
             .transform(lambda rdd: rdd.sortBy(lambda item: item[0].created_timestamp))
             .foreachRDD(foreach_rdd)
@@ -96,6 +102,7 @@ class StreamHandler(object):
             Dht22Value.from_json,
             Dht22Value.get_statistics,
             Dht22Value.handle_statistics,
+            "dht22",
         )
 
     @classmethod
@@ -108,4 +115,5 @@ class StreamHandler(object):
             Mq135Value.from_json,
             Mq135Value.get_statistics,
             Mq135Value.handle_statistics,
+            "mq135",
         )

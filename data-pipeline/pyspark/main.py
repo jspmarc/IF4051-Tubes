@@ -36,6 +36,7 @@ if __name__ == "__main__":
         broker_url=mqtt_url,
         username=mqtt_user,
         password=mqtt_pass,
+        log_level="ERROR",
     )
 
     try:

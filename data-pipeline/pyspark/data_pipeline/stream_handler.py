@@ -12,7 +12,7 @@ class StreamHandler(object):
     """
 
     window_duration = 15
-    slide_duration = 1
+    slide_interval = 5
 
     @staticmethod
     def get_statistics(time, rdd):

@@ -34,7 +34,7 @@ class DataPipeline(object):
         self.sc = SparkContext(appName=self.app_name)
         self.sc.setLogLevel(self.log_level)
 
-        self.ssc = StreamingContext(self.sc, 1)
+        self.ssc = StreamingContext(self.sc, 5)
         self.ssc.checkpoint(self.checkpoint_dir)
 
         self.topics = []

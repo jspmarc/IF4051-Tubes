@@ -11,6 +11,8 @@
 
 namespace Mq135Test {
 	void setup();
+	void setup();
+	std::tuple<float, float> loop();
 	std::tuple<float, float> loop(float temp_c, float humidity);
 }
 

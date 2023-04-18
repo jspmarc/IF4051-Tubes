@@ -10,16 +10,22 @@
 #include <Mq135Test.hpp>
 #include <ServoTest.hpp>
 
+#ifndef INSIDE_MODE
+#define INSIDE_MODE 1
+#endif//INSIDE_MODE
+
 static WiFiClient wifi_client;
 static PubSubClient mqtt_client(MQTT_HOST, MQTT_PORT, wifi_client);
 
 static TaskHandle_t main_task_handle;
 void main_task(void *params);
 
+#if INSIDE_MODE==1
 static std::shared_ptr<uint8_t> servo_multiple(nullptr);
 void servo_task(void *params);
 static TaskHandle_t servo_task_handle;
 void servo_callback(char *topic, uint8_t *payload, unsigned int length);
+#endif//INSIDE_MODE==1
 
 void setup() {
 	Serial.begin(115200);
@@ -30,10 +36,14 @@ void setup() {
 
 	WifiHelper::setup(WIFI_SSID, WIFI_PASS);
 	TimeHelper::setup();
+#if INSIDE_MODE==0
+	MqttHelper::setup(mqtt_client, nullptr);
+#else//INSIDE_MODE==1
 	MqttHelper::setup(mqtt_client, servo_callback);
 
-	xTaskCreatePinnedToCore(main_task, "Main task", 5000, nullptr, 1, &main_task_handle, 0);
 	xTaskCreatePinnedToCore(servo_task, "Servo task", 5000, nullptr, 1, &servo_task_handle, 1);
+#endif//INSIDE_MODE
+	xTaskCreatePinnedToCore(main_task, "Main task", 5000, nullptr, 1, &main_task_handle, 0);
 }
 
 void loop() {}
@@ -50,18 +60,20 @@ void main_task(void *params) {
 		auto unix_timestamp = TimeHelper::get_epoch_time();
 		Serial.printf("Epoch time: %llu\n", unix_timestamp);
 
+#if INSIDE_MODE==1
 		auto [humidity, temperature] = DhtTest::loop();
 		Serial.printf("Humidity: %.2f%% | Temperature: %.2f°C\n", humidity, temperature);
 		MqttHelper::publish_dht22_data(mqtt_client, humidity, temperature, unix_timestamp);
-
-		auto [rzero, ppm] = Mq135Test::loop(temperature, humidity);
+#else//INSIDE_MODE==0
+		auto [rzero, ppm] = Mq135Test::loop();
 		Serial.printf("RZero: %f\tPPM: %f\n", rzero, ppm);
 		MqttHelper::publish_mq135_data(mqtt_client, ppm, unix_timestamp);
-
+#endif//INSIDE_MODE
 		Serial.println("=================================");
 	}
 }
 
+#if INSIDE_MODE==1
 void servo_task(void *params) {
 	for (;;) {
 		delay(100);
@@ -89,3 +101,4 @@ void servo_callback(char *topic, uint8_t *payload, unsigned int length) {
 
 	servo_multiple.reset(new uint8_t(counter));
 }
+#endif//INSIDE_MODE==1

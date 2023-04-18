@@ -20,6 +20,9 @@ services:
       MQTT_PASS: ${MQTT_PASS}
       DB_URI: ${DB_URI}
     restart: unless-stopped
+    # depends_on:
+    #   - mosquitto
+    #   - kafka
 
   # zookeeper:
   #   container_name: zookeeper
@@ -41,12 +44,13 @@ services:
   #   depends_on:
   #     - zookeeper
 
-  # For now we are using "central" Mosquitto
-  # mosquitto:
-  #   container_name: mosquitto
-  #   image: eclipse-mosquitto
-  #   volumes:
-  #     - ../data-pipeline/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  #   ports:
-  #     - "1883:1883"
-  #   restart: unless-stopped
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    volumes:
+      - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../mosquitto/passwd:/mosquitto/config/passwd
+      - ../mosquitto/logs:/mosquitto/log
+    ports:
+      - "1883:1883"
+    restart: unless-stopped

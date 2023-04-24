@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
+import Selection from './components/Selection.vue';
+
+const beUrl = import.meta.env.VITE_BACKEND_URL
 </script>
 
 <template>
@@ -12,6 +15,27 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <!-- Mode -->
+  <Selection class="py-2" 
+             label="Mode" 
+             :optionsDisplay="['Auto', 'Override']" 
+             :options="['Ai', 'Override']"
+             :url="`${beUrl}/mode`"
+             propertyName="current_mode" />
+  <!-- Door - Servo -->
+  <Selection class="py-2" 
+             label="Door" 
+             :optionsDisplay="['Open', 'Close']"
+             :options="['2', '0']"
+             :url="`${beUrl}/servo`"
+             propertyName="multiple" />
+  <!-- Window - Servo -->
+  <Selection class="py-2" 
+             label="Window" 
+             :optionsDisplay="['Open', 'Close']"
+             :options="['2', '0']"
+             :url="`${beUrl}/servo`"
+             propertyName="multiple" />
 </template>
 
 <style scoped>

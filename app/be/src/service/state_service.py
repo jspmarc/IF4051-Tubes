@@ -11,14 +11,20 @@ class StateService:
     def __init__(self, db: Annotated[Session, Depends(get_state_db)]):
         self.__db = db
 
-    def get_state(self) -> dto.AppState:
-        return dto.AppState.from_orm(self.__db.query(models.AppState).one())
+    def get_state(self) -> dto.AppState | None:
+        state = dto.AppState.from_orm(self.__db.query(models.AppState).one_or_none())
+        if state is None:
+            print("No state found in database")
+        return state
 
     def update_state(self, new_state: dto.AppState) -> dto.AppState:
         db = self.__db
 
         query = db.query(models.AppState)
-        db_state = query.one()
+        db_state = query.one_or_none()
+        # create new if state is None
+        if db_state is None:
+            db_state = models.AppState()
 
         for var, value in vars(new_state).items():
             setattr(db_state, var, value)

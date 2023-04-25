@@ -32,6 +32,7 @@ USER ${USER_NAME}
 
 CMD $SPARK_HOME/bin/spark-submit \
 	--packages "org.apache.bahir:spark-streaming-mqtt_2.11:2.4.0" \
-	--conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" \
+	# --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" \
 	--driver-memory 512M \
+	--master local[*] \
 	/pyspark/main.py

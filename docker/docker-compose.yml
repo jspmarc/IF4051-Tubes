@@ -24,6 +24,17 @@ services:
     #   - mosquitto
     #   - kafka
 
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    volumes:
+      - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../mosquitto/passwd:/mosquitto/config/passwd
+      - ../mosquitto/logs:/mosquitto/logs
+    ports:
+      - "1883:1883"
+    restart: unless-stopped
+
   # zookeeper:
   #   container_name: zookeeper
   #   image: zookeeper:3.8.1
@@ -43,14 +54,3 @@ services:
   #   restart: unless-stopped
   #   depends_on:
   #     - zookeeper
-
-  mosquitto:
-    container_name: mosquitto
-    image: eclipse-mosquitto
-    volumes:
-      - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ../mosquitto/passwd:/mosquitto/config/passwd
-      - ../mosquitto/logs:/mosquitto/log
-    ports:
-      - "1883:1883"
-    restart: unless-stopped

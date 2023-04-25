@@ -12,7 +12,9 @@
 
 const IPAddress MQTT_HOST(103,176,78,158);
 const uint16_t MQTT_PORT = 1883;
-const char *const MQTT_ID = "esp32";
+#ifndef MQTT_ID
+#define MQTT_ID "esp32"
+#endif//MQTT_ID
 const char *const MQTT_USER = "IF4051_mqtt";
 const char *const MQTT_PASS = "kerja-lembur";
 

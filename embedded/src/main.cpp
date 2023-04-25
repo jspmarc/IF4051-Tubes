@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <cmath>
 #include <memory>
 #include <MQ135.h>
 
@@ -52,7 +53,7 @@ void main_task(void *params) {
 		// Wait a few seconds between loops
 		delay(1000);
 
-		if (!mqtt_client.connected()) {
+		while (!mqtt_client.connected()) {
 			MqttHelper::reconnect(mqtt_client, MQTT_ID, MQTT_USER, MQTT_PASS);
 		}
 		mqtt_client.loop();
@@ -62,10 +63,16 @@ void main_task(void *params) {
 
 #if INSIDE_MODE==1
 		auto [humidity, temperature] = DhtTest::loop();
+		if (isnan(humidity) || isnan(temperature)) {
+			continue;
+		}
 		Serial.printf("Humidity: %.2f%% | Temperature: %.2f°C\n", humidity, temperature);
 		MqttHelper::publish_dht22_data(mqtt_client, humidity, temperature, unix_timestamp);
 #else//INSIDE_MODE==0
 		auto [rzero, ppm] = Mq135Test::loop();
+		if (isnan(rzero) || isnan(ppm)) {
+			continue;
+		}
 		Serial.printf("RZero: %f\tPPM: %f\n", rzero, ppm);
 		MqttHelper::publish_mq135_data(mqtt_client, ppm, unix_timestamp);
 #endif//INSIDE_MODE

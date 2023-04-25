@@ -1,4 +1,4 @@
 mosquitto.conf
 passwd
-logs/
+logs
 data/

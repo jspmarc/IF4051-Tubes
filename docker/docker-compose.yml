@@ -19,10 +19,23 @@ services:
       MQTT_USER: ${MQTT_USER}
       MQTT_PASS: ${MQTT_PASS}
       DB_URI: ${DB_URI}
+      SPARK_MASTER_HOST: ${SPARK_MASTER_HOST}
+      SPARK_MASTER_PORT: ${SPARK_MASTER_PORT}
     restart: unless-stopped
-    # depends_on:
+    depends_on:
+      - spark-master
     #   - mosquitto
     #   - kafka
+
+  spark-master:
+    container_name: spark-master
+    build:
+      context: .
+      dockerfile: spark-master.Dockerfile
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    restart: unless-stopped
 
   mosquitto:
     container_name: mosquitto

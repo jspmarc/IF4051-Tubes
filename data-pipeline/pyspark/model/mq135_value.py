@@ -1,14 +1,17 @@
 from __future__ import annotations
 import json
-from typing import Dict, List
+from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy_cockroachdb import run_transaction
+import math
+from datetime import datetime
 
 import common_python.model as common_model
 from model.component_value import ComponentValue
 from model.statistics_data import StatisticsData
 from utils.db_connector import DbSession
+from utils.kafka_producer import producer
 
 
 class Mq135Value(ComponentValue):
@@ -51,28 +54,35 @@ class Mq135Value(ComponentValue):
         return {"time": time, "co2": co2_nv}
 
     @staticmethod
-    def handle_statistics(statistics: Dict[str, StatisticsData]) -> None:
+    def handle_statistics(statistics: dict) -> None:
         """
         Handle the statistics
         """
+        time: datetime = statistics["time"]
+        co2: StatisticsData = statistics["co2"]
         print_string = [
             f"Time: {statistics['time']}",
             "CO2:",
-            "\t" + str(statistics["co2"]),
+            "\t" + str(co2),
             "",
         ]
         print("\n".join(print_string))
+        producer.send(
+            "mq135",
+            {
+                "co2_avg": co2.mean,
+                "co2_min": co2.min,
+                "co2_max": co2.max,
+                "created_timestamp": math.floor(time.timestamp()),
+            },
+        )
 
     @classmethod
     def rdd_saver(cls, rdd):
         """
         RDD is in the form of List[(Mq135Value, int)]
         """
-        data: List[Mq135Value] = (
-            rdd
-            .map(lambda x: x[0])
-            .collect()
-        )
+        data: List[Mq135Value] = rdd.map(lambda x: x[0]).collect()
         if len(data) <= 0:
             return
 
@@ -87,4 +97,5 @@ class Mq135Value(ComponentValue):
                     .on_conflict_do_nothing()
                 )
                 s.execute(insert_query)
+
         run_transaction(DbSession, add_all)

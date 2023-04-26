@@ -13,7 +13,7 @@ if __name__ == "__main__":
     Create handler in the data_pipeline/stream_handler.py
     """
     topic_handler_dict = {
-        "dht22": StreamHandler.dht22_process,
+        #"dht22": StreamHandler.dht22_process,
         "mq135": StreamHandler.mq135_process,
     }
 
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     os.makedirs(os.path.dirname(logging_file), exist_ok=True)
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         filename=logging_file,
         filemode="w",
         format="%(asctime)s|%(name)s|%(levelname)s: %(message)s",

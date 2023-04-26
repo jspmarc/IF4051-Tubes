@@ -2,11 +2,6 @@ FROM apache/spark-py:v3.4.0
 
 ARG USER_ID=1000
 ARG USER_NAME=spark
-ARG SPARK_MASTER_HOST=spark-master
-ARG SPARK_MASTER_PORT=7077
-
-ENV SPARK_MASTER_HOST=${SPARK_MASTER_HOST}
-ENV SPARK_MASTER_PORT=${SPARK_MASTER_PORT}
 
 USER root
 
@@ -39,5 +34,5 @@ CMD $SPARK_HOME/bin/spark-submit \
 	--packages "org.apache.bahir:spark-streaming-mqtt_2.11:2.4.0" \
 	--conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" \
 	--executor-memory 512M \
-	--master spark://$SPARK_MASTER_HOST:$SPARK_MASTER_PORT \
+	--master local[*] \
 	/pyspark/main.py

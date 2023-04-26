@@ -4,10 +4,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy_cockroachdb import run_transaction
 from typing import List
+import math
+from datetime import datetime
 
 import common_python.model as common_model
 from utils.db_connector import DbSession
+import utils.kafka_producer
 from model.component_value import ComponentValue
+from model.statistics_data import StatisticsData
 
 
 class Dht22Value(ComponentValue):
@@ -67,26 +71,37 @@ class Dht22Value(ComponentValue):
         """
         Handle the given statistics
         """
+        time: datetime = statistics["time"]
+        temperature: StatisticsData = statistics["temperature"]
+        humidity: StatisticsData = statistics["humidity"]
         print_string = [
-            f"Time: {statistics['time']}",
+            f"Time: {time}",
             "Temperature:",
-            "\t" + str(statistics["temperature"]),
+            "\t" + str(temperature),
             "Humidity:",
-            "\t" + str(statistics["humidity"]),
+            "\t" + str(humidity),
             "",
         ]
         print("\n".join(print_string))
+        utils.kafka_producer.producer.send(
+            "dht22",
+            {
+                "humidity_avg": humidity.mean,
+                "humidity_min": humidity.min,
+                "humidity_max": humidity.max,
+                "temperature_avg": temperature.mean,
+                "temperature_min": temperature.min,
+                "temperature_max": temperature.max,
+                "created_timestamp": math.floor(time.timestamp()),
+            },
+        )
 
     @classmethod
     def rdd_saver(cls, rdd):
         """
         RDD is in the form of List[(Dht22Value, int)]
         """
-        data: List[Dht22Value] = (
-            rdd
-            .map(lambda x: x[0])
-            .collect()
-        )
+        data: List[Dht22Value] = rdd.map(lambda x: x[0]).collect()
         if len(data) <= 0:
             return
 
@@ -102,4 +117,5 @@ class Dht22Value(ComponentValue):
                     .on_conflict_do_nothing()
                 )
                 s.execute(insert_query)
+
         run_transaction(DbSession, add_all)

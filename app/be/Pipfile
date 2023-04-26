@@ -11,6 +11,8 @@ websockets = "*"
 paho-mqtt = "*"
 python-dotenv = "*"
 sqlalchemy = "*"
+common-python = {editable = true, path = "./../../common-python"}
+aiokafka = "*"
 
 [dev-packages]
 

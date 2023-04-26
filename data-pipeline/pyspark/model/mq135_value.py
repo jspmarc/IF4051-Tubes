@@ -70,9 +70,9 @@ class Mq135Value(ComponentValue):
         producer.send(
             "mq135",
             {
-                "co2_avg": co2.mean,
-                "co2_min": co2.min,
-                "co2_max": co2.max,
+                "co2_avg": round(co2.mean, 2),
+                "co2_min": round(co2.min, 2),
+                "co2_max": round(co2.max, 2),
                 "created_timestamp": math.floor(time.timestamp()),
             },
         )

@@ -86,12 +86,12 @@ class Dht22Value(ComponentValue):
         utils.kafka_producer.producer.send(
             "dht22",
             {
-                "humidity_avg": humidity.mean,
-                "humidity_min": humidity.min,
-                "humidity_max": humidity.max,
-                "temperature_avg": temperature.mean,
-                "temperature_min": temperature.min,
-                "temperature_max": temperature.max,
+                "humidity_avg": round(humidity.mean, 2),
+                "humidity_min": round(humidity.min, 2),
+                "humidity_max": round(humidity.max, 2),
+                "temperature_avg": round(temperature.mean, 2),
+                "temperature_min": round(temperature.min, 2),
+                "temperature_max": round(temperature.max, 2),
                 "created_timestamp": math.floor(time.timestamp()),
             },
         )

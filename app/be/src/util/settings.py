@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     app_state_sqlite_url: str = "sqlite:///./app_state.db"
 
+    kafka_bootstrap_server: str = "127.0.0.1:9092"
+
     class Config:
         env_file = ".env"
 

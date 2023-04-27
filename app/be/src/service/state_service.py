@@ -14,7 +14,7 @@ class StateService:
     def get_state(self) -> dto.AppState | None:
         state = dto.AppState.from_orm(self.__db.query(models.AppState).one_or_none())
         if state is None:
-            print("No state found in database")
+            raise RuntimeError("No state found in database")
         return state
 
     def update_state(self, new_state: dto.AppState) -> dto.AppState:

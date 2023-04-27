@@ -3,7 +3,7 @@ import dto
 from typing import Annotated
 from fastapi import Depends, status
 
-from service import MqttService, StateService
+from service import StateService
 
 from util.enums import AppMode
 

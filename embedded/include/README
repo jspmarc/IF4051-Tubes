@@ -1,6 +1,10 @@
 
 This directory is intended for project header files.
 
+And the file `constants.hpp` could contain secrets, so it is not included.
+Instead, you can copy `constants.example.hpp` to `constants.hpp` and then
+fill in your own values.
+
 A header file is a file containing C declarations and macro definitions
 to be shared between several project source files. You request the use of a
 header file in your project source file (C, C++, etc) located in `src` folder

@@ -4,10 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
-sqlalchemy-cockroachdb = "*"
-common-python = {editable = true, path = "./../common-python"}
-psycopg2-binary = "*"
 
 [dev-packages]
 

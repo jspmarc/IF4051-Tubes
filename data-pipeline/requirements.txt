@@ -1,7 +1,1 @@
 -i https://pypi.org/simple
-./../common-python
-greenlet==2.0.2 ; platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32')))))
-psycopg2-binary==2.9.6
-sqlalchemy==2.0.9
-sqlalchemy-cockroachdb==2.0.1
-typing-extensions==4.5.0 ; python_version >= '3.7'

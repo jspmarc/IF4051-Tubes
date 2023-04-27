@@ -1,12 +1,10 @@
 from __future__ import annotations
 import json
-from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy_cockroachdb import run_transaction
-from typing import List
+from typing import Tuple
+from influxdb_client import Point, WritePrecision
+from influxdb_client.client import write_api
 
-import common_python.model as common_model
-from utils.db_connector import DbSession
+from utils.db_connector import db_client, db_bucket, db_org
 from model.component_value import ComponentValue
 
 
@@ -82,24 +80,21 @@ class Dht22Value(ComponentValue):
         """
         RDD is in the form of List[(Dht22Value, int)]
         """
-        data: List[Dht22Value] = (
-            rdd
-            .map(lambda x: x[0])
-            .collect()
-        )
-        if len(data) <= 0:
-            return
+        write_client = db_client.write_api(write_options=write_api.SYNCHRONOUS)
 
-        def add_all(s: Session):
-            for datum in data:
-                insert_query = (
-                    insert(common_model.Dht22)
-                    .values(
-                        humidity=datum.humidity,
-                        temperature=datum.temperature,
-                        created_timestamp=datum.created_timestamp,
-                    )
-                    .on_conflict_do_nothing()
-                )
-                s.execute(insert_query)
-        run_transaction(DbSession, add_all)
+        def foreach_datum(datum: Tuple[Dht22Value, int]):
+            value = datum[0]
+            point = (
+                Point("dht22")
+                .time(value.created_timestamp, write_precision=WritePrecision.S)
+                .field("humidity", value.humidity)
+                .field("temperature", value.temperature)
+            )
+            if db_bucket is None or db_org is None:
+                """
+                Will never be here
+                """
+                return
+            write_client.write(bucket=db_bucket, record=point, org=db_org)
+
+        rdd.foreach(foreach_datum)

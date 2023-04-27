@@ -1,14 +1,12 @@
 from __future__ import annotations
 import json
-from typing import Dict, List
-from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy_cockroachdb import run_transaction
+from typing import Dict, Tuple
+from influxdb_client import Point, WritePrecision
+from influxdb_client.client import write_api
 
-import common_python.model as common_model
+from utils.db_connector import db_client, db_bucket, db_org
 from model.component_value import ComponentValue
 from model.statistics_data import StatisticsData
-from utils.db_connector import DbSession
 
 
 class Mq135Value(ComponentValue):
@@ -68,23 +66,20 @@ class Mq135Value(ComponentValue):
         """
         RDD is in the form of List[(Mq135Value, int)]
         """
-        data: List[Mq135Value] = (
-            rdd
-            .map(lambda x: x[0])
-            .collect()
-        )
-        if len(data) <= 0:
-            return
+        write_client = db_client.write_api(write_options=write_api.SYNCHRONOUS)
 
-        def add_all(s: Session):
-            for datum in data:
-                insert_query = (
-                    insert(common_model.Mq135)
-                    .values(
-                        co2=datum.co2,
-                        created_timestamp=datum.created_timestamp,
-                    )
-                    .on_conflict_do_nothing()
-                )
-                s.execute(insert_query)
-        run_transaction(DbSession, add_all)
+        def foreach_datum(datum: Tuple[Mq135Value, int]):
+            value = datum[0]
+            point = (
+                Point("mq135")
+                .time(value.created_timestamp, write_precision=WritePrecision.S)
+                .field("co2", value.co2)
+            )
+            if db_bucket is None or db_org is None:
+                """
+                Will never be here
+                """
+                return
+            write_client.write(bucket=db_bucket, record=point, org=db_org)
+
+        rdd.foreach(foreach_datum)

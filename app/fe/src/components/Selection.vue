@@ -25,8 +25,67 @@ interface SelectionProps {
   propertyName?: string
 }
 
-const props = defineProps<SelectionProps>()
-const state = reactive({ selectedIdx: 0 })
+const props = defineProps<SelectionProps>();
+const state = reactive({ 
+  selectedIdx: 0, 
+  protocol: '' 
+});
+let wsConnection: WebSocket;
+
+function defineProtocol() {
+  if (props.url == null) {
+    console.error('url is not set')
+    return;
+  }
+  const protocol = props.url!.split(':')[0]
+  switch (protocol) {
+    case "http":
+    case "https":
+      state.protocol = 'rest';
+      break;
+    case "ws":
+    case "wss":
+      state.protocol = 'websocket';
+      wsConnection = new WebSocket(props.url!);
+      break;
+    default:
+      console.debug(`protocol ${protocol} not supported`)
+      break;
+  }
+}
+
+async function setupInitState() {
+  // functions
+  async function getCurrentState() {
+    const propertyName = props.propertyName ?? slugify(props.label!)
+    const response = await fetch(props.url!, {
+      method: 'GET'
+    })
+    response.json().then((data: any) => {
+      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
+    })
+  }
+
+  function setupWebsocket() {
+    const propertyName = props.propertyName ?? slugify(props.label!)
+    wsConnection.onmessage = (event) => {
+      let data = JSON.parse(event.data);
+      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
+    }
+  }
+
+  // main logic
+  switch (state.protocol) {
+    case 'rest':
+      await getCurrentState();
+      break;
+    case 'websocket':
+      setupWebsocket();
+      break;
+    default:
+      break;
+  }
+}
 
 onMounted(async () => {
   // do some props validation
@@ -37,16 +96,8 @@ onMounted(async () => {
     console.error('optionsDisplay and options are not the same length')
   }
 
-  // get current state from backend
-  if (props.url != null) {
-    let propertyName = props.propertyName ?? slugify(props.label!)
-    const response = await fetch(props.url!, {
-      method: 'GET'
-    })
-    response.json().then((data: any) => {
-      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-    })
-  }
+  defineProtocol();
+  await setupInitState();
 })
 
 /**
@@ -85,16 +136,36 @@ function setSelectedIdx({index, option, options}: {index?: number, option?: stri
 }
 
 function sendData(selectedIdx: number) {
+  // functions
+  function sendRestData(value: string, propertyName: string) {
+    fetch(props.url!, { 
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({ [propertyName]: value })
+    })
+  }
+
+  function sendWebsocketData(value: string, propertyName: string) {
+    wsConnection.send(JSON.stringify({ [propertyName]: value }))
+  }
+
+  // main logic
   setSelectedIdx({ index: selectedIdx })
   let value = props.options[selectedIdx]
   let propertyName = props.propertyName ?? slugify(props.label!) // use slugified label if propertyName is not set
-  fetch(props.url!, { 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({ [propertyName]: value })
-  })
+
+  switch (state.protocol) {
+    case 'rest':
+      sendRestData(value, propertyName)
+      break;
+    case 'websocket':
+      sendWebsocketData(value, propertyName)
+      break;
+    default:
+      break;
+  }
 }
 </script>
 

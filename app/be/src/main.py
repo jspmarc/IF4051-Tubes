@@ -10,8 +10,9 @@ from fastapi import (
     status,
 )
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
-from router import servo_router, state_router
+from router import servo_router, state_router, mode_router
 from service.mqtt_sevice import MqttService
 from service import kafka_inbound_service
 from util.constants import Constants
@@ -22,6 +23,17 @@ from util.settings import Settings, get_settings
 
 app = FastAPI(responses=Constants.BASE_RESPONSE)
 
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup():
@@ -68,6 +80,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 api_router.include_router(servo_router)
 api_router.include_router(state_router)
+api_router.include_router(mode_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

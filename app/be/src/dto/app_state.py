@@ -7,9 +7,9 @@ from util.enums import AppMode
 
 
 class AppState(BaseModel):
-    current_mode: AppMode
-    servo_multiple: int
-    active_alarms: List[Alarm]
+    current_mode: AppMode = AppMode.Override
+    servo_multiple: int = 0
+    active_alarms: List[Alarm] = []
     dht22_statistics: KafkaDht22
     mq135_statistics: KafkaMq135
 

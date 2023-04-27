@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ed92a923bfc870b663b7bafa9cdb52e0c5afaa197cda7012b4f905fa2e9f4b8b"
+            "sha256": "ed6d5d614626ae28e274e453164affb26694755170ccab3aa5866f093d51d3e4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,71 +15,6 @@
             }
         ]
     },
-    "default": {
-        "certifi": {
-            "hashes": [
-                "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3",
-                "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"
-            ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2022.12.7"
-        },
-        "influxdb-client": {
-            "hashes": [
-                "sha256:59654af4f7133f0ecf916411935b50f42e5c4bc125d218e193848f3615b57bfc",
-                "sha256:a5a8d840139431356235f6c786cd49740ed545b6e99be62ae3fb6ba5df1d982b"
-            ],
-            "index": "pypi",
-            "version": "==1.36.1"
-        },
-        "python-dateutil": {
-            "hashes": [
-                "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86",
-                "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"
-            ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==2.8.2"
-        },
-        "reactivex": {
-            "hashes": [
-                "sha256:0004796c420bd9e68aad8e65627d85a8e13f293de76656165dffbcb3a0e3fb6a",
-                "sha256:e912e6591022ab9176df8348a653fe8c8fa7a301f26f9931c9d8c78a650e04e8"
-            ],
-            "markers": "python_version >= '3.7' and python_version < '4.0'",
-            "version": "==4.0.4"
-        },
-        "setuptools": {
-            "hashes": [
-                "sha256:23aaf86b85ca52ceb801d32703f12d77517b2556af839621c641fca11287952b",
-                "sha256:f104fa03692a2602fa0fec6c6a9e63b6c8a968de13e17c026957dd1f53d80990"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==67.7.2"
-        },
-        "six": {
-            "hashes": [
-                "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
-                "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
-            ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==1.16.0"
-        },
-        "typing-extensions": {
-            "hashes": [
-                "sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb",
-                "sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==4.5.0"
-        },
-        "urllib3": {
-            "hashes": [
-                "sha256:8f7f917bc6ff1c021c4b7b677229c455a7612878748581f6de39fd45e4fa21ae",
-                "sha256:da21131828d290d6331d0d93a18f062ead1ec4fe0cfebbcefc95ee5368f7188a"
-            ],
-            "markers": "python_version >= '3.7'",
-            "version": "==2.0.0"
-        }
-    },
+    "default": {},
     "develop": {}
 }

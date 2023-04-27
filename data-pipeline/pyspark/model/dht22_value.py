@@ -1,10 +1,6 @@
 from __future__ import annotations
 import json
-from typing import Tuple
-from influxdb_client import Point, WritePrecision
-from influxdb_client.client import write_api
 
-from utils.db_connector import db_client, db_bucket, db_org
 from model.component_value import ComponentValue
 
 
@@ -74,27 +70,3 @@ class Dht22Value(ComponentValue):
             "",
         ]
         print("\n".join(print_string))
-
-    @classmethod
-    def rdd_saver(cls, rdd):
-        """
-        RDD is in the form of List[(Dht22Value, int)]
-        """
-        write_client = db_client.write_api(write_options=write_api.SYNCHRONOUS)
-
-        def foreach_datum(datum: Tuple[Dht22Value, int]):
-            value = datum[0]
-            point = (
-                Point("dht22")
-                .time(value.created_timestamp, write_precision=WritePrecision.S)
-                .field("humidity", value.humidity)
-                .field("temperature", value.temperature)
-            )
-            if db_bucket is None or db_org is None:
-                """
-                Will never be here
-                """
-                return
-            write_client.write(bucket=db_bucket, record=point, org=db_org)
-
-        rdd.foreach(foreach_datum)

@@ -4,14 +4,13 @@ from fastapi import (
     FastAPI,
     HTTPException,
     Header,
-    WebSocket,
     APIRouter,
     status,
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import servo_router, state_router, mode_router
+from router import servo_router, state_router, mode_router, ws_router
 from service.mqtt_sevice import MqttService
 from util.constants import Constants
 from util.database import BaseSqlModel, app_state_engine
@@ -55,24 +54,10 @@ def validate_token(
 
 api_router = APIRouter(dependencies=[Depends(validate_token)])
 
-
-# noqa: going to need this: https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
-@api_router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    if websocket.client is not None:
-        print(
-            "A websocket client connected:",
-            websocket.client.host + ":" + str(websocket.client.port),
-        )
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
-
-
 api_router.include_router(servo_router)
 api_router.include_router(state_router)
 api_router.include_router(mode_router)
+api_router.include_router(ws_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

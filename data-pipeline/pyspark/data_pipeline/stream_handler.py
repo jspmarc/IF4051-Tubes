@@ -73,11 +73,13 @@ class StreamHandler(object):
 
         def foreach_rdd(time, rdd):
             # save data
+            """
             if sensor == "dht22":
-                t = Thread(target=Dht22Value.rdd_saver, args=[rdd], daemon=True)
+                t = Thread(target=Dht22Value.rdd_saver, args=(rdd,), daemon=True)
             else:
-                t = Thread(target=Mq135Value.rdd_saver, args=[rdd], daemon=True)
+                t = Thread(target=Mq135Value.rdd_saver, args=(rdd,), daemon=True)
             t.start()
+            """
 
             sensor_value_dict = statistics_extractor(time, rdd)
             statistics_handler(sensor_value_dict)

@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     mqtt_user: str | None = None
     mqtt_pass: str | None = None
 
-    app_state_sqlite_url: str = "sqlite:///./app_state.db"
-
     kafka_bootstrap_server: str = "127.0.0.1:9092"
 
     redis_host: str = "127.0.0.1"

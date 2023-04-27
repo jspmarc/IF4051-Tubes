@@ -11,9 +11,6 @@
 #include <DhtTest.hpp>
 #include <Mq135Test.hpp>
 #include <ServoTest.hpp>
-#include <InfluxDbHelper.hpp>
-
-#define DEVICE "ESP32"
 
 #ifndef INSIDE_MODE
 #define INSIDE_MODE 1
@@ -42,7 +39,6 @@ void setup() {
 
 	WifiHelper::setup(WIFI_SSID, WIFI_PASS);
 	TimeHelper::setup();
-	InfluxDbHelper::setup(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN);
 
 #if INSIDE_MODE==0
 	MqttHelper::setup(mqtt_client, nullptr);
@@ -75,7 +71,6 @@ void main_task(void *params) {
 		}
 		Serial.printf("Humidity: %.2f%% | Temperature: %.2f°C\n", humidity, temperature);
 		MqttHelper::publish_dht22_data(mqtt_client, humidity, temperature, unix_timestamp);
-		InfluxDbHelper::write_data(humidity, temperature);
 #else//INSIDE_MODE==0
 		auto [rzero, ppm] = Mq135Test::loop();
 		if (isnan(rzero) || isnan(ppm)) {

@@ -14,11 +14,4 @@ const uint16_t MQTT_PORT = 1883;
 const char *const MQTT_USER = "IF4051_mqtt";
 const char *const MQTT_PASS = "kerja-lembur";
 
-const char *const INFLUXDB_URL = "http://localhost:8086";
-const char *const INFLUXDB_TOKEN = "123456789";
-const char *const INFLUXDB_ORG = "org";
-const char *const INFLUXDB_BUCKET = "bucket";
-const char *const INFLUXDB_USER = "influx";
-const char *const INFLUXDB_PASSWORD = "influx_password";
-
 #endif//CONSTANTS_HPP

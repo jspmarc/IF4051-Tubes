@@ -10,7 +10,7 @@ from fastapi import (
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import servo_router, state_router, mode_router, ws_router
+from router import servo_router, state_router, mode_router
 from service.mqtt_sevice import MqttService
 from util.constants import Constants
 from util.database import BaseSqlModel, app_state_engine
@@ -57,7 +57,6 @@ api_router = APIRouter(dependencies=[Depends(validate_token)])
 api_router.include_router(servo_router)
 api_router.include_router(state_router)
 api_router.include_router(mode_router)
-api_router.include_router(ws_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

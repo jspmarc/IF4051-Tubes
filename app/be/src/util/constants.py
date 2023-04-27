@@ -12,3 +12,5 @@ class Constants:
 
     KAFKA_MQ135_TOPIC = "mq135"
     KAFKA_DHT22_TOPIC = "dht22"
+
+    REDIS_STATE_KEY = "app-state"

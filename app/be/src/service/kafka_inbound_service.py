@@ -3,11 +3,11 @@ from typing import Annotated, Literal
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 from fastapi import Depends
 from common_python.dto import KafkaDht22, KafkaMq135
-from sqlalchemy.orm import Session
+from redis import Redis
 
 from service.state_service import StateService
 from util import Constants
-from util.database import AppStateSession, get_state_db
+from util.database import get_state_db
 from util.settings import Settings, get_settings
 
 __kafka_mq135_consumer = None
@@ -19,7 +19,7 @@ __kafka_dht22_consume_task = None
 async def __consume_messages(
     consumer: AIOKafkaConsumer,
     sensor: Literal["mq135", "dht22"],
-    db: Annotated[Session, Depends(get_state_db)],
+    db: Annotated[Redis, Depends(get_state_db)],
 ):
     state_service = StateService(db)
     try:
@@ -37,8 +37,10 @@ async def __consume_messages(
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
 
-    except Exception:
-        pass
+            state_service.update_state(state)
+
+    except Exception as e:
+        print("Error occured on processing kafka message", e)
     finally:
         db.close()
         await consumer.stop()
@@ -73,10 +75,10 @@ def start_kafka_consumers():
         raise RuntimeError("Consumers has not been initialized")
 
     __kafka_mq135_consume_task = create_task(
-        __consume_messages(__kafka_mq135_consumer, "mq135", AppStateSession()),
+        __consume_messages(__kafka_mq135_consumer, "mq135", get_state_db()),
     )
     __kafka_dht22_consume_task = create_task(
-        __consume_messages(__kafka_dht22_consumer, "dht22", AppStateSession())
+        __consume_messages(__kafka_dht22_consumer, "dht22", get_state_db())
     )
 
 

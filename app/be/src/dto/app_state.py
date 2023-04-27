@@ -10,8 +10,8 @@ class AppState(BaseModel):
     current_mode: AppMode = AppMode.Override
     servo_multiple: int = 0
     active_alarms: List[Alarm] = []
-    dht22_statistics: KafkaDht22
-    mq135_statistics: KafkaMq135
+    dht22_statistics = KafkaDht22()
+    mq135_statistics = KafkaMq135()
 
     class Config:
         orm_mode = True

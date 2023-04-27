@@ -16,7 +16,7 @@ from router import servo_router, state_router, mode_router
 from service.mqtt_sevice import MqttService
 from service import kafka_inbound_service
 from util.constants import Constants
-from util.database import BaseSqlModel, app_state_engine
+from util import database
 from util.helpers import hash
 from util.settings import Settings, get_settings
 
@@ -35,9 +35,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 async def startup():
-    BaseSqlModel.metadata.create_all(bind=app_state_engine)
+    database.initialize_db()
 
     settings = get_settings()
     loop = asyncio.get_event_loop()

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <cmath>
+#include <HTTPClient.h>
 #include <memory>
 #include <MQ135.h>
 
@@ -22,11 +23,12 @@ static TaskHandle_t main_task_handle;
 void main_task(void *params);
 
 #if INSIDE_MODE==1
-static std::shared_ptr<uint8_t> servo_multiple(nullptr);
 void servo_task(void *params);
-static TaskHandle_t servo_task_handle;
 void servo_callback(char *topic, uint8_t *payload, unsigned int length);
-#endif//INSIDE_MODE==1
+
+static std::shared_ptr<uint8_t> servo_multiple(nullptr);
+static TaskHandle_t servo_task_handle;
+#endif//INSIDE_MODE
 
 void setup() {
 	Serial.begin(115200);
@@ -37,6 +39,7 @@ void setup() {
 
 	WifiHelper::setup(WIFI_SSID, WIFI_PASS);
 	TimeHelper::setup();
+
 #if INSIDE_MODE==0
 	MqttHelper::setup(mqtt_client, nullptr);
 #else//INSIDE_MODE==1

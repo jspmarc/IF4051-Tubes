@@ -1,14 +1,8 @@
 from __future__ import annotations
 import json
-from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy_cockroachdb import run_transaction
-from typing import List
 import math
 from datetime import datetime
 
-import common_python.model as common_model
-from utils.db_connector import DbSession
 import utils.kafka_producer
 from model.component_value import ComponentValue
 from model.statistics_data import StatisticsData
@@ -95,27 +89,3 @@ class Dht22Value(ComponentValue):
                 "created_timestamp": math.floor(time.timestamp()),
             },
         )
-
-    @classmethod
-    def rdd_saver(cls, rdd):
-        """
-        RDD is in the form of List[(Dht22Value, int)]
-        """
-        data: List[Dht22Value] = rdd.map(lambda x: x[0]).collect()
-        if len(data) <= 0:
-            return
-
-        def add_all(s: Session):
-            for datum in data:
-                insert_query = (
-                    insert(common_model.Dht22)
-                    .values(
-                        humidity=datum.humidity,
-                        temperature=datum.temperature,
-                        created_timestamp=datum.created_timestamp,
-                    )
-                    .on_conflict_do_nothing()
-                )
-                s.execute(insert_query)
-
-        run_transaction(DbSession, add_all)

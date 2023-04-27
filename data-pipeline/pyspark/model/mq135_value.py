@@ -1,16 +1,10 @@
 from __future__ import annotations
 import json
-from typing import List
-from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy_cockroachdb import run_transaction
 import math
 from datetime import datetime
 
-import common_python.model as common_model
 from model.component_value import ComponentValue
 from model.statistics_data import StatisticsData
-from utils.db_connector import DbSession
 from utils.kafka_producer import producer
 
 
@@ -76,26 +70,3 @@ class Mq135Value(ComponentValue):
                 "created_timestamp": math.floor(time.timestamp()),
             },
         )
-
-    @classmethod
-    def rdd_saver(cls, rdd):
-        """
-        RDD is in the form of List[(Mq135Value, int)]
-        """
-        data: List[Mq135Value] = rdd.map(lambda x: x[0]).collect()
-        if len(data) <= 0:
-            return
-
-        def add_all(s: Session):
-            for datum in data:
-                insert_query = (
-                    insert(common_model.Mq135)
-                    .values(
-                        co2=datum.co2,
-                        created_timestamp=datum.created_timestamp,
-                    )
-                    .on_conflict_do_nothing()
-                )
-                s.execute(insert_query)
-
-        run_transaction(DbSession, add_all)

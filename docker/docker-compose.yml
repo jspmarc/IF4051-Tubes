@@ -74,6 +74,8 @@ services:
     image: telegraf:1.26-alpine
     environment:
       INFLUX_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
+      INFLUX_ORG: ${INFLUXDB_ORG}
+      INFLUX_BUCKET: ${INFLUXDB_BUCKET}
       MQTT_HOST: ${MQTT_HOST}
       MQTT_PORT: ${MQTT_PORT}
       MQTT_USER: ${MQTT_USER}

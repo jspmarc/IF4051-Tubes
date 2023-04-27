@@ -2,9 +2,12 @@ from asyncio import AbstractEventLoop, create_task
 from typing import Annotated, Literal
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 from fastapi import Depends
-
 from common_python.dto import KafkaDht22, KafkaMq135
+from sqlalchemy.orm import Session
+
+from service.state_service import StateService
 from util import Constants
+from util.database import AppStateSession, get_state_db
 from util.settings import Settings, get_settings
 
 __kafka_mq135_consumer = None
@@ -13,26 +16,37 @@ __kafka_dht22_consumer = None
 __kafka_dht22_consume_task = None
 
 
-async def __consume_messages(consumer: AIOKafkaConsumer, sensor: Literal["mq135", "dht22"]):
+async def __consume_messages(
+    consumer: AIOKafkaConsumer,
+    sensor: Literal["mq135", "dht22"],
+    db: Annotated[Session, Depends(get_state_db)],
+):
+    state_service = StateService(db)
     try:
         async for msg in consumer:
+            print("Got kafka message", msg.topic, msg.value)
             msg: ConsumerRecord[None, bytes] = msg
-            data: KafkaMq135 | KafkaDht22
 
             if msg.value is None:
-                return
+                continue
+
+            state = state_service.get_state()
 
             if sensor == "dht22":
-                data = KafkaDht22.parse_raw(msg.value)
+                state.dht22_statistics = KafkaDht22.parse_raw(msg.value)
             else:
-                data = KafkaMq135.parse_raw(msg.value)
-            print(data)
+                state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
+
+    except Exception:
+        pass
     finally:
+        db.close()
         await consumer.stop()
 
 
 async def initialize_kafka_consumers(
-    loop: AbstractEventLoop, settings: Annotated[Settings, Depends(get_settings)]
+    loop: AbstractEventLoop,
+    settings: Annotated[Settings, Depends(get_settings)],
 ):
     global __kafka_mq135_consumer, __kafka_dht22_consumer
 
@@ -58,8 +72,12 @@ def start_kafka_consumers():
     if __kafka_mq135_consumer is None or __kafka_dht22_consumer is None:
         raise RuntimeError("Consumers has not been initialized")
 
-    __kafka_mq135_consume_task = create_task(__consume_messages(__kafka_mq135_consumer, "mq135"))
-    __kafka_dht22_consume_task = create_task(__consume_messages(__kafka_dht22_consumer, "dht22"))
+    __kafka_mq135_consume_task = create_task(
+        __consume_messages(__kafka_mq135_consumer, "mq135", AppStateSession()),
+    )
+    __kafka_dht22_consume_task = create_task(
+        __consume_messages(__kafka_dht22_consumer, "dht22", AppStateSession())
+    )
 
 
 async def stop_all():

@@ -27,4 +27,5 @@ class StateService:
         db.commit()
         db.refresh(db_state)
 
+        print(db_state)
         return dto.AppState.from_orm(db_state)

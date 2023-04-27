@@ -13,7 +13,7 @@ if __name__ == "__main__":
     Create handler in the data_pipeline/stream_handler.py
     """
     topic_handler_dict = {
-        #"dht22": StreamHandler.dht22_process,
+        "dht22": StreamHandler.dht22_process,
         "mq135": StreamHandler.mq135_process,
     }
 

@@ -30,6 +30,7 @@ services:
       - ../mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ../mosquitto/passwd:/mosquitto/config/passwd
       - ../mosquitto/logs:/mosquitto/logs
+      - mosquitto_data:/mosquitto/data
     ports:
       - "1883:1883"
     restart: unless-stopped
@@ -65,6 +66,8 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
       DOCKER_INFLUXDB_INIT_RETENTION: 3d
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
     ports:
       - "8086:8086"
     restart: unless-stopped
@@ -85,3 +88,7 @@ services:
     restart: unless-stopped
     depends_on:
       - influxdb
+
+volumes:
+  mosquitto_data:
+  influxdb_data:

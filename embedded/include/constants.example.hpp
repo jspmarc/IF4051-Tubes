@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-const char *const WIFI_SSID = "tomat";
-const char *const WIFI_PASS = "23101977";
+const char *const WIFI_SSID = "ssid";
+const char *const WIFI_PASS = "pass";
 
 const IPAddress MQTT_HOST(103,176,78,158);
 const uint16_t MQTT_PORT = 1883;

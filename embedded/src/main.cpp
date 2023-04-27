@@ -78,7 +78,6 @@ void main_task(void *params) {
 		}
 		Serial.printf("RZero: %f\tPPM: %f\n", rzero, ppm);
 		MqttHelper::publish_mq135_data(mqtt_client, ppm, unix_timestamp);
-		InfluxDbHelper::write_data(ppm);
 #endif//INSIDE_MODE
 		Serial.println("=================================");
 	}

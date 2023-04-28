@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import Selection from '../components/Selection.vue';
 
-const beUrn = import.meta.env.VITE_BACKEND_URN;
-const httpBeUrl = `http://${beUrn}`;
-const wsBeUrl = `ws://${beUrn}`;
+/**
+ * HomeView component properties
+ * @interface HomeViewProps
+ * @member {string} [url] url to send request to, if not set: do nothing
+ * @member {WebSocket} [wsConnection] websocket connection to listen to, if not set: do nothing
+ */
+interface HomeViewProps {
+  url?: string,
+  wsConnection?: WebSocket
+}
+
+const props = defineProps<HomeViewProps>();
 </script>
 
 <template>
@@ -14,24 +22,24 @@ const wsBeUrl = `ws://${beUrn}`;
               label="Mode" 
               :optionsDisplay="['Auto', 'Override']" 
               :options="['Ai', 'Override']"
-              :url="`${httpBeUrl}/mode`"
-              :wsUrl="`${wsBeUrl}/state/ws`"
+              :url="`${props.url}/mode`"
+              :wsConnection="props.wsConnection"
               propertyName="current_mode" />
     <!-- Door - Servo -->
     <Selection class="py-2" 
               label="Door" 
               :optionsDisplay="['Open', 'Close']"
               :options="['2', '0']"
-              :url="`${httpBeUrl}/servo`"
-              :wsUrl="`${wsBeUrl}/state/ws`"
+              :url="`${props.url}/servo`"
+              :wsConnection="props.wsConnection"
               propertyName="servo_multiple" />
     <!-- Window - Servo -->
     <Selection class="py-2" 
               label="Window" 
               :optionsDisplay="['Open', 'Close']"
               :options="['2', '0']"
-              :url="`${httpBeUrl}/servo`"
-              :wsUrl="`${wsBeUrl}/state/ws`"
+              :url="`${props.url}/servo`"
+              :wsConnection="props.wsConnection"
               propertyName="servo_multiple" />
   </div>
 </template>

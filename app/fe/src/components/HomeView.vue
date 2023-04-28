@@ -14,21 +14,24 @@ const wsBeUrl = `ws://${beUrn}`;
               label="Mode" 
               :optionsDisplay="['Auto', 'Override']" 
               :options="['Ai', 'Override']"
-              :url="`${wsBeUrl}/mode/ws`"
+              :url="`${httpBeUrl}/mode`"
+              :wsUrl="`${wsBeUrl}/state/ws`"
               propertyName="current_mode" />
     <!-- Door - Servo -->
     <Selection class="py-2" 
               label="Door" 
               :optionsDisplay="['Open', 'Close']"
               :options="['2', '0']"
-              :url="`${wsBeUrl}/servo/ws`"
+              :url="`${httpBeUrl}/servo`"
+              :wsUrl="`${wsBeUrl}/state/ws`"
               propertyName="servo_multiple" />
     <!-- Window - Servo -->
     <Selection class="py-2" 
               label="Window" 
               :optionsDisplay="['Open', 'Close']"
               :options="['2', '0']"
-              :url="`${wsBeUrl}/servo/ws`"
+              :url="`${httpBeUrl}/servo`"
+              :wsUrl="`${wsBeUrl}/state/ws`"
               propertyName="servo_multiple" />
   </div>
 </template>

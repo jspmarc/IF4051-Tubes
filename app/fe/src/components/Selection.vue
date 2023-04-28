@@ -9,12 +9,14 @@ import slugify from 'slugify'
  * @member {string[]} [optionsDisplay] options to display, if not set: use options
  * @member {string} [label] label to display, if not set: only display options
  * @member {string} [url] url to send request to, if not set: do nothing
+ * @member {string} [wsUrl] WebSocket url to receive current state to, if not set: do nothing
  * @member {string} [propertyName] property name to send to server, if not set: use slugified label
  * @example 
  * <Selection label="Mode"
  *            :optionsDisplay="['Auto', 'Override']"
  *            :options="['ai', 'override']"
- *            :url="`localhost:8080/mode`"
+ *            :url="`http://localhost:8080/mode`"
+ *            :wsUrl="`ws://localhost:8080/ws`"
  *            propertyName="current_mode" />
  */
 interface SelectionProps {
@@ -22,6 +24,7 @@ interface SelectionProps {
   optionsDisplay?: string[],
   label?: string,
   url?: string,
+  wsUrl?: string,
   propertyName?: string
 }
 
@@ -32,59 +35,22 @@ const state = reactive({
 });
 let wsConnection: WebSocket;
 
-function defineProtocol() {
-  if (props.url == null) {
-    console.error('url is not set')
-    return;
-  }
-  const protocol = props.url!.split(':')[0]
-  switch (protocol) {
-    case "http":
-    case "https":
-      state.protocol = 'rest';
-      break;
-    case "ws":
-    case "wss":
-      state.protocol = 'websocket';
-      wsConnection = new WebSocket(props.url!);
-      break;
-    default:
-      console.debug(`protocol ${protocol} not supported`)
-      break;
+function setupWebsocket() {
+  const propertyName = props.propertyName ?? slugify(props.label!)
+  wsConnection.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
   }
 }
 
-async function setupInitState() {
-  // functions
-  async function getCurrentState() {
-    const propertyName = props.propertyName ?? slugify(props.label!)
-    const response = await fetch(props.url!, {
-      method: 'GET'
-    })
-    response.json().then((data: any) => {
-      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-    })
-  }
-
-  function setupWebsocket() {
-    const propertyName = props.propertyName ?? slugify(props.label!)
-    wsConnection.onmessage = (event) => {
-      let data = JSON.parse(event.data);
-      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-    }
-  }
-
-  // main logic
-  switch (state.protocol) {
-    case 'rest':
-      await getCurrentState();
-      break;
-    case 'websocket':
-      setupWebsocket();
-      break;
-    default:
-      break;
-  }
+async function getCurrentState() {
+  const propertyName = props.propertyName ?? slugify(props.label!)
+  const response = await fetch(props.url!, {
+    method: 'GET'
+  })
+  response.json().then((data: any) => {
+    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
+  })
 }
 
 onMounted(async () => {
@@ -96,8 +62,16 @@ onMounted(async () => {
     console.error('optionsDisplay and options are not the same length')
   }
 
-  defineProtocol();
-  await setupInitState();
+  // main logic
+  if (props.wsUrl != null) {
+    wsConnection = new WebSocket(props.wsUrl!);
+    setupWebsocket();
+  } else if (props.url != null) {
+    console.debug('wsUrl is not set, will use http to get current state');
+    getCurrentState();
+  } else {
+    console.debug('wsUrl and url are not set, will not get current state');
+  }
 })
 
 /**
@@ -147,24 +121,15 @@ function sendData(selectedIdx: number) {
     })
   }
 
-  function sendWebsocketData(value: string, propertyName: string) {
-    wsConnection.send(JSON.stringify({ [propertyName]: value }))
-  }
-
   // main logic
   setSelectedIdx({ index: selectedIdx })
   let value = props.options[selectedIdx]
   let propertyName = props.propertyName ?? slugify(props.label!) // use slugified label if propertyName is not set
 
-  switch (state.protocol) {
-    case 'rest':
-      sendRestData(value, propertyName)
-      break;
-    case 'websocket':
-      sendWebsocketData(value, propertyName)
-      break;
-    default:
-      break;
+  if (props.url != null) {
+    sendRestData(value, propertyName)
+  } else {
+    console.debug('wsUrl and url are not set, will not send data');
   }
 }
 </script>

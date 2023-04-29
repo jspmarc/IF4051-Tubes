@@ -5,7 +5,6 @@ from fastapi import (
     FastAPI,
     HTTPException,
     Header,
-    WebSocket,
     APIRouter,
     status,
 )
@@ -63,21 +62,6 @@ def validate_token(
 
 
 api_router = APIRouter(dependencies=[Depends(validate_token)])
-
-
-# noqa: going to need this: https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
-@api_router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    if websocket.client is not None:
-        print(
-            "A websocket client connected:",
-            websocket.client.host + ":" + str(websocket.client.port),
-        )
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
-
 
 api_router.include_router(servo_router)
 api_router.include_router(state_router)

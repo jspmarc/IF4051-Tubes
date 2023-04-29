@@ -13,6 +13,10 @@ class AppState(BaseModel):
     dht22_statistics = KafkaDht22()
     mq135_statistics = KafkaMq135()
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(**data)
+
     class Config:
         orm_mode = True
         use_enum_values = True

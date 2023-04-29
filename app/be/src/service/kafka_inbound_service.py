@@ -6,6 +6,7 @@ from common_python.dto import KafkaDht22, KafkaMq135
 from redis import Redis
 
 from service.state_service import StateService
+from service.websocket_service import WebsocketService
 from util import Constants
 from util.database import get_state_db
 from util.settings import Settings, get_settings
@@ -20,8 +21,9 @@ async def __consume_messages(
     consumer: AIOKafkaConsumer,
     sensor: Literal["mq135", "dht22"],
     db: Annotated[Redis, Depends(get_state_db)],
+    websocket_service: Annotated[WebsocketService, Depends()],
 ):
-    state_service = StateService(db)
+    state_service = StateService(db, websocket_service)
     try:
         async for msg in consumer:
             print("Got kafka message", msg.topic, msg.value)
@@ -37,7 +39,7 @@ async def __consume_messages(
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
 
-            state_service.update_state(state)
+            await state_service.update_state(state)
 
     except Exception as e:
         print("Error occured on processing kafka message", e)
@@ -75,10 +77,14 @@ def start_kafka_consumers():
         raise RuntimeError("Consumers has not been initialized")
 
     __kafka_mq135_consume_task = create_task(
-        __consume_messages(__kafka_mq135_consumer, "mq135", get_state_db()),
+        __consume_messages(
+            __kafka_mq135_consumer, "mq135", get_state_db(), WebsocketService()
+        ),
     )
     __kafka_dht22_consume_task = create_task(
-        __consume_messages(__kafka_dht22_consumer, "dht22", get_state_db())
+        __consume_messages(
+            __kafka_dht22_consumer, "dht22", get_state_db(), WebsocketService()
+        )
     )
 
 

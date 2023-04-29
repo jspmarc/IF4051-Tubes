@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import HelloWorld from './components/HelloWorld.vue'
-import HomeView from './components/HomeView.vue';
+import HomeView from "./components/HomeView.vue";
 
 const beUrn = import.meta.env.VITE_BACKEND_URN;
 const wsBeUrl = `ws://${beUrn}/state/ws`;
@@ -10,8 +10,7 @@ let wsConnection = new WebSocket(wsBeUrl);
 
 <template>
   <div class="flex w-full place-self-center">
-    <HomeView :url="httpBeUrl"
-              :ws-connection="wsConnection" />
+    <HomeView :url="httpBeUrl" :ws-connection="wsConnection" />
   </div>
 </template>
 
@@ -22,9 +21,11 @@ let wsConnection = new WebSocket(wsBeUrl);
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-import slugify from 'slugify'
+import { onMounted, reactive } from "vue";
+import slugify from "slugify";
 /**
  * Selection component properties
- * @interface SelectionProps
+ * @type SelectionProps
  * @member {string[]} options options to store/send value
  * @member {string[]} [optionsDisplay] options to display, if not set: use options
  * @member {string} [label] label to display, if not set: only display options
  * @member {string} [url] url to send request to, if not set: do nothing
  * @member {WebSocket} [wsConnection] websocket connection to listen to, if not set: do nothing
  * @member {string} [propertyName] property name to send to server, if not set: use slugified label
- * @example 
+ * @example
  * <Selection label="Mode"
  *            :optionsDisplay="['Auto', 'Override']"
  *            :options="['ai', 'override']"
@@ -19,57 +19,66 @@ import slugify from 'slugify'
  *            propertyName="current_mode" />
  */
 interface SelectionProps {
-  options: string[],
-  optionsDisplay?: string[],
-  label?: string,
-  url?: string,
-  wsConnection?: WebSocket,
-  propertyName?: string
+  options: string[];
+  optionsDisplay?: string[];
+  label?: string;
+  url?: string;
+  wsConnection?: WebSocket;
+  propertyName?: string;
 }
 
 const props = defineProps<SelectionProps>();
-const state = reactive({ 
-  selectedIdx: 0, 
-  protocol: '' 
+const state = reactive({
+  selectedIdx: 0,
+  protocol: "",
 });
 
 function setupWebsocket() {
-  const propertyName = props.propertyName ?? slugify(props.label!)
+  const propertyName = props.propertyName ?? slugify(props.label!);
   props.wsConnection!.onmessage = (event) => {
     let data = JSON.parse(event.data);
-    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-  }
+    setSelectedIdx({
+      option: data[propertyName].toString(),
+      options: props.options,
+    });
+  };
 }
 
 async function getCurrentState() {
-  const propertyName = props.propertyName ?? slugify(props.label!)
+  const propertyName = props.propertyName ?? slugify(props.label!);
   const response = await fetch(props.url!, {
-    method: 'GET'
-  })
+    method: "GET",
+  });
   response.json().then((data: any) => {
-    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-  })
+    setSelectedIdx({
+      option: data[propertyName].toString(),
+      options: props.options,
+    });
+  });
 }
 
 onMounted(async () => {
   // do some props validation
   if (props.url != null && props.label == null && props.propertyName == null) {
-    console.warn('url is set but no propertyName or label set')
+    console.warn("url is set but no propertyName or label set");
   }
-  if (props.optionsDisplay != null && props.optionsDisplay.length != props.options.length) {
-    console.error('optionsDisplay and options are not the same length')
+  if (
+    props.optionsDisplay != null &&
+    props.optionsDisplay.length != props.options.length
+  ) {
+    console.error("optionsDisplay and options are not the same length");
   }
 
   // main logic
   if (props.wsConnection != null) {
     setupWebsocket();
   } else if (props.url != null) {
-    console.debug('wsUrl is not set, will use http to get current state');
+    console.debug("wsUrl is not set, will use http to get current state");
     getCurrentState();
   } else {
-    console.debug('wsUrl and url are not set, will not get current state');
+    console.debug("wsUrl and url are not set, will not get current state");
   }
-})
+});
 
 /**
  * set `state.selectedIdx` based on option or index; the index takes precedence
@@ -77,32 +86,40 @@ onMounted(async () => {
  * @param index index of option to set as selected
  * @returns void
  */
-function setSelectedIdx({index, option, options}: {index?: number, option?: string, options?: string[]}) {
+function setSelectedIdx({
+  index,
+  option,
+  options,
+}: {
+  index?: number;
+  option?: string;
+  options?: string[];
+}) {
   // guards
   if (index != null && option != null) {
-    console.warn('both index and option are set, index takes precedence')
+    console.warn("both index and option are set, index takes precedence");
   }
   if (index != null && options != null) {
-    console.warn('index is set and options is set, index will be used')
+    console.warn("index is set and options is set, index will be used");
   }
   if (index == null && option == null) {
-    console.error('neither index nor option is set')
-    return
+    console.error("neither index nor option is set");
+    return;
   }
   if (option != null && options == null) {
-    console.error('option is set but options is not set')
-    return
+    console.error("option is set but options is not set");
+    return;
   }
 
   // main logic
   if (index != null) {
-    state.selectedIdx = index
-    return
-  } 
-  
+    state.selectedIdx = index;
+    return;
+  }
+
   if (option != null && options != null) {
-    state.selectedIdx = options.indexOf(option)
-    return
+    state.selectedIdx = options.indexOf(option);
+    return;
   }
 }
 
@@ -110,27 +127,26 @@ function setSelectedIdx({index, option, options}: {index?: number, option?: stri
  * Sending data to server: only via REST for now
  */
 function sendData(selectedIdx: number) {
-  
   // functions
   function sendRestData(value: string, propertyName: string) {
-    fetch(props.url!, { 
+    fetch(props.url!, {
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      method: 'POST',
-      body: JSON.stringify({ [propertyName]: value })
-    })
+      method: "POST",
+      body: JSON.stringify({ [propertyName]: value }),
+    });
   }
 
   // main logic
-  setSelectedIdx({ index: selectedIdx })
-  let value = props.options[selectedIdx]
-  let propertyName = props.propertyName ?? slugify(props.label!) // use slugified label if propertyName is not set
+  setSelectedIdx({ index: selectedIdx });
+  let value = props.options[selectedIdx];
+  let propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
 
   if (props.url != null) {
-    sendRestData(value, propertyName)
+    sendRestData(value, propertyName);
   } else {
-    console.debug('wsUrl and url are not set, will not send data');
+    console.debug("wsUrl and url are not set, will not send data");
   }
 }
 </script>
@@ -141,10 +157,13 @@ function sendData(selectedIdx: number) {
       {{ label }}
     </div>
     <div class="selection gray-1 rounded-full p-1">
-      <button type="button" class="rounded-full py-1" 
-              v-for="(option, index) in optionsDisplay" 
-              :class="{'blue': state.selectedIdx == index}" 
-              @click="sendData(index)">
+      <button
+        type="button"
+        class="rounded-full py-1"
+        v-for="(option, index) in optionsDisplay"
+        :class="{ blue: state.selectedIdx == index }"
+        @click="sendData(index)"
+      >
         {{ option }}
       </button>
     </div>

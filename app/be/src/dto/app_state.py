@@ -10,6 +10,10 @@ class AppState(BaseModel):
     servo_multiple: int = 0
     active_alarms: List[Alarm] = []
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(**data)
+
     class Config:
         orm_mode = True
         use_enum_values = True

@@ -1,41 +1,18 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import Selection from './components/Selection.vue';
+// import HelloWorld from './components/HelloWorld.vue'
+import HomeView from './components/HomeView.vue';
 
-const beUrl = import.meta.env.VITE_BACKEND_URL
+const beUrn = import.meta.env.VITE_BACKEND_URN;
+const wsBeUrl = `ws://${beUrn}/state/ws`;
+const httpBeUrl = `http://${beUrn}`;
+let wsConnection = new WebSocket(wsBeUrl);
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="flex w-full place-self-center">
+    <HomeView :url="httpBeUrl"
+              :ws-connection="wsConnection" />
   </div>
-  <HelloWorld msg="Vite + Vue" />
-  <!-- Mode -->
-  <Selection class="py-2" 
-             label="Mode" 
-             :optionsDisplay="['Auto', 'Override']" 
-             :options="['Ai', 'Override']"
-             :url="`${beUrl}/mode`"
-             propertyName="current_mode" />
-  <!-- Door - Servo -->
-  <Selection class="py-2" 
-             label="Door" 
-             :optionsDisplay="['Open', 'Close']"
-             :options="['2', '0']"
-             :url="`${beUrl}/servo`"
-             propertyName="multiple" />
-  <!-- Window - Servo -->
-  <Selection class="py-2" 
-             label="Window" 
-             :optionsDisplay="['Open', 'Close']"
-             :options="['2', '0']"
-             :url="`${beUrl}/servo`"
-             propertyName="multiple" />
 </template>
 
 <style scoped>

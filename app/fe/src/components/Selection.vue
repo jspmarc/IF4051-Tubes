@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import slugify from 'slugify'
-
 /**
  * Selection component properties
  * @interface SelectionProps
@@ -9,12 +8,14 @@ import slugify from 'slugify'
  * @member {string[]} [optionsDisplay] options to display, if not set: use options
  * @member {string} [label] label to display, if not set: only display options
  * @member {string} [url] url to send request to, if not set: do nothing
+ * @member {WebSocket} [wsConnection] websocket connection to listen to, if not set: do nothing
  * @member {string} [propertyName] property name to send to server, if not set: use slugified label
  * @example 
  * <Selection label="Mode"
  *            :optionsDisplay="['Auto', 'Override']"
  *            :options="['ai', 'override']"
- *            :url="`localhost:8080/mode`"
+ *            :url="`http://localhost:8080/mode`"
+ *            :wsConnection="`WebSocket()`"
  *            propertyName="current_mode" />
  */
 interface SelectionProps {
@@ -22,11 +23,33 @@ interface SelectionProps {
   optionsDisplay?: string[],
   label?: string,
   url?: string,
+  wsConnection?: WebSocket,
   propertyName?: string
 }
 
-const props = defineProps<SelectionProps>()
-const state = reactive({ selectedIdx: 0 })
+const props = defineProps<SelectionProps>();
+const state = reactive({ 
+  selectedIdx: 0, 
+  protocol: '' 
+});
+
+function setupWebsocket() {
+  const propertyName = props.propertyName ?? slugify(props.label!)
+  props.wsConnection!.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
+  }
+}
+
+async function getCurrentState() {
+  const propertyName = props.propertyName ?? slugify(props.label!)
+  const response = await fetch(props.url!, {
+    method: 'GET'
+  })
+  response.json().then((data: any) => {
+    setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
+  })
+}
 
 onMounted(async () => {
   // do some props validation
@@ -37,15 +60,14 @@ onMounted(async () => {
     console.error('optionsDisplay and options are not the same length')
   }
 
-  // get current state from backend
-  if (props.url != null) {
-    let propertyName = props.propertyName ?? slugify(props.label!)
-    const response = await fetch(props.url!, {
-      method: 'GET'
-    })
-    response.json().then((data: any) => {
-      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-    })
+  // main logic
+  if (props.wsConnection != null) {
+    setupWebsocket();
+  } else if (props.url != null) {
+    console.debug('wsUrl is not set, will use http to get current state');
+    getCurrentState();
+  } else {
+    console.debug('wsUrl and url are not set, will not get current state');
   }
 })
 
@@ -84,17 +106,32 @@ function setSelectedIdx({index, option, options}: {index?: number, option?: stri
   }
 }
 
+/**
+ * Sending data to server: only via REST for now
+ */
 function sendData(selectedIdx: number) {
+  
+  // functions
+  function sendRestData(value: string, propertyName: string) {
+    fetch(props.url!, { 
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({ [propertyName]: value })
+    })
+  }
+
+  // main logic
   setSelectedIdx({ index: selectedIdx })
   let value = props.options[selectedIdx]
   let propertyName = props.propertyName ?? slugify(props.label!) // use slugified label if propertyName is not set
-  fetch(props.url!, { 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({ [propertyName]: value })
-  })
+
+  if (props.url != null) {
+    sendRestData(value, propertyName)
+  } else {
+    console.debug('wsUrl and url are not set, will not send data');
+  }
 }
 </script>
 

@@ -10,6 +10,8 @@ from util.database import get_state_db
 
 
 class StateService:
+    _lock = asyncio.Lock()
+
     def __init__(
         self,
         db: Annotated[Redis, Depends(get_state_db)],
@@ -35,6 +37,7 @@ class StateService:
         task_broadcast = asyncio.create_task(self.__ws.broadcast_state(new_state))
         task_save = asyncio.create_task(self.__save_to_db(new_state))
 
-        (_, db_state) = await asyncio.gather(task_broadcast, task_save)
-
-        return db_state
+        print(self._lock)
+        async with self._lock:
+            (_, db_state) = await asyncio.gather(task_broadcast, task_save)
+            return db_state

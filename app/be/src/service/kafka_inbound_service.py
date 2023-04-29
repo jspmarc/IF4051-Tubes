@@ -5,8 +5,7 @@ from fastapi import Depends
 from common_python.dto import KafkaDht22, KafkaMq135
 from redis import Redis
 
-from service.state_service import StateService
-from service.websocket_service import WebsocketService
+from service import StateService, WebsocketService
 from util import Constants
 from util.database import get_state_db
 from util.settings import Settings, get_settings

@@ -38,9 +38,12 @@ wsConnection.onmessage = (event) => {
 </script>
 
 <template>
-  <div class="flex w-full place-self-center">
-    <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" />
-  </div>
+  <header>
+    <nav>
+      halo
+    </nav>
+  </header>
+  <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" />
 </template>
 
 <style scoped>

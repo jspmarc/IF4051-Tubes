@@ -8,6 +8,7 @@ class Constants:
 
     BASE_RESPONSE: Dict[int | str, Dict[str, Any]] = {
         401: {"message": "X-Token is invalid."},
+        500: {"message": "Internal server error. Please contact."}
     }
 
     KAFKA_MQ135_TOPIC = "mq135"

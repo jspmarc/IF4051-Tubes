@@ -1,5 +1,6 @@
 from functools import lru_cache
 from redis import Redis
+from influxdb_client import InfluxDBClient
 
 from dto.app_state import AppState
 from util import Constants
@@ -22,7 +23,7 @@ else:
     )
 
 
-def initialize_db():
+def initialize_state_db():
     state = __redis.get(Constants.REDIS_STATE_KEY)
     if state is None:
         state = AppState()
@@ -40,3 +41,13 @@ def initialize_db():
 @lru_cache()
 def get_state_db():
     return __redis
+
+
+def get_realtime_data_db():
+    db = InfluxDBClient(
+        url=__settings.db_uri, token=__settings.db_token, org=__settings.db_org
+    )
+    try:
+        yield db
+    finally:
+        db.close()

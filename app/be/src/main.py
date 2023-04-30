@@ -11,7 +11,7 @@ from fastapi import (
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import servo_router, state_router, mode_router
+from router import servo_router, state_router, mode_router, realtime_data_router
 from service.mqtt_sevice import MqttService
 from service import kafka_inbound_service
 from util.constants import Constants
@@ -37,12 +37,12 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    database.initialize_db()
+    database.initialize_state_db()
 
-    settings = get_settings()
-    loop = asyncio.get_event_loop()
-    await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
-    kafka_inbound_service.start_kafka_consumers()
+    # settings = get_settings()
+    # loop = asyncio.get_event_loop()
+    # await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
+    # kafka_inbound_service.start_kafka_consumers()
 
 
 @app.on_event("shutdown")
@@ -66,6 +66,7 @@ api_router = APIRouter(dependencies=[Depends(validate_token)])
 api_router.include_router(servo_router)
 api_router.include_router(state_router)
 api_router.include_router(mode_router)
+api_router.include_router(realtime_data_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

@@ -141,10 +141,3 @@ async function sendData(selectedIdx: number) {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* kalau pengen dibikin bagus silakan hehe */
-button {
-  transition: all 0.3s ease-in-out;
-}
-</style>

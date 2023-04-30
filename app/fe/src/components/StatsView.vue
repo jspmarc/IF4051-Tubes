@@ -56,7 +56,7 @@ async function updateCo2(e: Event) {
         :max="appState.dht22_statistics.temperature_max"
         data-label="Temperature (in °C)"
       />
-      <button class="bg-black text-white px-4 py-2" @click="updateTemperature">Update data</button>
+      <button @click="updateTemperature">Update data</button>
     </div>
 
     <div class="flex flex-col items-center justify-center h-full w-full">
@@ -69,7 +69,7 @@ async function updateCo2(e: Event) {
         :max="appState.mq135_statistics.co2_max"
         data-label="CO2 PPM"
       />
-      <button class="bg-black text-white px-4 py-2" @click="updateCo2">Update data</button>
+      <button @click="updateCo2">Update data</button>
     </div>
   </div>
 </template>

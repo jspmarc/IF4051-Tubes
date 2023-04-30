@@ -9,15 +9,24 @@ import {
   Legend,
   CategoryScale,
   LinearScale,
-} from "chart.js"
-import "chart.js/auto"
+} from "chart.js";
+import "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
 
-const StatsView = defineAsyncComponent(() => import("./components/StatsView.vue"));
+const StatsView = defineAsyncComponent(
+  () => import("./components/StatsView.vue")
+);
 
-ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, annotationPlugin)
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  annotationPlugin
+);
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,
@@ -49,22 +58,35 @@ wsConnection.onmessage = (event) => {
   let data: AppState = JSON.parse(event.data);
   appState.value = data;
 };
+
+const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 </script>
 
 <template>
   <header>
-    <nav>
-      halo
+    <nav class="flex flex-row">
+      <ul class="selection gray-1 flex flex-row gap-6 p-1 rounded-full">
+        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'home'">HOME</button></li>
+        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'stats'">STATS</button></li>
+        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'alert'">ALERTS</button></li>
+      </ul>
     </nav>
   </header>
-  <Suspense>
-    <StatsView :app-state="appState" :be-url="httpBeUrl" />
 
-    <template #fallback>
-        Loading...
-    </template>
-  </Suspense>
-  <!-- <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" /> -->
+  <HomeView
+    v-show="currentView === 'home'"
+    :url="httpBeUrl"
+    :ws-connection="wsConnection"
+    :app-state="appState"
+  />
+
+  <div class="h-full w-full" v-show="currentView === 'stats'">
+    <Suspense>
+      <StatsView :app-state="appState" :be-url="httpBeUrl" />
+
+      <template #fallback> Loading... </template>
+    </Suspense>
+  </div>
 </template>
 
 <style scoped>

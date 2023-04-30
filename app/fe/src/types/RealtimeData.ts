@@ -1,5 +1,7 @@
+import type { Dayjs } from "dayjs";
+
 interface RealtimeData {
-	time: Date,
+	time: Dayjs,
 	value: number,
 }
 

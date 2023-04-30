@@ -2,10 +2,22 @@
 import { defineAsyncComponent, ref } from "vue";
 import type { Ref } from "vue";
 import HomeView from "./components/HomeView.vue";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js"
+import "chart.js/auto"
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
 
 const StatsView = defineAsyncComponent(() => import("./components/StatsView.vue"));
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,

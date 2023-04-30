@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Selection from "../components/Selection.vue";
+import type AppState from "../types/AppState";
 
 /**
  * HomeView component properties
@@ -10,6 +11,7 @@ import Selection from "../components/Selection.vue";
 interface HomeViewProps {
   url?: string;
   wsConnection?: WebSocket;
+  appState: AppState;
 }
 
 const props = defineProps<HomeViewProps>();
@@ -24,8 +26,8 @@ const props = defineProps<HomeViewProps>();
       :options-display="['Auto', 'Override']"
       :options="['Ai', 'Override']"
       :url="`${props.url}/mode`"
-      :ws-connection="props.wsConnection"
       property-name="current_mode"
+      :app-state="appState"
     />
     <!-- Door - Servo -->
     <Selection
@@ -34,8 +36,8 @@ const props = defineProps<HomeViewProps>();
       :options-display="['Open', 'Close']"
       :options="['2', '0']"
       :url="`${props.url}/servo`"
-      :ws-connection="props.wsConnection"
       property-name="servo_multiple"
+      :app-state="appState"
     />
     <!-- Window - Servo -->
     <Selection
@@ -44,8 +46,8 @@ const props = defineProps<HomeViewProps>();
       :options-display="['Open', 'Close']"
       :options="['2', '0']"
       :url="`${props.url}/servo`"
-      :ws-connection="props.wsConnection"
       property-name="servo_multiple"
+      :app-state="appState"
     />
   </div>
 </template>

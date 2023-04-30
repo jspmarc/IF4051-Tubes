@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import slugify from "slugify";
+import type AppState from "../types/AppState";
 /**
  * Selection component properties
  * @type SelectionProps
@@ -24,7 +25,8 @@ interface SelectionProps {
   label?: string;
   url?: string;
   wsConnection?: WebSocket;
-  propertyName?: string;
+  propertyName: "current_mode" | "servo_multiple";
+  appState: AppState;
 }
 
 const props = defineProps<SelectionProps>();
@@ -33,29 +35,13 @@ const state = reactive({
   protocol: "",
 });
 
-function setupWebsocket() {
+watch(() => props.appState, function(newState) {
   const propertyName = props.propertyName ?? slugify(props.label!);
-  props.wsConnection!.onmessage = (event) => {
-    let data = JSON.parse(event.data);
-    setSelectedIdx({
-      option: data[propertyName].toString(),
-      options: props.options,
-    });
-  };
-}
-
-async function getCurrentState() {
-  const propertyName = props.propertyName ?? slugify(props.label!);
-  const response = await fetch(props.url!, {
-    method: "GET",
+  setSelectedIdx({
+    option: newState[propertyName].toString(),
+    options: props.options,
   });
-  response.json().then((data: any) => {
-    setSelectedIdx({
-      option: data[propertyName].toString(),
-      options: props.options,
-    });
-  });
-}
+})
 
 onMounted(async () => {
   // do some props validation
@@ -67,16 +53,6 @@ onMounted(async () => {
     props.optionsDisplay.length != props.options.length
   ) {
     console.error("optionsDisplay and options are not the same length");
-  }
-
-  // main logic
-  if (props.wsConnection != null) {
-    setupWebsocket();
-  } else if (props.url != null) {
-    console.debug("wsUrl is not set, will use http to get current state");
-    getCurrentState();
-  } else {
-    console.debug("wsUrl and url are not set, will not get current state");
   }
 });
 
@@ -126,25 +102,21 @@ function setSelectedIdx({
 /**
  * Sending data to server: only via REST for now
  */
-function sendData(selectedIdx: number) {
-  // functions
-  function sendRestData(value: string, propertyName: string) {
-    fetch(props.url!, {
+async function sendData(selectedIdx: number) {
+  if (props.url != null) {
+    const propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
+    const value = props.options[selectedIdx];
+    const response = await fetch(props.url!, {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({ [propertyName]: value }),
     });
-  }
-
-  // main logic
-  setSelectedIdx({ index: selectedIdx });
-  let value = props.options[selectedIdx];
-  let propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
-
-  if (props.url != null) {
-    sendRestData(value, propertyName);
+    if (!response.ok) {
+      console.error("Can't update state to server, response:", response.statusText);
+    }
+    setSelectedIdx({ index: selectedIdx });
   } else {
     console.debug("wsUrl and url are not set, will not send data");
   }

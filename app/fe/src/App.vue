@@ -1,16 +1,45 @@
 <script setup lang="ts">
-// import HelloWorld from './components/HelloWorld.vue'
+import { ref } from "vue";
+import type { Ref } from "vue";
 import HomeView from "./components/HomeView.vue";
+import AppMode from "./types/AppMode";
+import type AppState from "./types/AppState";
+
+let appState: Ref<AppState> = ref({
+  current_mode: AppMode.Ai,
+  active_alarms: [],
+  servo_multiple: 0,
+  dht22_statistics: {
+    humidity_avg: 0,
+    humidity_max: 0,
+    humidity_min: 0,
+    temperature_avg: 0,
+    temperature_max: 0,
+    temperature_min: 0,
+    created_timestamp: 0,
+  },
+  mq135_statistics: {
+    co2_avg: 0,
+    co2_max: 0,
+    co2_min: 0,
+    created_timestamp: 0,
+  },
+});
 
 const beUrn = import.meta.env.VITE_BACKEND_URN;
 const wsBeUrl = `ws://${beUrn}/state/ws`;
 const httpBeUrl = `http://${beUrn}`;
-let wsConnection = new WebSocket(wsBeUrl);
+const wsConnection = new WebSocket(wsBeUrl);
+
+wsConnection.onmessage = (event) => {
+  let data: AppState = JSON.parse(event.data);
+  appState.value = data;
+};
 </script>
 
 <template>
   <div class="flex w-full place-self-center">
-    <HomeView :url="httpBeUrl" :ws-connection="wsConnection" />
+    <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" />
   </div>
 </template>
 

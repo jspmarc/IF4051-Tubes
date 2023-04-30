@@ -45,25 +45,31 @@ async function updateCo2(e: Event) {
 </script>
 
 <template>
-  <p>Temperature</p>
-  <Chart
-    v-if="realtimeData.temperature != null"
-    :data="realtimeData.temperature"
-    :mean="appState.dht22_statistics.temperature_avg"
-    :min="appState.dht22_statistics.temperature_min"
-    :max="appState.dht22_statistics.temperature_max"
-    data-label="Temperature (in °C)"
-  />
-  <button @click="updateTemperature">Update data</button>
+  <div class="flex flex-col lg:flex-row h-screen lg:h-[30rem] items-center justify-center px-4 lg:px-10 w-full">
+    <div class="flex flex-col items-center justify-center h-full w-full">
+      <p>Temperature</p>
+      <Chart
+        v-if="realtimeData.temperature != null"
+        :data="realtimeData.temperature"
+        :mean="appState.dht22_statistics.temperature_avg"
+        :min="appState.dht22_statistics.temperature_min"
+        :max="appState.dht22_statistics.temperature_max"
+        data-label="Temperature (in °C)"
+      />
+      <button class="bg-black text-white px-4 py-2" @click="updateTemperature">Update data</button>
+    </div>
 
-  <p>CO<sub>2</sub></p>
-  <Chart
-    v-if="realtimeData.co2 != null"
-    :data="realtimeData.co2"
-    :mean="appState.mq135_statistics.co2_avg"
-    :min="appState.mq135_statistics.co2_min"
-    :max="appState.mq135_statistics.co2_max"
-    data-label="CO2 PPM"
-  />
-  <button @click="updateCo2">Update data</button>
+    <div class="flex flex-col items-center justify-center h-full w-full">
+      <p>CO<sub>2</sub></p>
+      <Chart
+        v-if="realtimeData.co2 != null"
+        :data="realtimeData.co2"
+        :mean="appState.mq135_statistics.co2_avg"
+        :min="appState.mq135_statistics.co2_min"
+        :max="appState.mq135_statistics.co2_max"
+        data-label="CO2 PPM"
+      />
+      <button class="bg-black text-white px-4 py-2" @click="updateCo2">Update data</button>
+    </div>
+  </div>
 </template>

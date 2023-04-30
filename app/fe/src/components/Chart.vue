@@ -79,7 +79,7 @@ const chartOptions = ref({
 </script>
 
 <template>
-  <div class="h-1/2 w-1/2">
+  <div class="h-full w-full">
     <Line :data="chartData" :options="chartOptions" />
   </div>
 </template>

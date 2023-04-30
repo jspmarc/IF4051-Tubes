@@ -8,19 +8,12 @@ from util.settings import get_settings
 
 __settings = get_settings()
 
-if __settings.redis_password != "":
-    __redis = Redis(
-        host=__settings.redis_host,
-        port=__settings.redis_port,
-        password=__settings.redis_password,
-        decode_responses=True,
-    )
-else:
-    __redis = Redis(
-        host=__settings.redis_host,
-        port=__settings.redis_port,
-        decode_responses=True,
-    )
+__redis = Redis(
+    host=__settings.redis_host,
+    port=__settings.redis_port,
+    password=__settings.redis_password if __settings.redis_password != "" else None,
+    decode_responses=True,
+)
 
 
 def initialize_state_db():

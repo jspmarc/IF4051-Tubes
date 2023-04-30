@@ -39,10 +39,10 @@ app.add_middleware(
 async def startup():
     database.initialize_state_db()
 
-    # settings = get_settings()
-    # loop = asyncio.get_event_loop()
-    # await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
-    # kafka_inbound_service.start_kafka_consumers()
+    settings = get_settings()
+    loop = asyncio.get_event_loop()
+    await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
+    kafka_inbound_service.start_kafka_consumers()
 
 
 @app.on_event("shutdown")

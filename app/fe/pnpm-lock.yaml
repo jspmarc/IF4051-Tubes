@@ -4,6 +4,9 @@ dependencies:
   chart.js:
     specifier: ^4.3.0
     version: 4.3.0
+  chartjs-plugin-annotation:
+    specifier: ^2.2.1
+    version: 2.2.1(chart.js@4.3.0)
   dayjs:
     specifier: ^1.11.7
     version: 1.11.7
@@ -534,6 +537,14 @@ packages:
     engines: {pnpm: '>=7'}
     dependencies:
       '@kurkle/color': 0.3.2
+    dev: false
+
+  /chartjs-plugin-annotation@2.2.1(chart.js@4.3.0):
+    resolution: {integrity: sha512-RL9UtrFr2SXd7C47zD0MZqn6ZLgrcRt3ySC6cYal2amBdANcYB1QcwFXcpKWAYnO4SGJYRok7P5rKDDNgJMA/w==}
+    peerDependencies:
+      chart.js: '>=3.7.0'
+    dependencies:
+      chart.js: 4.3.0
     dev: false
 
   /chokidar@3.5.3:

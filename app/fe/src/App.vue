@@ -7,17 +7,17 @@ import {
   Title,
   Tooltip,
   Legend,
-  BarElement,
   CategoryScale,
   LinearScale,
 } from "chart.js"
 import "chart.js/auto"
+import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
 
 const StatsView = defineAsyncComponent(() => import("./components/StatsView.vue"));
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, CategoryScale, LinearScale, annotationPlugin)
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,
@@ -58,7 +58,7 @@ wsConnection.onmessage = (event) => {
     </nav>
   </header>
   <Suspense>
-    <StatsView />
+    <StatsView :app-state="appState" :be-url="httpBeUrl" />
 
     <template #fallback>
         Loading...

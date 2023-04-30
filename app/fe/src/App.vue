@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 import type { Ref } from "vue";
 import HomeView from "./components/HomeView.vue";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
+
+const StatsView = defineAsyncComponent(() => import("./components/StatsView.vue"));
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,
@@ -43,7 +45,14 @@ wsConnection.onmessage = (event) => {
       halo
     </nav>
   </header>
-  <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" />
+  <Suspense>
+    <StatsView />
+
+    <template #fallback>
+        Loading...
+    </template>
+  </Suspense>
+  <!-- <HomeView :url="httpBeUrl" :ws-connection="wsConnection" :app-state="appState" /> -->
 </template>
 
 <style scoped>

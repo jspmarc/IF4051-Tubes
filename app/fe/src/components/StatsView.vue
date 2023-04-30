@@ -20,7 +20,28 @@ const realtimeData: Ref<{
   co2?: RealtimeData[];
 }> = ref({});
 
-const _ = await getRealtimeData(realtimeData, props.beUrl);
+const tmp = await getRealtimeData(props.beUrl, "all");
+realtimeData.value = { ...tmp };
+
+async function updateTemperature(e: Event) {
+  e.preventDefault();
+  const tmp = await getRealtimeData(props.beUrl, "temp");
+  // bad performance but i am too tired :D
+  if (realtimeData.value.co2) {
+    tmp.co2 = [...realtimeData.value.co2];
+  }
+  realtimeData.value = { ...tmp };
+}
+
+async function updateCo2(e: Event) {
+  e.preventDefault();
+  const tmp = await getRealtimeData(props.beUrl, "co2");
+  // bad performance but i am too tired :D
+  if (realtimeData.value.temperature) {
+    tmp.temperature = [...realtimeData.value.temperature];
+  }
+  realtimeData.value = { ...tmp };
+}
 </script>
 
 <template>
@@ -33,6 +54,7 @@ const _ = await getRealtimeData(realtimeData, props.beUrl);
     :max="appState.dht22_statistics.temperature_max"
     data-label="Temperature (in °C)"
   />
+  <button @click="updateTemperature">Update data</button>
 
   <p>CO<sub>2</sub></p>
   <Chart
@@ -43,4 +65,5 @@ const _ = await getRealtimeData(realtimeData, props.beUrl);
     :max="appState.mq135_statistics.co2_max"
     data-label="CO2 PPM"
   />
+  <button @click="updateCo2">Update data</button>
 </template>

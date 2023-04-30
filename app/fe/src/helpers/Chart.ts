@@ -1,3 +1,6 @@
+import { ChartData } from "chart.js";
+import RealtimeData from "../types/RealtimeData";
+
 export function getAverageAnnotation(mean?: number) {
   return mean
     ? {
@@ -81,4 +84,25 @@ export function getMaximumAnnotation(max?: number) {
         value: max,
       }
     : undefined;
+}
+
+export function updateData(newData: RealtimeData[], dataLabel: string) {
+  const labels: string[] = [];
+  const data: number[] = [];
+  newData.forEach((datum) => {
+    const { time } = datum;
+    labels.push(time.format("DD-MM-YYYY HH:mm:ss"));
+    data.push(datum.value);
+  });
+
+  const chartData: ChartData<"line"> = {
+    labels,
+    datasets: [
+      {
+        label: dataLabel,
+        data,
+      }
+    ]
+  }
+  return chartData;
 }

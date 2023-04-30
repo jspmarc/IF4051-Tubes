@@ -1,28 +1,33 @@
-import { Ref } from "vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import type RawRealtimeData from "../types/RawRealtimeData";
 import type RealtimeData from "../types/RealtimeData";
 
-dayjs.extend(utc)
+dayjs.extend(utc);
 
 export async function getRealtimeData(
-  realtimeData: Ref<{
-    humidity?: RealtimeData[];
-    temperature?: RealtimeData[];
-    co2?: RealtimeData[];
-  }>,
   beUrl: string,
+  data: "all" | "temp" | "co2"
 ) {
+  let url = `${beUrl}/realtime-data?time_range=-30s`;
+  if (data == "all") {
+    url += "&data=co2&data=temperature";
+  } else if (data == "temp") {
+    url += "&data=temperature";
+  } else if (data == "co2") {
+    url += "&data=co2";
+  }
   const rawRealtimeData: {
     humidity?: RawRealtimeData[];
     temperature?: RawRealtimeData[];
     co2?: RawRealtimeData[];
-  } = await(
-    await fetch(
-      `${beUrl}/realtime-data?time_range=-30s&data=temperature&data=co2`
-    )
-  ).json();
+  } = await (await fetch(url)).json();
+
+  const realtimeData: {
+    humidity?: RealtimeData[];
+    temperature?: RealtimeData[];
+    co2?: RealtimeData[];
+  } = {};
 
   for (const key in rawRealtimeData) {
     if (key !== "humidity" && key !== "temperature" && key !== "co2") {
@@ -34,7 +39,7 @@ export async function getRealtimeData(
       continue;
     }
 
-    realtimeData.value[key] = data.map((datum) => {
+    realtimeData[key] = data.map((datum) => {
       const time = dayjs.utc(datum[0]).local();
 
       return {

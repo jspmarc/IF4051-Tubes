@@ -6,6 +6,7 @@ import {
   getAverageAnnotation,
   getMaximumAnnotation,
   getMinimumAnnotation,
+  updateData,
 } from "../helpers/Chart";
 import type RealtimeData from "../types/RealtimeData";
 
@@ -17,22 +18,10 @@ const props = defineProps<{
   max?: number;
 }>();
 
-const labels: string[] = [];
-const data: number[] = [];
-props.data.forEach((datum) => {
-  const { time } = datum;
-  labels.push(time.format("DD-MM-YYYY HH:mm:ss"));
-  data.push(datum.value);
-});
-
-const chartData = ref<ChartData<"line">>({
-  labels,
-  datasets: [
-    {
-      label: props.dataLabel,
-      data,
-    },
-  ],
+const chartData = ref<ChartData<"line">>({ ...updateData(props.data, props.dataLabel) });
+watch(() => props.data, (newData) => {
+  const updated = updateData(newData, props.dataLabel);
+  chartData.value = { ...updated };
 });
 
 const averageAnnotation = getAverageAnnotation(props.mean);

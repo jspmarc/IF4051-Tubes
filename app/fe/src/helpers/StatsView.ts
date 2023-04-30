@@ -7,9 +7,10 @@ dayjs.extend(utc);
 
 export async function getRealtimeData(
   beUrl: string,
-  data: "all" | "temp" | "co2"
+  data: "all" | "temp" | "co2",
+  timeRange: string,
 ) {
-  let url = `${beUrl}/realtime-data?time_range=-30s`;
+  let url = `${beUrl}/realtime-data?time_range=-${timeRange}`;
   if (data == "all") {
     url += "&data=co2&data=temperature";
   } else if (data == "temp") {

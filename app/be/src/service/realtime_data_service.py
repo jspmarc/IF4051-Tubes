@@ -51,6 +51,12 @@ from(bucket: "{self._settings.db_bucket}")
                     status_code=status.HTTP_502_BAD_GATEWAY,
                     detail="Can't query DB.",
                 )
+        except Exception as e:
+            print("Unable to query DB, error:", e)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="God help me 😭😭😭",
+            )
 
         results = {}
         for table in tables:

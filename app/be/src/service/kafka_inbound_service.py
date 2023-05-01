@@ -5,8 +5,9 @@ from fastapi import Depends
 from common_python.dto import KafkaDht22, KafkaMq135
 from redis import Redis
 
-from service import StateService, WebsocketService
+from service import StateService, WebsocketService, PredictionService, MqttService
 from util import Constants
+from util.enums import AppMode
 from util.database import get_state_db
 from util.settings import Settings, get_settings
 
@@ -22,7 +23,11 @@ async def __consume_messages(
     db: Annotated[Redis, Depends(get_state_db)],
     websocket_service: Annotated[WebsocketService, Depends()],
 ):
-    state_service = StateService(db, websocket_service)
+    state_service = StateService(
+        # IMO, agak janky, tapi "yasudalaya"
+        db, websocket_service, MqttService.get_instance(get_settings())
+    )
+    prediction_service = PredictionService()
     try:
         async for msg in consumer:
             print("Got kafka message", msg.topic, msg.value)
@@ -38,6 +43,23 @@ async def __consume_messages(
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
 
+            # predict
+            should_open = prediction_service.predict(
+                state.dht22_statistics.humidity_avg,
+                state.dht22_statistics.temperature_avg,
+                state.mq135_statistics.co2_avg,
+            )
+
+            if state.current_mode == AppMode.Ai.value:
+                if should_open:
+                    state.servo_multiple = 2
+                else:
+                    state.servo_multiple = 0
+            else:
+                # send alert or notification
+                pass
+
+            print(state)
             await state_service.update_state(state)
 
     except Exception as e:

@@ -2,6 +2,9 @@
 import dayjs from "dayjs";
 import Selection from "../components/Selection.vue";
 import type AppState from "../types/AppState";
+import AlarmCard from "./AlarmCard.vue";
+import AppMode from "../types/AppMode";
+import Alarm from "../types/Alarms";
 
 /**
  * HomeView component properties
@@ -16,10 +19,26 @@ interface HomeViewProps {
 }
 
 const props = defineProps<HomeViewProps>();
+const dummyAlarms: Alarm[] = [
+  {
+    time: dayjs(),
+    is_active: true,
+    mode: AppMode.Ai,
+    servo_multiple: 0,
+    label: "Anjay"
+  },
+  {
+    time: dayjs().hour(12).minute(30),
+    is_active: true,
+    mode: AppMode.Ai,
+    servo_multiple: 2,
+    label: "Anjay"
+  }
+];
 </script>
 
 <template>
-  <div class="flex flex-col lg:w-3/6 md:w-4/6 sm:w-5/6 w-full mx-auto text-primary-text bg-white rounded-lg px-20 py-5">
+  <div class="flex flex-col lg:w-3/6 md:w-4/6 sm:w-5/6 w-full mx-auto text-primary-text bg-primary-bg rounded-lg px-20 py-5">
     <!-- Mode -->
     <Selection
       class="py-2"
@@ -50,6 +69,17 @@ const props = defineProps<HomeViewProps>();
       property-name="servo_multiple"
       :app-state="appState"
     />
+    <section name="alarm-section" class="flex flex-col">
+      <p class="flex self-start">Alarm(s)</p>
+      <section class="flex flex-row justify-center">
+        <AlarmCard
+          v-for="alarm in dummyAlarms"
+          :alarm="alarm" 
+        />
+        <AlarmCard
+        />
+      </section>
+    </section>
   </div>
 </template>
 

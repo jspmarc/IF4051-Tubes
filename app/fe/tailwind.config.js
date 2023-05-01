@@ -10,7 +10,7 @@ export default {
       // Custom color palette based on the figma
       primary: {
         text: "#000000", // black
-        background: "#f4f4f1", // white
+        bg: "#f4f4f1", // white
       },
       active: {
         text: "#f4f4f1", // white

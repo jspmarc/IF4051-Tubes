@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ed6d5d614626ae28e274e453164affb26694755170ccab3aa5866f093d51d3e4"
+            "sha256": "63998b189223c63a3b84382c566732f6c3ee49af20f5754fb13a9a1a6e014870"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,6 +15,18 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "common-python": {
+            "editable": true,
+            "path": "./../common-python"
+        },
+        "kafka-python3": {
+            "hashes": [
+                "sha256:01b911bb5402a7c4f9af3ea382bb060e9aa487b5dec249cf5e798c6e9822a62f"
+            ],
+            "index": "pypi",
+            "version": "==3.0.0"
+        }
+    },
     "develop": {}
 }

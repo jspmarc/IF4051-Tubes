@@ -1,7 +1,11 @@
 from __future__ import annotations
 import json
+import math
+from datetime import datetime
 
+import utils.kafka_producer
 from model.component_value import ComponentValue
+from model.statistics_data import StatisticsData
 
 
 class Dht22Value(ComponentValue):
@@ -61,12 +65,27 @@ class Dht22Value(ComponentValue):
         """
         Handle the given statistics
         """
+        time: datetime = statistics["time"]
+        temperature: StatisticsData = statistics["temperature"]
+        humidity: StatisticsData = statistics["humidity"]
         print_string = [
-            f"Time: {statistics['time']}",
+            f"Time: {time}",
             "Temperature:",
-            "\t" + str(statistics["temperature"]),
+            "\t" + str(temperature),
             "Humidity:",
-            "\t" + str(statistics["humidity"]),
+            "\t" + str(humidity),
             "",
         ]
         print("\n".join(print_string))
+        utils.kafka_producer.producer.send(
+            "dht22",
+            {
+                "humidity_avg": round(humidity.mean, 2),
+                "humidity_min": round(humidity.min, 2),
+                "humidity_max": round(humidity.max, 2),
+                "temperature_avg": round(temperature.mean, 2),
+                "temperature_min": round(temperature.min, 2),
+                "temperature_max": round(temperature.max, 2),
+                "created_timestamp": math.floor(time.timestamp()),
+            },
+        )

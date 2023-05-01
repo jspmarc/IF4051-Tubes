@@ -19,7 +19,7 @@ if __name__ == "__main__":
     os.makedirs(os.path.dirname(logging_file), exist_ok=True)
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         filename=logging_file,
         filemode="w",
         format="%(asctime)s|%(name)s|%(levelname)s: %(message)s",

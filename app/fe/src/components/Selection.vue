@@ -1,53 +1,60 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-import slugify from 'slugify'
-
+import { onMounted, reactive, watch } from "vue";
+import slugify from "slugify";
+import type AppState from "../types/AppState";
 /**
  * Selection component properties
- * @interface SelectionProps
+ * @type SelectionProps
  * @member {string[]} options options to store/send value
  * @member {string[]} [optionsDisplay] options to display, if not set: use options
  * @member {string} [label] label to display, if not set: only display options
  * @member {string} [url] url to send request to, if not set: do nothing
+ * @member {WebSocket} [wsConnection] websocket connection to listen to, if not set: do nothing
  * @member {string} [propertyName] property name to send to server, if not set: use slugified label
- * @example 
+ * @example
  * <Selection label="Mode"
  *            :optionsDisplay="['Auto', 'Override']"
  *            :options="['ai', 'override']"
- *            :url="`localhost:8080/mode`"
+ *            :url="`http://localhost:8080/mode`"
+ *            :wsConnection="`WebSocket()`"
  *            propertyName="current_mode" />
  */
 interface SelectionProps {
-  options: string[],
-  optionsDisplay?: string[],
-  label?: string,
-  url?: string,
-  propertyName?: string
+  options: string[];
+  optionsDisplay?: string[];
+  label?: string;
+  url?: string;
+  wsConnection?: WebSocket;
+  propertyName: "current_mode" | "servo_multiple";
+  appState: AppState;
 }
 
-const props = defineProps<SelectionProps>()
-const state = reactive({ selectedIdx: 0 })
+const props = defineProps<SelectionProps>();
+const state = reactive({
+  selectedIdx: 0,
+  protocol: "",
+});
+
+watch(() => props.appState, function(newState) {
+  const propertyName = props.propertyName ?? slugify(props.label!);
+  setSelectedIdx({
+    option: newState[propertyName].toString(),
+    options: props.options,
+  });
+})
 
 onMounted(async () => {
   // do some props validation
   if (props.url != null && props.label == null && props.propertyName == null) {
-    console.warn('url is set but no propertyName or label set')
+    console.warn("url is set but no propertyName or label set");
   }
-  if (props.optionsDisplay != null && props.optionsDisplay.length != props.options.length) {
-    console.error('optionsDisplay and options are not the same length')
+  if (
+    props.optionsDisplay != null &&
+    props.optionsDisplay.length != props.options.length
+  ) {
+    console.error("optionsDisplay and options are not the same length");
   }
-
-  // get current state from backend
-  if (props.url != null) {
-    let propertyName = props.propertyName ?? slugify(props.label!)
-    const response = await fetch(props.url!, {
-      method: 'GET'
-    })
-    response.json().then((data: any) => {
-      setSelectedIdx({ option: data[propertyName].toString(), options: props.options })
-    })
-  }
-})
+});
 
 /**
  * set `state.selectedIdx` based on option or index; the index takes precedence
@@ -55,46 +62,64 @@ onMounted(async () => {
  * @param index index of option to set as selected
  * @returns void
  */
-function setSelectedIdx({index, option, options}: {index?: number, option?: string, options?: string[]}) {
+function setSelectedIdx({
+  index,
+  option,
+  options,
+}: {
+  index?: number;
+  option?: string;
+  options?: string[];
+}) {
   // guards
   if (index != null && option != null) {
-    console.warn('both index and option are set, index takes precedence')
+    console.warn("both index and option are set, index takes precedence");
   }
   if (index != null && options != null) {
-    console.warn('index is set and options is set, index will be used')
+    console.warn("index is set and options is set, index will be used");
   }
   if (index == null && option == null) {
-    console.error('neither index nor option is set')
-    return
+    console.error("neither index nor option is set");
+    return;
   }
   if (option != null && options == null) {
-    console.error('option is set but options is not set')
-    return
+    console.error("option is set but options is not set");
+    return;
   }
 
   // main logic
   if (index != null) {
-    state.selectedIdx = index
-    return
-  } 
-  
+    state.selectedIdx = index;
+    return;
+  }
+
   if (option != null && options != null) {
-    state.selectedIdx = options.indexOf(option)
-    return
+    state.selectedIdx = options.indexOf(option);
+    return;
   }
 }
 
-function sendData(selectedIdx: number) {
-  setSelectedIdx({ index: selectedIdx })
-  let value = props.options[selectedIdx]
-  let propertyName = props.propertyName ?? slugify(props.label!) // use slugified label if propertyName is not set
-  fetch(props.url!, { 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({ [propertyName]: value })
-  })
+/**
+ * Sending data to server: only via REST for now
+ */
+async function sendData(selectedIdx: number) {
+  if (props.url != null) {
+    const propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
+    const value = props.options[selectedIdx];
+    const response = await fetch(props.url!, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ [propertyName]: value }),
+    });
+    if (!response.ok) {
+      console.error("Can't update state to server, response:", response.statusText);
+    }
+    setSelectedIdx({ index: selectedIdx });
+  } else {
+    console.debug("wsUrl and url are not set, will not send data");
+  }
 }
 </script>
 
@@ -104,19 +129,15 @@ function sendData(selectedIdx: number) {
       {{ label }}
     </div>
     <div class="selection gray-1 rounded-full p-1">
-      <button type="button" class="rounded-full py-1" 
-              v-for="(option, index) in optionsDisplay" 
-              :class="{'blue': state.selectedIdx == index}" 
-              @click="sendData(index)">
+      <button
+        type="button"
+        class="rounded-full py-1"
+        v-for="(option, index) in optionsDisplay"
+        :class="{ blue: state.selectedIdx == index }"
+        @click="sendData(index)"
+      >
         {{ option }}
       </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-/* kalau pengen dibikin bagus silakan hehe */
-button {
-  transition: all 0.3s ease-in-out;
-}
-</style>

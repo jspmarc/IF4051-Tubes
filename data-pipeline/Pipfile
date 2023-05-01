@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+common-python = {editable = true, path = "./../common-python"}
+kafka-python3 = "*"
 
 [dev-packages]
 

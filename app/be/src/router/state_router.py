@@ -8,8 +8,7 @@ from fastapi import (
 )
 
 from dto import AppState
-from service.state_service import StateService
-from service.websocket_service import WebsocketService
+from service import StateService, WebsocketService
 
 
 state_router = APIRouter(prefix="/state", tags=["State"])

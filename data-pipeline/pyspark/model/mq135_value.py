@@ -1,8 +1,11 @@
 from __future__ import annotations
 import json
+import math
+from datetime import datetime
 
 from model.component_value import ComponentValue
 from model.statistics_data import StatisticsData
+from utils.kafka_producer import producer
 
 
 class Mq135Value(ComponentValue):
@@ -45,14 +48,25 @@ class Mq135Value(ComponentValue):
         return {"time": time, "co2": co2_nv}
 
     @staticmethod
-    def handle_statistics(statistics: Dict[str, StatisticsData]) -> None:
+    def handle_statistics(statistics: dict) -> None:
         """
         Handle the statistics
         """
+        time: datetime = statistics["time"]
+        co2: StatisticsData = statistics["co2"]
         print_string = [
             f"Time: {statistics['time']}",
             "CO2:",
-            "\t" + str(statistics["co2"]),
+            "\t" + str(co2),
             "",
         ]
         print("\n".join(print_string))
+        producer.send(
+            "mq135",
+            {
+                "co2_avg": round(co2.mean, 2),
+                "co2_min": round(co2.min, 2),
+                "co2_max": round(co2.max, 2),
+                "created_timestamp": math.floor(time.timestamp()),
+            },
+        )

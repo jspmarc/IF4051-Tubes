@@ -11,7 +11,7 @@ from fastapi import (
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import servo_router, state_router, mode_router, realtime_data_router
+from router import servo_router, state_router, mode_router, realtime_data_router, alert_router
 from service.mqtt_sevice import MqttService
 from service import kafka_inbound_service
 from util.constants import Constants
@@ -70,6 +70,7 @@ api_router.include_router(servo_router)
 api_router.include_router(state_router)
 api_router.include_router(mode_router)
 api_router.include_router(realtime_data_router)
+api_router.include_router(alert_router)
 
 app.include_router(api_router)
 app.mount("/", StaticFiles(directory="public", html=True), name="public")

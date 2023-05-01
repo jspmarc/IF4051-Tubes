@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     redis_port: int = 6379
     redis_password: str = ""
 
+    gmail_sender_email: str = ""
+    gmail_password: str = ""
+    notification_receiver_email: str = ""
+
     class Config:
         env_file = ".env"
 

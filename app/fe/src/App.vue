@@ -65,16 +65,17 @@ const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 <template>
   <header>
     <nav class="flex flex-row">
-      <ul class="selection gray-1 flex flex-row gap-6 p-1 rounded-full">
-        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'home'">HOME</button></li>
-        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'stats'">STATS</button></li>
-        <li class="rounded-full"><button class="p-1" @click="() => currentView = 'alert'">ALERTS</button></li>
+      <ul class="selection bg-gray-1 flex flex-row gap-6 p-1 my-2.5 rounded-full text-primary-text">
+        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'home'}" @click="() => currentView = 'home'">HOME</button></li>
+        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'stats'}" @click="() => currentView = 'stats'">STATS</button></li>
+        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'alert'}" @click="() => currentView = 'alert'">ALERTS</button></li>
       </ul>
     </nav>
   </header>
 
   <HomeView
     v-show="currentView === 'home'"
+    class="my-2.5"
     :url="httpBeUrl"
     :ws-connection="wsConnection"
     :app-state="appState"

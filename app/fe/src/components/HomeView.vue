@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dayjs from "dayjs";
 import Selection from "../components/Selection.vue";
 import type AppState from "../types/AppState";
 
@@ -18,7 +19,7 @@ const props = defineProps<HomeViewProps>();
 </script>
 
 <template>
-  <div class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto">
+  <div class="flex flex-col lg:w-3/6 md:w-4/6 sm:w-5/6 w-full mx-auto text-primary-text bg-white rounded-lg px-20 py-5">
     <!-- Mode -->
     <Selection
       class="py-2"

@@ -14,6 +14,7 @@ common-python = {editable = true, path = "./../../common-python"}
 aiokafka = "*"
 redis = {extras = ["hiredis"], version = "*"}
 influxdb-client = "*"
+urllib3 = "*"
 
 [dev-packages]
 

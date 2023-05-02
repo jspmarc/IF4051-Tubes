@@ -18,5 +18,4 @@ class AppState(BaseModel):
         return cls(**data)
 
     class Config:
-        orm_mode = True
         use_enum_values = True

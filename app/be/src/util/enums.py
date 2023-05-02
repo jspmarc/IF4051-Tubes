@@ -13,6 +13,12 @@ class AppModeMeta(EnumMeta):
             return False
         return True
 
+
 class AppMode(Enum, metaclass=AppModeMeta):
     Ai = 'Ai'
     Override = 'Override'
+
+
+class AlertType(Enum):
+    HighTemperature = 0
+    HighCo2Ppm = 1

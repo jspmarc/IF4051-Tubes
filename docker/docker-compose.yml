@@ -1,6 +1,29 @@
 version: "3.9"
 
 services:
+  app:
+    container_name: smart-air-conditioning
+    build:
+      context: ..
+      dockerfile: ./docker/app.Dockerfile
+    environment:
+      API_TOKEN: ${APP_API_TOKEN}
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USER: ${MQTT_USER}
+      MQTT_PASS: ${MQTT_PASS}
+      DB_URI: ${DB_URI}
+      DB_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
+      DB_ORG: ${INFLUXDB_ORG}
+      DB_BUCKET: ${INFLUXDB_BUCKET}
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
   pyspark:
     container_name: pyspark
     build:

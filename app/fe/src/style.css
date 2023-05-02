@@ -8,8 +8,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #000;
+  background-color: #d2d2d2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -83,8 +83,8 @@ button:focus-visible {
   }
 }
 
-/* 
- * Custom colors 
+/*
+ * Custom colors
  * based on the defined color palette on figma
 */
 .blue {
@@ -107,11 +107,11 @@ button:focus-visible {
   background-color: #000000;
 }
 .green {
-  background-color: #6DFE5D;
+  background-color: #6dfe5d;
 }
 .yellow {
-  background-color: #E8FF1F;
+  background-color: #e8ff1f;
 }
 .red {
-  background-color: #FF3C3C;
+  background-color: #ff3c3c;
 }

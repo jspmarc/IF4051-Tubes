@@ -49,9 +49,9 @@ let appState: Ref<AppState> = ref({
   },
 });
 
-const beUrn = import.meta.env.VITE_BACKEND_URN;
-const wsBeUrl = `ws://${beUrn}/state/ws`;
-const httpBeUrl = `http://${beUrn}`;
+const beUrn: string = import.meta.env.VITE_BACKEND_URN;
+const wsBeUrl: string = (import.meta.env.VITE_IS_SECURE ? "wss://" : "ws://") + `${beUrn}/state/ws`;
+const httpBeUrl: string = (import.meta.env.VITE_IS_SECURE ? "https://" : "http://") + beUrn;
 const wsConnection = new WebSocket(wsBeUrl);
 
 wsConnection.onmessage = (event) => {

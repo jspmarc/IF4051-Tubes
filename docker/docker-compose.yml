@@ -8,6 +8,7 @@ services:
       dockerfile: ./docker/app.Dockerfile
       args:
         - BE_URN=${APP_BE_URN}
+        - IS_SECURE=${APP_IS_SECURE}
     environment:
       API_TOKEN: ${APP_API_TOKEN}
       MQTT_HOST: ${MQTT_HOST}

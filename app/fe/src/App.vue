@@ -14,6 +14,7 @@ import "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
+import Recommendation from "./components/Recommendation.vue";
 
 const StatsView = defineAsyncComponent(
   () => import("./components/StatsView.vue")
@@ -30,6 +31,7 @@ ChartJS.register(
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,
+  // is_recommending: false,
   active_alarms: [],
   servo_multiple: 0,
   dht22_statistics: {
@@ -60,19 +62,68 @@ wsConnection.onmessage = (event) => {
 };
 
 const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
+const isRecommending: Ref<boolean> = ref(true);
 </script>
 
 <template>
   <header>
-    <nav class="flex flex-row">
-      <ul class="selection bg-gray-1 flex flex-row gap-6 p-1 my-2.5 rounded-full text-primary-text">
-        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'home'}" @click="() => currentView = 'home'">HOME</button></li>
-        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'stats'}" @click="() => currentView = 'stats'">STATS</button></li>
-        <li class=""><button class="rounded-full py-1 px-5" :class="{ 'bg-gray-2': currentView === 'alert'}" @click="() => currentView = 'alert'">ALERTS</button></li>
+    <nav class="flex flex-row mb-6">
+      <ul class="selection gray-1 flex flex-row gap-6 p-1 rounded-full menu">
+        <li class="rounded-full">
+          <button
+            class="p-1"
+            @click="() => (currentView = 'home')"
+            :class="currentView == 'home' ? 'gray-2' : 'gray-1'"
+          >
+            <template v-if="currentView === 'home'"
+              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+            ></template>
+            <template v-else
+              ><div
+                class="w-[13px] h-[13px] border-[1px] border-black rounded-[14px]"
+              ></div
+            ></template>
+            HOME
+          </button>
+        </li>
+        <li class="rounded-full">
+          <button
+            class="p-1"
+            @click="() => (currentView = 'stats')"
+            :class="currentView == 'stats' ? 'gray-2' : 'gray-1'"
+          >
+            <template v-if="currentView === 'stats'"
+              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+            ></template>
+            <template v-else
+              ><div
+                class="w-[13px] h-[13px] border-[1px] border-black rounded-[14px]"
+              ></div
+            ></template>
+            STATS
+          </button>
+        </li>
+        <li class="rounded-full">
+          <button
+            class="p-1"
+            @click="() => (currentView = 'alert')"
+            :class="currentView == 'alert' ? 'gray-2' : 'gray-1'"
+          >
+            <template v-if="currentView === 'alert'"
+              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+            ></template>
+            <template v-else
+              ><div
+                class="w-[13px] h-[13px] border-[1px] border-black rounded-[14px]"
+              ></div
+            ></template>
+            ALERTS
+          </button>
+        </li>
       </ul>
     </nav>
   </header>
-
+  <Recommendation :is-recommending="isRecommending" title="Title" body="Body" />
   <HomeView
     v-show="currentView === 'home'"
     class="my-2.5"
@@ -104,5 +155,41 @@ const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 0px 8px 0px 0px; */
+  padding: 8px;
+  gap: 12px;
+
+  height: 56px;
+
+  /* gray 1 */
+  background: #e0e0de;
+  border-radius: 32px;
+}
+
+.menu li button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 24px;
+  gap: 8px;
+
+  height: 44px;
+
+  border-radius: 30px;
+
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+
+  /* black */
+  color: #000000;
 }
 </style>

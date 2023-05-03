@@ -38,7 +38,7 @@ const dummyAlarms: Alarm[] = [
 </script>
 
 <template>
-  <div class="flex flex-col lg:w-3/6 md:w-4/6 sm:w-5/6 w-full mx-auto text-primary-text bg-primary-bg rounded-lg px-20 py-5">
+  <div class="flex flex-col lg:w-3/6 md:w-4/6 sm:w-5/6 w-full mx-auto min-w-[450px] text-primary-text bg-primary-bg rounded-3xl px-8 py-3">
     <!-- Mode -->
     <Selection
       class="py-2"

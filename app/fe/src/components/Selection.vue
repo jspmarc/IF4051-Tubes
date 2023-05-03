@@ -35,13 +35,16 @@ const state = reactive({
   protocol: "",
 });
 
-watch(() => props.appState, function(newState) {
-  const propertyName = props.propertyName ?? slugify(props.label!);
-  setSelectedIdx({
-    option: newState[propertyName].toString(),
-    options: props.options,
-  });
-})
+watch(
+  () => props.appState,
+  function (newState) {
+    const propertyName = props.propertyName ?? slugify(props.label!);
+    setSelectedIdx({
+      option: newState[propertyName].toString(),
+      options: props.options,
+    });
+  }
+);
 
 onMounted(async () => {
   // do some props validation
@@ -114,7 +117,10 @@ async function sendData(selectedIdx: number) {
       body: JSON.stringify({ [propertyName]: value }),
     });
     if (!response.ok) {
-      console.error("Can't update state to server, response:", response.statusText);
+      console.error(
+        "Can't update state to server, response:",
+        response.statusText
+      );
     }
     setSelectedIdx({ index: selectedIdx });
   } else {
@@ -128,7 +134,7 @@ async function sendData(selectedIdx: number) {
     <div class="label" v-if="label != null">
       {{ label }}
     </div>
-    <div class="selection bg-gray-1 rounded-full p-1">
+     <div class="selection bg-gray-1 rounded-full p-2 gap-3 flex">
       <button
         type="button"
         class="rounded-full py-1"
@@ -141,3 +147,12 @@ async function sendData(selectedIdx: number) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.label {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+}
+</style>

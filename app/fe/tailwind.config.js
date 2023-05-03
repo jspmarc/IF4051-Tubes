@@ -12,6 +12,9 @@ export default {
         text: "#000000", // black
         bg: "#f4f4f1", // white
       },
+      secondary: {
+        button: "#e0e0de", // gray-1
+      },
       active: {
         text: "#f4f4f1", // white
         button: "#2f57fc", // blue

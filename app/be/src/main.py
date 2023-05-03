@@ -56,6 +56,9 @@ def validate_token(
     settings: Annotated[Settings, Depends(get_settings)],
     x_token: Annotated[str | None, Header()] = None,
 ):
+    if settings.api_token == "":
+        settings.api_token = None
+
     hashed = hash(x_token) if x_token is not None else None
     if hashed != settings.api_token:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "X-Token is invalid.")

@@ -13,6 +13,7 @@ class AppModeMeta(EnumMeta):
             return False
         return True
 
+
 class AppMode(Enum, metaclass=AppModeMeta):
     Ai = 'Ai'
     Override = 'Override'

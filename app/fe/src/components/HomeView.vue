@@ -18,7 +18,9 @@ const props = defineProps<HomeViewProps>();
 </script>
 
 <template>
-  <div class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto">
+  <div
+    class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[450px] px-8 py-3 bg-[#f4f4f4] rounded-3xl"
+  >
     <!-- Mode -->
     <Selection
       class="py-2"

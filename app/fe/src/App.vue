@@ -14,6 +14,7 @@ import "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
+import Recommendation from "./components/Recommendation.vue";
 
 const StatsView = defineAsyncComponent(
   () => import("./components/StatsView.vue")
@@ -30,6 +31,7 @@ ChartJS.register(
 
 let appState: Ref<AppState> = ref({
   current_mode: AppMode.Ai,
+  // is_recommending: false,
   active_alarms: [],
   servo_multiple: 0,
   dht22_statistics: {
@@ -60,6 +62,7 @@ wsConnection.onmessage = (event) => {
 };
 
 const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
+const isRecommending: Ref<boolean> = ref(true);
 </script>
 
 <template>
@@ -120,7 +123,7 @@ const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
       </ul>
     </nav>
   </header>
-
+  <Recommendation :is-recommending="isRecommending" title="Title" body="Body" />
   <HomeView
     v-show="currentView === 'home'"
     :url="httpBeUrl"

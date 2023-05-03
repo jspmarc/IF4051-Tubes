@@ -54,7 +54,7 @@ async function updateTimeRange(e: Event, newRange: string) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 items-center justify-center">
+  <div class="flex flex-col gap-4 items-center justify-center bg-primary-bg text-primary-text">
     <div
       class="flex flex-col lg:flex-row h-screen lg:h-[30rem] items-center justify-center px-4 lg:px-10 w-full"
     >

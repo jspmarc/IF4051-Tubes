@@ -134,12 +134,12 @@ async function sendData(selectedIdx: number) {
     <div class="label" v-if="label != null">
       {{ label }}
     </div>
-    <div class="selection gray-1 rounded-full p-2 gap-3 flex">
+     <div class="selection bg-gray-1 rounded-full p-2 gap-3 flex">
       <button
         type="button"
         class="rounded-full py-1"
         v-for="(option, index) in optionsDisplay"
-        :class="{ blue: state.selectedIdx == index }"
+        :class="{ 'bg-blue text-active-text': state.selectedIdx === index }"
         @click="sendData(index)"
       >
         {{ option }}

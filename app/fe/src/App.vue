@@ -126,6 +126,7 @@ const isRecommending: Ref<boolean> = ref(true);
   <Recommendation :is-recommending="isRecommending" title="Title" body="Body" />
   <HomeView
     v-show="currentView === 'home'"
+    class="my-2.5"
     :url="httpBeUrl"
     :ws-connection="wsConnection"
     :app-state="appState"

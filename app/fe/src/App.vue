@@ -15,6 +15,7 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
 import Recommendation from "./components/Recommendation.vue";
+import AlertBox from "./components/AlertBox.vue";
 
 const StatsView = defineAsyncComponent(
   () => import("./components/StatsView.vue")
@@ -63,20 +64,23 @@ wsConnection.onmessage = (event) => {
 
 const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 const isRecommending: Ref<boolean> = ref(true);
+const isAlerting: Ref<boolean> = ref(true);
 </script>
 
 <template>
-  <header>
-    <nav class="flex flex-row mb-6">
-      <ul class="selection gray-1 flex flex-row gap-6 p-1 rounded-full menu">
+  <header
+    class="flex lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[450px] mb-6"
+  >
+    <nav class="w-full">
+      <ul class="bg-gray-1 flex flex-row gap-3 rounded-full menu w-full">
         <li class="rounded-full">
           <button
-            class="p-1"
+            class=""
             @click="() => (currentView = 'home')"
-            :class="currentView == 'home' ? 'gray-2' : 'gray-1'"
+            :class="currentView == 'home' ? 'bg-gray-2' : 'bg-gray-1'"
           >
             <template v-if="currentView === 'home'"
-              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+              ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div
             ></template>
             <template v-else
               ><div
@@ -88,12 +92,12 @@ const isRecommending: Ref<boolean> = ref(true);
         </li>
         <li class="rounded-full">
           <button
-            class="p-1"
+            class=""
             @click="() => (currentView = 'stats')"
-            :class="currentView == 'stats' ? 'gray-2' : 'gray-1'"
+            :class="currentView == 'stats' ? 'bg-gray-2' : 'bg-gray-1'"
           >
             <template v-if="currentView === 'stats'"
-              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+              ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div
             ></template>
             <template v-else
               ><div
@@ -105,12 +109,12 @@ const isRecommending: Ref<boolean> = ref(true);
         </li>
         <li class="rounded-full">
           <button
-            class="p-1"
+            class=""
             @click="() => (currentView = 'alert')"
-            :class="currentView == 'alert' ? 'gray-2' : 'gray-1'"
+            :class="isAlerting ? 'bg-yellow' : 'bg-gray-1'"
           >
             <template v-if="currentView === 'alert'"
-              ><div class="w-[13px] h-[13px] blue rounded-[14px]"></div
+              ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div
             ></template>
             <template v-else
               ><div
@@ -123,15 +127,52 @@ const isRecommending: Ref<boolean> = ref(true);
       </ul>
     </nav>
   </header>
-  <Recommendation :is-recommending="isRecommending" title="Title" body="Body" />
+
+  <!-- RECOMMENDATION -->
+  <Recommendation
+    v-show="isRecommending"
+    title="This is a Recommendation"
+    body="Body"
+    :cta-primary="
+      () => {
+        // TODO
+        isRecommending = false;
+      }
+    "
+    :cta-secondary="() => (isRecommending = false)"
+  />
+
+  <!-- ALERT -->
+  <AlertBox
+    v-show="isAlerting && currentView !== 'alert'"
+    title="This is an Alert"
+    body="Body"
+    :temperature="40"
+    :ppm="600"
+    cta-primary-text="Acknowledge"
+    :cta-primary="
+      () => {
+        // TODO adjust action(s) needed
+        isAlerting = false;
+      }
+    "
+    :cta-secondary="() => (isAlerting = false)"
+    @click="
+      currentView = 'alert';
+      isAlerting = false;
+    "
+  />
+
+  <!-- HOME VIEW -->
   <HomeView
     v-show="currentView === 'home'"
-    class="my-2.5"
+    class=""
     :url="httpBeUrl"
     :ws-connection="wsConnection"
     :app-state="appState"
   />
 
+  <!-- STATS VIEW -->
   <div class="h-full w-full" v-show="currentView === 'stats'">
     <Suspense>
       <StatsView :app-state="appState" :be-url="httpBeUrl" />
@@ -139,6 +180,8 @@ const isRecommending: Ref<boolean> = ref(true);
       <template #fallback> Loading... </template>
     </Suspense>
   </div>
+
+  <!-- ALERT VIEW -->
 </template>
 
 <style scoped>
@@ -158,18 +201,13 @@ const isRecommending: Ref<boolean> = ref(true);
 }
 
 .menu {
-  display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   /* padding: 0px 8px 0px 0px; */
   padding: 8px;
-  gap: 12px;
 
   height: 56px;
 
-  /* gray 1 */
-  background: #e0e0de;
   border-radius: 32px;
 }
 

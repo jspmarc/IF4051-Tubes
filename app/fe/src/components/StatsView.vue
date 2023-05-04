@@ -51,10 +51,21 @@ async function updateTimeRange(e: Event, newRange: string) {
   const tmp = await getRealtimeData(props.beUrl, "all", newRange);
   realtimeData.value = { ...tmp };
 }
+
+const currentInterval: Ref<"1h" | "30m" | "5m" | "1m" | "30s"> = ref("30s");
+const intervals = [
+  { label: "30 seconds", value: "30s" },
+  { label: "1 minute", value: "1m" },
+  { label: "5 minutes", value: "5m" },
+  { label: "30 minutes", value: "30m" },
+  { label: "1 hour", value: "1h" },
+];
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 items-center justify-center bg-primary-bg text-primary-text">
+  <div
+    class="flex flex-col rounded-3xl gap-4 items-center justify-center bg-primary-bg text-primary-text"
+  >
     <div
       class="flex flex-col lg:flex-row h-screen lg:h-[30rem] items-center justify-center px-4 lg:px-10 w-full"
     >
@@ -85,30 +96,21 @@ async function updateTimeRange(e: Event, newRange: string) {
       </div>
     </div>
 
-    <ul class="selection gray-1 flex flex-row gap-6 p-1 rounded-full">
-      <li class="rounded-full">
-        <button class="p-1" @click="(ev) => updateTimeRange(ev, '30s')">
-          30 seconds ago
-        </button>
-      </li>
-      <li class="rounded-full">
-        <button class="p-1" @click="(ev) => updateTimeRange(ev, '1m')">
-          1 minute ago
-        </button>
-      </li>
-      <li class="rounded-full">
-        <button class="p-1" @click="(ev) => updateTimeRange(ev, '5m')">
-          5 minutes ago
-        </button>
-      </li>
-      <li class="rounded-full">
-        <button class="p-1" @click="(ev) => updateTimeRange(ev, '30m')">
-          30 minutes ago
-        </button>
-      </li>
-      <li class="rounded-full">
-        <button class="p-1" @click="(ev) => updateTimeRange(ev, '1h')">
-          1 hour ago
+    <ul
+      class="selection gray-1 flex flex-row gap-6 p-2 mb-2 rounded-full bg-gray-1"
+    >
+      <li v-for="i in intervals" :key="i.label" class="rounded-full">
+        <button
+          class="px-3 py-1 rounded-full"
+          @click="
+            (ev) => {
+              updateTimeRange(ev, i.value);
+              currentInterval = i.value;
+            }
+          "
+          :class="{ 'bg-black text-primary-bg': currentInterval === i.value }"
+        >
+          {{ i.label }} ago
         </button>
       </li>
     </ul>

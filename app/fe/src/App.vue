@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from "vue";
 import type { Ref } from "vue";
-import HomeView from "./components/HomeView.vue";
 import {
   Chart as ChartJS,
   Title,
@@ -14,9 +13,13 @@ import "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
 import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
+import HomeView from "./components/HomeView.vue";
 import Recommendation from "./components/Recommendation.vue";
 import AlertBox from "./components/AlertBox.vue";
 
+const AlertView = defineAsyncComponent(
+  () => import("./components/AlertView.vue")
+);
 const StatsView = defineAsyncComponent(
   () => import("./components/StatsView.vue")
 );
@@ -110,7 +113,12 @@ const isAlerting: Ref<boolean> = ref(true);
         <li class="rounded-full">
           <button
             class=""
-            @click="() => (currentView = 'alert')"
+            @click="
+              () => {
+                currentView = 'alert';
+                isAlerting = false;
+              }
+            "
             :class="{
               'bg-gray-2': currentView == 'alert',
               'bg-yellow': isAlerting,
@@ -185,6 +193,7 @@ const isAlerting: Ref<boolean> = ref(true);
   </div>
 
   <!-- ALERT VIEW -->
+  <AlertView v-show="currentView === 'alert'" class=""> asdfsd</AlertView>
 </template>
 
 <style scoped>

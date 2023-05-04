@@ -77,7 +77,7 @@ const isAlerting: Ref<boolean> = ref(true);
           <button
             class=""
             @click="() => (currentView = 'home')"
-            :class="currentView == 'home' ? 'bg-gray-2' : 'bg-gray-1'"
+            :class="{ 'bg-gray-2': currentView == 'home' }"
           >
             <template v-if="currentView === 'home'"
               ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div
@@ -94,7 +94,7 @@ const isAlerting: Ref<boolean> = ref(true);
           <button
             class=""
             @click="() => (currentView = 'stats')"
-            :class="currentView == 'stats' ? 'bg-gray-2' : 'bg-gray-1'"
+            :class="{ 'bg-gray-2': currentView == 'stats' }"
           >
             <template v-if="currentView === 'stats'"
               ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div
@@ -111,7 +111,10 @@ const isAlerting: Ref<boolean> = ref(true);
           <button
             class=""
             @click="() => (currentView = 'alert')"
-            :class="isAlerting ? 'bg-yellow' : 'bg-gray-1'"
+            :class="{
+              'bg-gray-2': currentView == 'alert',
+              'bg-yellow': isAlerting,
+            }"
           >
             <template v-if="currentView === 'alert'"
               ><div class="w-[13px] h-[13px] bg-blue rounded-[14px]"></div

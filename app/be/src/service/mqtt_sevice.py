@@ -14,6 +14,9 @@ class MqttService:
         """
         Treat this constructor/init as private. Never directly invoke this constructor.
         """
+        if self.__instance:
+            return
+
         mqtt_port = settings.mqtt_port
         mqtt_host = settings.mqtt_host
         mqtt_user = settings.mqtt_user

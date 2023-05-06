@@ -9,8 +9,15 @@ alert_router = APIRouter(prefix="/alert", tags=["Notification or alert"])
 
 
 @alert_router.post("", status_code=status.HTTP_204_NO_CONTENT)
-async def alert(alert_service: Annotated[AlertService, Depends(AlertService)]):
-    await alert_service.alert(AlertType.HighCo2Ppm, 40, int(datetime.now().timestamp()))
+async def alert(
+    alert_service: Annotated[AlertService, Depends(AlertService)],
+    alert_type: Annotated[AlertType, Query()],
+    sensor_value: Annotated[int, Query()],
+):
+    """
+    For testing purposes only.
+    """
+    await alert_service.alert(alert_type, sensor_value, int(datetime.now().timestamp()))
 
 
 @alert_router.get("")

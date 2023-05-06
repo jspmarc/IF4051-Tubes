@@ -75,6 +75,24 @@ class AlertService:
 
         return results
 
+    async def _count_alerts(self, alert_type: AlertType, time_range: str = "-30m"):
+        query = f"""
+from(bucket: "{self._db_bucket}")
+|> range(start: {time_range})
+|> filter(fn: (r) => r.alert_type == "{alert_type.value}")
+|> count()"""
+
+        loop = asyncio.get_event_loop()
+        tables = await loop.run_in_executor(
+            None, partial(self._query_db, query=query, time_range=time_range)
+        )
+
+        if len(tables) <= 0:
+            return 0
+
+        result = tables.pop().records[0]
+        return result.get_value()
+
     async def get_alerts(
         self, time_range: str, alert_type: AlertType | List[AlertType] | None = None
     ) -> List[Alert]:
@@ -100,11 +118,9 @@ from(bucket: "{self._db_bucket}")
         )
 
     async def alert(self, alert_type: AlertType, sensor_value: float, timestamp: int):
-        email = self._email_service
-
         alert_time = datetime.fromtimestamp(timestamp)
         time_iso_format = alert_time.replace(microsecond=0).astimezone().isoformat()
-        alert_description = f"Recorded a {'CO2 PPM' if alert_type == AlertType.HighCo2Ppm else 'temperature (°C)'} value of {sensor_value} at {time_iso_format}"  # noqa
+        alert_description = f"Recorded a {'CO2 PPM' if alert_type == AlertType.HighCo2Ppm else 'temperature (°C)'} value of {sensor_value} at {time_iso_format}. Please close your window/door."  # noqa
         db_write_api = self._db.write_api(write_options=SYNCHRONOUS)
         alert_point = (
             Point("alert")
@@ -113,8 +129,14 @@ from(bucket: "{self._db_bucket}")
             .time(alert_time.astimezone(timezone.utc), WritePrecision.S)
         )
 
-        loop = asyncio.get_event_loop()
+        alert_count = await self._count_alerts(alert_type, "-30m")
+        if alert_count > 0:
+            # don't alert when there's already another alert in the last 30 minutes
+            return
+
         async with asyncio.TaskGroup() as tg:
+            loop = asyncio.get_event_loop()
+            email = self._email_service
 
             async def wrapper():
                 return await loop.run_in_executor(

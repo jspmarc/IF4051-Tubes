@@ -39,16 +39,18 @@ app.add_middleware(
 async def startup():
     database.initialize_state_db()
 
-    # settings = get_settings()
-    # loop = asyncio.get_event_loop()
-    # await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
-    # kafka_inbound_service.start_kafka_consumers()
+    settings = get_settings()
+    loop = asyncio.get_event_loop()
+    await kafka_inbound_service.initialize_kafka_consumers(loop, settings)
+    kafka_inbound_service.start_kafka_consumers()
 
 
 @app.on_event("shutdown")
 async def shutdown():
     MqttService(get_settings()).disconnect()
-    # await kafka_inbound_service.stop_all()
+    await kafka_inbound_service.stop_all()
+    database.get_db().close()
+    database.get_state_db().close()
 
 
 @app.post("/validate-token", status_code=status.HTTP_204_NO_CONTENT)

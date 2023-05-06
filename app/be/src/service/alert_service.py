@@ -67,7 +67,7 @@ class AlertService:
             for record in table.records:
                 results.append(
                     Alert(
-                        alert_type=AlertType(int(record["alert_type"])),
+                        alert_type=AlertType(record["alert_type"]),
                         alert_description=record.get_value(),
                         alert_time=record.get_time(),
                     )

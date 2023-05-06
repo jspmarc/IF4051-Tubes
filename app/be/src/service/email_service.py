@@ -4,7 +4,7 @@ from typing import Annotated, List
 from fastapi import Depends
 from smtplib import SMTP
 import asyncio
-from functools import lru_cache, partial
+from functools import partial
 from email.mime.text import MIMEText
 from email.header import Header
 
@@ -53,7 +53,6 @@ class EmailService:
         )
 
     @classmethod
-    @lru_cache()
     def get_instance(cls, settings: Annotated[Settings, Depends(get_settings)]):
         instance = cls.__instance
 

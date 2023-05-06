@@ -36,7 +36,7 @@ def get_state_db():
     return __redis
 
 
-def get_realtime_data_db():
+def get_db():
     db = InfluxDBClient(
         url=__settings.db_uri, token=__settings.db_token, org=__settings.db_org
     )

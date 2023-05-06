@@ -3,6 +3,10 @@ import ssl
 from typing import Annotated, List
 from fastapi import Depends
 from smtplib import SMTP
+import asyncio
+from functools import partial
+from email.mime.text import MIMEText
+from email.header import Header
 
 from util.settings import Settings, get_settings
 
@@ -30,11 +34,20 @@ class EmailService:
         self._email_sender = settings.gmail_sender_email
         self._email_receiver = settings.notification_receiver_email
 
-    def send_email(self, content: str, recipient: List[str] | str | None = None):
+    async def send_email(self, subject: str, content: str, recipient: List[str] | str | None = None):
         if not recipient:
             recipient = self._email_receiver
-        self._client.sendmail(
-            from_addr=self._email_sender, to_addrs=recipient, msg=content
+        loop = asyncio.get_event_loop()
+        msg = MIMEText(content, _charset="UTF-8")
+        msg["Subject"] = Header(subject, "utf-8")
+        return await loop.run_in_executor(
+            None,
+            partial(
+                self._client.sendmail,
+                from_addr=self._email_sender,
+                to_addrs=recipient,
+                msg=msg.as_string(),
+            ),
         )
 
     @classmethod

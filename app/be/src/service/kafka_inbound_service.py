@@ -54,12 +54,10 @@ async def __consume_messages(
 
             if sensor == "dht22":
                 state.dht22_statistics = KafkaDht22.parse_raw(msg.value)
-                alert_type = AlertType.HighTemperature
                 alert_sensor_value = state.dht22_statistics.temperature_avg
                 alert_ts = state.dht22_statistics.created_timestamp
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
-                alert_type = AlertType.HighCo2Ppm
                 alert_sensor_value = state.mq135_statistics.co2_avg
                 alert_ts = state.mq135_statistics.created_timestamp
 
@@ -70,7 +68,9 @@ async def __consume_messages(
                 state.mq135_statistics.co2_avg,
             )
 
-            should_update = should_open and state.servo_multiple != 2
+            should_update = (should_open and state.servo_multiple == 0) or (
+                not should_open and state.servo_multiple != 0
+            )
             update_task = None
             if should_update:
                 if state.current_mode == AppMode.Ai.value:
@@ -79,6 +79,18 @@ async def __consume_messages(
                         state.servo_multiple, save_to_db=False
                     )
                 else:
+                    if sensor == "dht22":
+                        alert_type = (
+                            AlertType.LowTemperature
+                            if not should_open
+                            else AlertType.HighTemperature
+                        )
+                    else:
+                        alert_type = (
+                            AlertType.LowCo2Ppm
+                            if not should_open
+                            else AlertType.HighCo2Ppm
+                        )
                     update_task = asyncio.create_task(
                         alert_service.alert(alert_type, alert_sensor_value, alert_ts)
                     )

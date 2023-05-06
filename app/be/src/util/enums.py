@@ -1,3 +1,4 @@
+from ctypes import ArgumentError
 from enum import Enum, EnumMeta
 
 
@@ -21,11 +22,17 @@ class AppMode(Enum, metaclass=AppModeMeta):
 
 class AlertType(str, Enum):
     HighTemperature = "HighTemp"
+    LowTemperature = "LowTemp"
     HighCo2Ppm = "HighCo2"
+    LowCo2Ppm = "LowCo2"
 
     def to_mail_subject(self):
-        return (
-            "High CO2 PPM warning"
-            if self == AlertType.HighCo2Ppm
-            else "High temperature warning"
-        )
+        match self:
+            case AlertType.HighCo2Ppm:
+                return "HIGH CO2 PPM warning"
+            case AlertType.LowCo2Ppm:
+                return "LOW CO2 PPM warning"
+            case AlertType.HighTemperature:
+                return "HIGH temperature warning"
+            case AlertType.LowTemperature:
+                return "LOW temperature warning"

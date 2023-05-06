@@ -120,7 +120,13 @@ from(bucket: "{self._db_bucket}")
     async def alert(self, alert_type: AlertType, sensor_value: float, timestamp: int):
         alert_time = datetime.fromtimestamp(timestamp)
         time_iso_format = alert_time.replace(microsecond=0).astimezone().isoformat()
-        alert_description = f"Recorded a {'CO2 PPM' if alert_type == AlertType.HighCo2Ppm else 'temperature (°C)'} value of {sensor_value} at {time_iso_format}. Please close your window/door."  # noqa
+        alert_description = (
+            "Recorded a"
+            + (" CO2 PPM" if alert_type == AlertType.HighCo2Ppm or alert_type == AlertType.LowCo2Ppm else " temperature (°C)")  # noqa
+            + f" value of {sensor_value} at {time_iso_format}."
+            + f" Please {'close' if alert_type.value.lower().startswith('low') else 'open'}"
+            + " your window/door."
+        )
         db_write_api = self._db.write_api(write_options=SYNCHRONOUS)
         alert_point = (
             Point("alert")

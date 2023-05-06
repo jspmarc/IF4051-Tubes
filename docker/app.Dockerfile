@@ -1,5 +1,8 @@
 FROM node:20-alpine3.16 AS build-fe
 
+ARG BE_URN=localhost:8080
+ARG IS_SECURE=
+
 RUN npm i -g pnpm
 
 RUN mkdir -p /app/be/src
@@ -7,7 +10,8 @@ COPY ./app/fe/ /app/fe/
 
 WORKDIR /app/fe
 
-ENV VITE_BACKEND_URN=localhost:8080
+ENV VITE_BACKEND_URN=${BE_URN}
+ENV VITE_IS_SECURE=${IS_SECURE}
 
 RUN pnpm install --frozen-lockfile
 

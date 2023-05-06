@@ -7,6 +7,7 @@ from functools import partial
 import dto
 from util import Constants
 from service.websocket_service import WebsocketService
+from service import MqttService
 from util.database import get_state_db
 
 
@@ -17,9 +18,11 @@ class StateService:
         self,
         db: Annotated[Redis, Depends(get_state_db)],
         websocket_service: Annotated[WebsocketService, Depends()],
+        mqtt_service: Annotated[MqttService, Depends(MqttService.get_instance)],
     ):
         self.__db = db
         self.__ws = websocket_service
+        self.__mqtt = mqtt_service
 
     def get_state(self) -> dto.AppState:
         state = self.__db.get(Constants.REDIS_STATE_KEY)
@@ -42,5 +45,9 @@ class StateService:
         task_save = asyncio.create_task(self.__save_to_db(new_state))
 
         async with self._lock:
+            current_state = self.get_state()
+            if current_state.servo_multiple != new_state.servo_multiple:
+                # IMO, agak janky, tapi "yasudalaya"
+                self.__mqtt.publish_servo(new_state.servo_multiple)
             (_, db_state) = await asyncio.gather(task_broadcast, task_save)
             return db_state

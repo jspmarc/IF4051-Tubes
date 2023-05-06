@@ -6,6 +6,9 @@ services:
     build:
       context: ..
       dockerfile: ./docker/app.Dockerfile
+      args:
+        - BE_URN=${APP_BE_URN}
+        - IS_SECURE=${APP_IS_SECURE}
     environment:
       API_TOKEN: ${APP_API_TOKEN}
       MQTT_HOST: ${MQTT_HOST}
@@ -17,7 +20,7 @@ services:
       DB_ORG: ${INFLUXDB_ORG}
       DB_BUCKET: ${INFLUXDB_BUCKET}
       KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
-      REDIS_HOST: redis
+      REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     restart: unless-stopped

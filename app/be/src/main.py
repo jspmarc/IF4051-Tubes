@@ -47,7 +47,7 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
-    MqttService(get_settings()).disconnect()
+    MqttService.get_instance(get_settings()).disconnect()
     await kafka_inbound_service.stop_all()
     database.get_db().close()
     database.get_state_db().close()

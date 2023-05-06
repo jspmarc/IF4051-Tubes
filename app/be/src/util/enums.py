@@ -20,8 +20,8 @@ class AppMode(Enum, metaclass=AppModeMeta):
 
 
 class AlertType(str, Enum):
-    HighTemperature = "high temperature"
-    HighCo2Ppm = "high CO2 PPM"
+    HighTemperature = "HighTemp"
+    HighCo2Ppm = "HighCo2"
 
     def to_mail_subject(self):
         return (

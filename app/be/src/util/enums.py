@@ -19,9 +19,9 @@ class AppMode(Enum, metaclass=AppModeMeta):
     Override = "Override"
 
 
-class AlertType(Enum):
-    HighTemperature = 0
-    HighCo2Ppm = 1
+class AlertType(str, Enum):
+    HighTemperature = "high temperature"
+    HighCo2Ppm = "high CO2 PPM"
 
     def to_mail_subject(self):
         return (

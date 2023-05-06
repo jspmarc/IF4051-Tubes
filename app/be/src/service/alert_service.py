@@ -124,7 +124,7 @@ from(bucket: "{self._db_bucket}")
         db_write_api = self._db.write_api(write_options=SYNCHRONOUS)
         alert_point = (
             Point("alert")
-            .tag("alert_type", int(alert_type.value))
+            .tag("alert_type", alert_type.value)
             .field("alert_description", alert_description)
             .time(alert_time.astimezone(timezone.utc), WritePrecision.S)
         )

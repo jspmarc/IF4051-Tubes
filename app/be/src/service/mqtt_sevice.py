@@ -1,4 +1,5 @@
 from __future__ import annotations
+from functools import lru_cache
 from typing import Annotated
 from fastapi import Depends
 import paho.mqtt.client as mqtt
@@ -35,6 +36,7 @@ class MqttService:
         self.__client.disconnect()
 
     @classmethod
+    @lru_cache()
     def get_instance(cls, settings: Annotated[Settings, Depends(get_settings)]):
         instance = cls.__instance
 

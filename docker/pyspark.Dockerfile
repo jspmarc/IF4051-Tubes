@@ -30,9 +30,11 @@ RUN pip3 install -r /tmp/requirements.txt; \
 
 USER ${USER_NAME}
 
+ENV SENSOR=dht22
+
 CMD $SPARK_HOME/bin/spark-submit \
 	--packages "org.apache.bahir:spark-streaming-mqtt_2.11:2.4.0" \
 	--conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" \
 	--executor-memory 512M \
 	--master local[*] \
-	/pyspark/main.py
+	/pyspark/main.py $SENSOR

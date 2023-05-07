@@ -2,6 +2,7 @@
 import { onMounted, reactive, watch } from "vue";
 import slugify from "slugify";
 import type AppState from "../types/AppState";
+import { getPassword } from "../helpers/password";
 /**
  * Selection component properties
  * @type SelectionProps
@@ -35,13 +36,16 @@ const state = reactive({
   protocol: "",
 });
 
-watch(() => props.appState, function(newState) {
-  const propertyName = props.propertyName ?? slugify(props.label!);
-  setSelectedIdx({
-    option: newState[propertyName].toString(),
-    options: props.options,
-  });
-})
+watch(
+  () => props.appState,
+  function (newState) {
+    const propertyName = props.propertyName ?? slugify(props.label!);
+    setSelectedIdx({
+      option: newState[propertyName].toString(),
+      options: props.options,
+    });
+  }
+);
 
 onMounted(async () => {
   // do some props validation
@@ -106,15 +110,25 @@ async function sendData(selectedIdx: number) {
   if (props.url != null) {
     const propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
     const value = props.options[selectedIdx];
+    const password = getPassword();
+    const xTokenHeader = password
+      ? {
+          "X-Token": password,
+        }
+      : null;
     const response = await fetch(props.url!, {
       headers: {
+        ...xTokenHeader,
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({ [propertyName]: value }),
     });
     if (!response.ok) {
-      console.error("Can't update state to server, response:", response.statusText);
+      console.error(
+        "Can't update state to server, response:",
+        response.statusText
+      );
     }
     setSelectedIdx({ index: selectedIdx });
   } else {

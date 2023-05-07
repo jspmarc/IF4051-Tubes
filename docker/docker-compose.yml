@@ -27,8 +27,9 @@ services:
     ports:
       - "8080:8080"
 
-  pyspark:
-    container_name: pyspark
+  pyspark-mq135:
+    container_name: pyspark-mq135
+    image: if4051-pyspark
     build:
       context: ..
       dockerfile: ./docker/pyspark.Dockerfile
@@ -39,6 +40,7 @@ services:
       - ../data-pipeline/pyspark/:/pyspark:rw
     working_dir: /pyspark
     environment:
+      SENSOR: mq135
       MQTT_HOST: ${MQTT_HOST}
       MQTT_PORT: ${MQTT_PORT}
       MQTT_USER: ${MQTT_USER}
@@ -47,6 +49,26 @@ services:
       KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
     restart: unless-stopped
     # depends_on:
+    #   - mosquitto
+    #   - kafka
+
+  pyspark-dht22:
+    container_name: pyspark-dht22
+    image: if4051-pyspark
+    volumes:
+      - ../data-pipeline/pyspark/:/pyspark:rw
+    working_dir: /pyspark
+    environment:
+      SENSOR: dht22
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USER: ${MQTT_USER}
+      MQTT_PASS: ${MQTT_PASS}
+      DB_URI: ${DB_URI}
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
+    restart: unless-stopped
+    depends_on:
+      - pyspark-mq135
     #   - mosquitto
     #   - kafka
 

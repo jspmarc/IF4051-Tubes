@@ -1,4 +1,3 @@
-from threading import Thread
 from typing import Callable, Literal
 
 from model.statistics_data import StatisticsData
@@ -11,8 +10,8 @@ class StreamHandler(object):
     StreamHandler stores the definition of functions to process the stream.
     """
 
-    window_duration = 15
-    slide_interval = 5
+    window_duration = 30
+    slide_interval = 15
 
     @staticmethod
     def get_statistics(time, rdd):
@@ -24,12 +23,12 @@ class StreamHandler(object):
         - median
         """
         val = StatisticsData()
-        val.count_unique = rdd.count()
+        # val.count_unique = rdd.count()
 
         # rdd comes in as list of (temp, freq)
         # if rdd is empty
-        if val.count_unique != 0:
-            val.count = rdd.map(lambda x: x[1]).reduce(lambda x, y: x + y)
+        # if val.count_unique != 0:
+        val.count = rdd.map(lambda x: x[1]).reduce(lambda x, y: x + y)
 
         # count is the total of freq
         # if there is at least one freq
@@ -41,13 +40,13 @@ class StreamHandler(object):
             total_temp = rdd.map(lambda x: x[0] * x[1]).reduce(lambda x, y: x + y)
             val.mean = total_temp / val.count
 
-            temp_flatmap = rdd.flatMap(lambda x: [x[0]] * x[1])
-            median_idx = int(val.count / 2)
-            val.median = (
-                temp_flatmap.takeOrdered(median_idx + 1, key=lambda x: x)[-1]
-                if median_idx > 0
-                else 0
-            )
+            # temp_flatmap = rdd.flatMap(lambda x: [x[0]] * x[1])
+            # median_idx = int(val.count / 2)
+            # val.median = (
+            #     temp_flatmap.takeOrdered(median_idx + 1, key=lambda x: x)[-1]
+            #     if median_idx > 0
+            #     else 0
+            # )
 
         print(f"Time: {time} -------------------------------------------")
         print(val)
@@ -60,7 +59,6 @@ class StreamHandler(object):
         parser: Callable,
         statistics_extractor: Callable,
         statistics_handler: Callable,
-        sensor: Literal["dht22", "mq135"],
     ):
         """
         Parse the sensor values
@@ -95,7 +93,6 @@ class StreamHandler(object):
             Dht22Value.from_json,
             Dht22Value.get_statistics,
             Dht22Value.handle_statistics,
-            "dht22",
         )
 
     @classmethod
@@ -108,5 +105,4 @@ class StreamHandler(object):
             Mq135Value.from_json,
             Mq135Value.get_statistics,
             Mq135Value.handle_statistics,
-            "mq135",
         )

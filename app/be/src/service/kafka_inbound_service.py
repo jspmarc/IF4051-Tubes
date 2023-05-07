@@ -1,14 +1,23 @@
 from asyncio import AbstractEventLoop, create_task
+import asyncio
 from typing import Annotated, Literal
 from aiokafka import AIOKafkaConsumer, ConsumerRecord
 from fastapi import Depends
 from common_python.dto import KafkaDht22, KafkaMq135
 from redis import Redis
 
-from service import StateService, WebsocketService, PredictionService, MqttService
+from service import (
+    StateService,
+    WebsocketService,
+    PredictionService,
+    MqttService,
+    AlertService,
+    ServoService,
+    EmailService,
+)
 from util import Constants
-from util.enums import AppMode
-from util.database import get_state_db
+from util.enums import AlertType, AppMode
+from util.database import get_db, get_state_db
 from util.settings import Settings, get_settings
 
 __kafka_mq135_consumer = None
@@ -22,11 +31,16 @@ async def __consume_messages(
     sensor: Literal["mq135", "dht22"],
     db: Annotated[Redis, Depends(get_state_db)],
     websocket_service: Annotated[WebsocketService, Depends()],
+    alert_service: Annotated[AlertService, Depends()],
 ):
     state_service = StateService(
-        # IMO, agak janky, tapi "yasudalaya"
-        db, websocket_service, MqttService.get_instance(get_settings())
+        db,
+        websocket_service,
     )
+    servo_service = ServoService(
+        MqttService.get_instance(get_settings()), state_service
+    )
+
     prediction_service = PredictionService()
     try:
         async for msg in consumer:
@@ -40,8 +54,12 @@ async def __consume_messages(
 
             if sensor == "dht22":
                 state.dht22_statistics = KafkaDht22.parse_raw(msg.value)
+                alert_sensor_value = state.dht22_statistics.temperature_avg
+                alert_ts = state.dht22_statistics.created_timestamp
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
+                alert_sensor_value = state.mq135_statistics.co2_avg
+                alert_ts = state.mq135_statistics.created_timestamp
 
             # predict
             should_open = prediction_service.predict(
@@ -50,17 +68,38 @@ async def __consume_messages(
                 state.mq135_statistics.co2_avg,
             )
 
-            if state.current_mode == AppMode.Ai.value:
-                if should_open:
-                    state.servo_multiple = 2
+            should_update = (should_open and state.servo_multiple == 0) or (
+                not should_open and state.servo_multiple != 0
+            )
+            update_task = None
+            if should_update:
+                if state.current_mode == AppMode.Ai.value:
+                    state.servo_multiple = 2 if should_open else 0
+                    update_task = servo_service.update_rotation(
+                        state.servo_multiple, save_to_db=False
+                    )
                 else:
-                    state.servo_multiple = 0
-            else:
-                # send alert or notification
-                pass
+                    if sensor == "dht22":
+                        alert_type = (
+                            AlertType.LowTemperature
+                            if not should_open
+                            else AlertType.HighTemperature
+                        )
+                    else:
+                        alert_type = (
+                            AlertType.LowCo2Ppm
+                            if not should_open
+                            else AlertType.HighCo2Ppm
+                        )
+                    update_task = asyncio.create_task(
+                        alert_service.alert(alert_type, alert_sensor_value, alert_ts)
+                    )
 
-            print(state)
-            await state_service.update_state(state)
+            update_state_task = asyncio.create_task(state_service.update_state(state))
+            if update_task:
+                await asyncio.gather(update_state_task, update_task)
+            else:
+                await update_state_task
 
     except Exception as e:
         print("Error occured on processing kafka message", e)
@@ -97,14 +136,27 @@ def start_kafka_consumers():
     if __kafka_mq135_consumer is None or __kafka_dht22_consumer is None:
         raise RuntimeError("Consumers has not been initialized")
 
+    settings = get_settings()
+    alert_service = AlertService(
+        settings, EmailService.get_instance(settings), get_db()
+    )
+
     __kafka_mq135_consume_task = create_task(
         __consume_messages(
-            __kafka_mq135_consumer, "mq135", get_state_db(), WebsocketService()
+            __kafka_mq135_consumer,
+            "mq135",
+            get_state_db(),
+            WebsocketService(),
+            alert_service,
         ),
     )
     __kafka_dht22_consume_task = create_task(
         __consume_messages(
-            __kafka_dht22_consumer, "dht22", get_state_db(), WebsocketService()
+            __kafka_dht22_consumer,
+            "dht22",
+            get_state_db(),
+            WebsocketService(),
+            alert_service,
         )
     )
 

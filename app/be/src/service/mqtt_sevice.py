@@ -14,6 +14,9 @@ class MqttService:
         """
         Treat this constructor/init as private. Never directly invoke this constructor.
         """
+        if self.__instance:
+            return
+
         mqtt_port = settings.mqtt_port
         mqtt_host = settings.mqtt_host
         mqtt_user = settings.mqtt_user
@@ -29,7 +32,8 @@ class MqttService:
         self.__client.publish(topic, multiple, qos=1, retain=True)
 
     def disconnect(self):
-        self.__client.disconnect()
+        if hasattr(self, "__client"):
+            self.__client.disconnect()
 
     @classmethod
     def get_instance(cls, settings: Annotated[Settings, Depends(get_settings)]):

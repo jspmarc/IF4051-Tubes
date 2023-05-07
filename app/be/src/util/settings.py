@@ -16,13 +16,18 @@ class Settings(BaseSettings):
     db_uri: str = "http://localhost:8086"
     db_token: str = ""
     db_org: str = ""
-    db_bucket: str = ""
+    db_realtime_bucket: str = "realtime"
+    db_alert_bucket: str = "alert"
 
     kafka_bootstrap_server: str = "127.0.0.1:9092"
 
     redis_host: str = "127.0.0.1"
     redis_port: int = 6379
     redis_password: str = ""
+
+    gmail_sender_email: str = ""
+    gmail_password: str = ""
+    notification_receiver_email: str = ""
 
     class Config:
         env_file = ".env"

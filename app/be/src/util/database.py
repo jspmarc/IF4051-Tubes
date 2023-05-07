@@ -36,11 +36,11 @@ def get_state_db():
     return __redis
 
 
-def get_realtime_data_db():
-    db = InfluxDBClient(
-        url=__settings.db_uri, token=__settings.db_token, org=__settings.db_org
-    )
-    try:
-        yield db
-    finally:
-        db.close()
+__influx_client = InfluxDBClient(
+    url=__settings.db_uri, token=__settings.db_token, org=__settings.db_org
+)
+
+
+@lru_cache()
+def get_db():
+    return __influx_client

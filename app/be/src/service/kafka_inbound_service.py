@@ -51,10 +51,7 @@ async def __consume_messages(
             )
 
             if state.current_mode == AppMode.Ai.value:
-                if should_open:
-                    state.servo_multiple = 2
-                else:
-                    state.servo_multiple = 0
+                state.servo_multiple = 2 if should_open else 0
             else:
                 # send alert or notification
                 pass

@@ -22,7 +22,7 @@
         "-bibtex",
         "-outdir=../build",
         "-cd",
-        "../src/thesis.tex"
+        "../src/conference.tex"
       ],
       "env": {}
     },
@@ -30,8 +30,8 @@
       "name": "latex_itb_move",
       "command": "mv",
       "args": [
-        "%DIR%/../build/thesis.pdf",
-        "%DIR%/../output/thesis.pdf"
+        "%DIR%/../build/conference.pdf",
+        "%DIR%/../output/conference.pdf"
       ],
       "env": {}
     }

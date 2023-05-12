@@ -1,3 +1,15 @@
 \section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits.
+One's room air quality is an important factor in one's health and productivity.
+According to $<$insert source$>$, $<$insert quote$>$.
+
+In this paper, we present a system that monitors the air quality of a room and the outside, and uses those informations to make decision about when to open and close doors/windows.
+For ease of use, in this paper, we will use the term "door" to refer to both doors and windows.
+
+In this paper, we will use humidity and temperature as indicators of indoor air quality while CO2 (Carbondioxide) as indicators of outdoor air quality. To measure this we will use DHT22 sensor to measure both humidity and temperature, and MQ135 sensor to measure CO2. We will also use a servo motor to open and close the door.
+
+To implement the system, we will utilize the Internet of Things (IoT) technology. The microprocessor that monitors and control the room will be connected to the internet, and can be accessed from anywhere in the world. The system will also be able to send notifications to the user's phone.
+
+We will use KMeans algorithm to cluster the data from the sensors to determine whether the door should be opened or closed.
+
+We will also use a web application as the interface for the user to interact with the system.
+The web application will be able to display the current air quality of the room and the outside, and the status of the door. The web application will also be able to send commands to the microprocessor to open and close the door manually.

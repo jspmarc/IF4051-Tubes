@@ -39,5 +39,6 @@
   "latex-workshop.synctex.afterBuild.enabled": true,
   "latex-workshop.latex.outDir": "%DIR%/../output",
   "latex-workshop.latex.autoBuild.run": "onSave",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on"
 }

@@ -15,19 +15,22 @@ export default defineComponent({
     };
   },
   methods: {
-    formatDesc2(string) {
+    formatDesc2(string: string) {
       const regexp = /([^\.].[^\.]+)+/g;
       return [...string.matchAll(regexp)][1][0];
     },
-    formatDesc1(string) {
+    formatDesc1(string: string) {
       const regexp1 = /([^\.].[^\.]+)+/g;
       const newString = [...string.matchAll(regexp1)][0][0];
       const regexp2 = /([\d-T:+]{25})/g;
-      const date = new Date([...newString.match(regexp2)][0]);
+      const regexp2Match = newString.match(regexp2);
+      if (!regexp2Match)
+        return;
+      const date = new Date(regexp2Match[0]);
       const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
       return newString.replace(regexp2, newDate) + ".";
     },
-    formatTime(string) {
+    formatTime(string: string) {
       return dayjs(string).format("HH:mm");
     },
   },

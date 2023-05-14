@@ -1,28 +1,18 @@
 <script setup lang="ts">
 import { ref, defineProps } from "vue";
-import { getPassword } from "../helpers/password";
+import { getAlerts } from "../helpers/GetAlerts";
 import AlertCard from "./AlertCard.vue";
 
 const props = defineProps<{
   beUrl: string;
+  timeRange: string;
 }>();
+
 const alerts = ref([]);
 
-async function getData() {
-  const password = getPassword();
-  const xTokenHeader = password
-    ? {
-        "X-Token": password,
-      }
-    : null;
-  const res = await fetch(`${props.beUrl}/alert?time_range=-1d`, {
-    headers: { ...xTokenHeader },
-  });
-  const finalRes = await res.json();
-  alerts.value = finalRes?.reverse();
-}
-
-getData();
+const alertRes = await getAlerts(props.beUrl, props.timeRange);
+alerts.value = alertRes?.reverse() ?? [];
+// console.log(alerts.value);
 </script>
 
 <template>

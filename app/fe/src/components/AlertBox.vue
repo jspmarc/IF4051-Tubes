@@ -1,49 +1,38 @@
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
+import { defineProps, ref, Ref, defineEmits } from "vue";
+import { getAlerts } from "../helpers/GetAlerts";
+import dayjs from "dayjs";
 
-export default defineComponent({
-  props: {
-    title: {
-      type: String as PropType<string>,
-      required: true,
-    },
-    body: {
-      type: String as PropType<string>,
-      required: true,
-    },
-    temperature: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    ppm: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    ctaPrimary: {
-      type: Function as PropType<() => void>,
-      required: true,
-    },
-    ctaSecondary: {
-      type: Function as PropType<() => void>,
-      required: true,
-    },
-    ctaPrimaryText: {
-      type: String as PropType<string>,
-      required: true,
-    },
-  },
-  setup(props) {
-    return {
-      title: props.title,
-      body: props.body,
-      temperature: props.temperature,
-      ppm: props.ppm,
-      toAlertView: props.ctaPrimary,
-      dismissAction: props.ctaSecondary,
-      ctaPrimaryText: props.ctaPrimaryText,
-    };
-  },
-});
+const props = defineProps<{
+  url: string;
+  // ctaPrimary: () => void;
+  ctaSecondary: () => void;
+  // ctaPrimaryText: string;
+}>();
+
+const title: Ref<string> = ref("");
+const body: Ref<string> = ref("");
+
+const alertRes = await getAlerts(props.url, "30m");
+const latestAlert = alertRes?.reverse()[0];
+const emit = defineEmits<{
+  (e: "noAlerts", val: string): void;
+}>();
+
+if (latestAlert) {
+  const regexp1 = /([^\.].[^\.]+)+/g;
+  const regexp2 = /([\d-T:+]{25})/g;
+  const newString = [...latestAlert.alert_description.matchAll(regexp1)][0][0];
+  const date = new Date([...newString.match(regexp2)][0]);
+  const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
+
+  title.value = [...latestAlert.alert_description.matchAll(regexp1)][1][0];
+  body.value = newString.replace(regexp2, newDate) + ".";
+} else {
+  title.value = "";
+  body.value = "No alerts";
+  emit("noAlerts", "No alerts");
+}
 </script>
 
 <template>
@@ -53,21 +42,16 @@ export default defineComponent({
     <p class="font-semibold text-xl">{{ title }}</p>
     <p class="text-base">{{ body }}</p>
 
-    <div class="pt-2 flex flex-row">
-      <p class="rounded-2xl bg-red px-2.5 h-8 leading-8">{{ temperature }}°C</p>
-      <p class="rounded-2xl ml-2.5 bg-red px-2.5 h-8 leading-8">{{ ppm }}ppm</p>
-    </div>
-
     <div class="flex gap-[10px] pt-2.5">
       <button
         class="bg-secondary-button text-primary-text"
-        @click="dismissAction"
+        @click="ctaSecondary"
       >
         Dismiss
       </button>
-      <button class="bg-active-button text-active-text" @click="toAlertView">
+      <!-- <button class="bg-active-button text-active-text" @click="ctaPrimary">
         {{ ctaPrimaryText }}
-      </button>
+      </button> -->
     </div>
   </div>
 </template>

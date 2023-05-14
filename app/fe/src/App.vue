@@ -15,10 +15,12 @@ import AppMode from "./types/AppMode";
 import type AppState from "./types/AppState";
 import HomeView from "./components/HomeView.vue";
 import Recommendation from "./components/Recommendation.vue";
-import AlertBox from "./components/AlertBox.vue";
 import passwordHelper from "./helpers/password";
 import LockSVG from "./assets/lock.svg";
 
+const AlertBox = defineAsyncComponent(
+  () => import("./components/AlertBox.vue")
+);
 const AlertView = defineAsyncComponent(
   () => import("./components/AlertView.vue")
 );
@@ -71,7 +73,6 @@ wsConnection.onmessage = (event) => {
 
 const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 const isRecommending: Ref<boolean> = ref(true);
-const isAlerting: Ref<boolean> = ref(true);
 
 const loginDialogRef: Ref<HTMLDialogElement | undefined | null> = ref(null);
 const savePasswordForm: Ref<HTMLFormElement | undefined | null> = ref(null);
@@ -85,6 +86,8 @@ function savePassword(e: Event) {
 
   passwordHelper.savePassword(password.value);
 }
+
+const isAlerting: Ref<boolean> = ref(true);
 </script>
 
 <template>
@@ -188,25 +191,14 @@ function savePassword(e: Event) {
   />
 
   <!-- ALERT -->
-  <AlertBox
-    v-show="isAlerting && currentView !== 'alert'"
-    title="This is an Alert"
-    body="Body"
-    :temperature="40"
-    :ppm="600"
-    cta-primary-text="Acknowledge"
-    :cta-primary="
-      () => {
-        // TODO adjust action(s) needed
-        isAlerting = false;
-      }
-    "
-    :cta-secondary="() => (isAlerting = false)"
-    @click="
-      currentView = 'alert';
-      isAlerting = false;
-    "
-  />
+  <Suspense>
+    <AlertBox
+      v-show="isAlerting && currentView !== 'alert'"
+      :url="httpBeUrl"
+      :cta-secondary="() => (isAlerting = false)"
+      @no-alerts="() => (isAlerting = false)"
+    />
+  </Suspense>
 
   <!-- HOME VIEW -->
   <HomeView
@@ -227,7 +219,13 @@ function savePassword(e: Event) {
   </div>
 
   <!-- ALERT VIEW -->
-  <AlertView v-show="currentView === 'alert'" class="" :be-url="httpBeUrl" />
+  <Suspense>
+    <AlertView
+      v-show="currentView === 'alert'"
+      :be-url="httpBeUrl"
+      time-range="12h"
+    />
+  </Suspense>
 </template>
 
 <style scoped>

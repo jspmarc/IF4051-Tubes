@@ -15,3 +15,5 @@ class Constants:
     KAFKA_DHT22_TOPIC = "dht22"
 
     REDIS_STATE_KEY = "app-state"
+
+    ML_MODELS_DIR = "ml_models"

@@ -48,7 +48,7 @@ export default defineComponent({
 
 <template>
   <div
-    class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[450px] px-8 py-3 bg-yellow rounded-3xl mb-6 items-center"
+    class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[550px] px-8 py-3 bg-yellow rounded-3xl mb-6 items-center"
   >
     <p class="font-semibold text-xl">{{ title }}</p>
     <p class="text-base">{{ body }}</p>

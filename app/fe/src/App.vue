@@ -17,6 +17,7 @@ import HomeView from "./components/HomeView.vue";
 import Recommendation from "./components/Recommendation.vue";
 import AlertBox from "./components/AlertBox.vue";
 import passwordHelper from "./helpers/password";
+import LockSVG from "./assets/lock.svg";
 
 const AlertView = defineAsyncComponent(
   () => import("./components/AlertView.vue")
@@ -100,7 +101,7 @@ function savePassword(e: Event) {
     </form>
   </dialog>
   <header
-    class="flex lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[450px] mb-6"
+    class="flex lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[550px] mb-6"
   >
     <nav class="w-full">
       <ul class="bg-gray-1 flex flex-row gap-3 rounded-full menu w-full">
@@ -164,7 +165,9 @@ function savePassword(e: Event) {
           </button>
         </li>
         <li>
-          <button @click="loginDialogRef?.showModal">Update password</button>
+          <button @click="loginDialogRef?.showModal" class="px-4">
+            <img :src="LockSVG" alt="Update Password" class="h-8 w-8" />
+          </button>
         </li>
       </ul>
     </nav>
@@ -224,7 +227,7 @@ function savePassword(e: Event) {
   </div>
 
   <!-- ALERT VIEW -->
-  <AlertView v-show="currentView === 'alert'" class=""> asdfsd</AlertView>
+  <AlertView v-show="currentView === 'alert'" class="" :be-url="httpBeUrl" />
 </template>
 
 <style scoped>

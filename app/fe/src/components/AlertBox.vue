@@ -1,57 +1,68 @@
-<script setup lang="ts">
-import { defineProps, ref, Ref, defineEmits } from "vue";
+<script lang="ts">
+import { defineComponent, defineEmits } from "vue";
 import { getAlerts } from "../helpers/GetAlerts";
 import dayjs from "dayjs";
 
-const props = defineProps<{
-  url: string;
-  // ctaPrimary: () => void;
-  ctaSecondary: () => void;
-  // ctaPrimaryText: string;
-}>();
+export default defineComponent({
+  emits: ["noAlerts"],
+  props: {
+    url: {
+      type: String,
+      required: true,
+    },
+    timeRange: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      alert: this.fetchAlert(),
+    };
+  },
+  methods: {
+    async fetchAlert() {
+      const res = await getAlerts(this.url, this.timeRange);
+      if (res.length == 0) {
+        this.alert = {
+          title: "",
+          body: "No alerts (you should not be seeing this...)",
+        };
+        this.$emit("noAlerts");
+      } else {
+        const latestAlert = res[0];
+        const regexp1 = /([^\.].[^\.]+)+/g;
+        const regexp2 = /([\d-T:+]{25})/g;
+        const newString = [
+          ...latestAlert.alert_description.matchAll(regexp1),
+        ][0][0];
+        const date = new Date([...newString.match(regexp2)][0]);
+        const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
 
-const title: Ref<string> = ref("");
-const body: Ref<string> = ref("");
-
-const alertRes = await getAlerts(props.url, "30m");
-const latestAlert = alertRes?.reverse()[0];
-const emit = defineEmits<{
-  (e: "noAlerts", val: string): void;
-}>();
-
-if (latestAlert) {
-  const regexp1 = /([^\.].[^\.]+)+/g;
-  const regexp2 = /([\d-T:+]{25})/g;
-  const newString = [...latestAlert.alert_description.matchAll(regexp1)][0][0];
-  const date = new Date([...newString.match(regexp2)][0]);
-  const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
-
-  title.value = [...latestAlert.alert_description.matchAll(regexp1)][1][0];
-  body.value = newString.replace(regexp2, newDate) + ".";
-} else {
-  title.value = "";
-  body.value = "No alerts";
-  emit("noAlerts", "No alerts");
-}
+        this.alert = {
+          title: [...latestAlert.alert_description.matchAll(regexp1)][1][0],
+          body: newString.replace(regexp2, newDate) + ".",
+        };
+      }
+    },
+  },
+});
 </script>
 
 <template>
   <div
     class="flex flex-col lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[550px] px-8 py-3 bg-yellow rounded-3xl mb-6 items-center"
   >
-    <p class="font-semibold text-xl">{{ title }}</p>
-    <p class="text-base">{{ body }}</p>
+    <p class="font-semibold text-xl">{{ alert.title }}</p>
+    <p class="text-base">{{ alert.body }}</p>
 
     <div class="flex gap-[10px] pt-2.5">
       <button
         class="bg-secondary-button text-primary-text"
-        @click="ctaSecondary"
+        @click="$emit('noAlerts')"
       >
         Dismiss
       </button>
-      <!-- <button class="bg-active-button text-active-text" @click="ctaPrimary">
-        {{ ctaPrimaryText }}
-      </button> -->
     </div>
   </div>
 </template>

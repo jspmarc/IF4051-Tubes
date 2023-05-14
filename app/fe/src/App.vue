@@ -17,12 +17,10 @@ import HomeView from "./components/HomeView.vue";
 import Recommendation from "./components/Recommendation.vue";
 import passwordHelper from "./helpers/password";
 import LockSVG from "./assets/lock.svg";
+import AlertView from "./components/AlertView.vue";
 
 const AlertBox = defineAsyncComponent(
   () => import("./components/AlertBox.vue")
-);
-const AlertView = defineAsyncComponent(
-  () => import("./components/AlertView.vue")
 );
 const StatsView = defineAsyncComponent(
   () => import("./components/StatsView.vue")
@@ -191,14 +189,12 @@ const isAlerting: Ref<boolean> = ref(true);
   />
 
   <!-- ALERT -->
-  <Suspense>
-    <AlertBox
-      v-show="isAlerting && currentView !== 'alert'"
-      :url="httpBeUrl"
-      :cta-secondary="() => (isAlerting = false)"
-      @no-alerts="() => (isAlerting = false)"
-    />
-  </Suspense>
+  <AlertBox
+    v-show="isAlerting && currentView !== 'alert'"
+    :url="httpBeUrl"
+    time-range="30m"
+    @no-alerts="() => (isAlerting = false)"
+  />
 
   <!-- HOME VIEW -->
   <HomeView
@@ -219,13 +215,11 @@ const isAlerting: Ref<boolean> = ref(true);
   </div>
 
   <!-- ALERT VIEW -->
-  <Suspense>
-    <AlertView
-      v-show="currentView === 'alert'"
-      :be-url="httpBeUrl"
-      time-range="12h"
-    />
-  </Suspense>
+  <AlertView
+    v-show="currentView === 'alert'"
+    :be-url="httpBeUrl"
+    time-range="12h"
+  />
 </template>
 
 <style scoped>

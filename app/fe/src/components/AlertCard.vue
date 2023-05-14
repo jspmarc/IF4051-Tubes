@@ -9,23 +9,26 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
-    return {
-      alert: props.alert,
-    };
-  },
   methods: {
     formatDesc2(string) {
-      const regexp = /([^\.].[^\.]+)+/g;
-      return [...string.matchAll(regexp)][1][0];
+      try {
+        const regexp = /([^\.].[^\.]+)+/g;
+        return [...string.matchAll(regexp)][1][0];
+      } catch (e) {
+        return string;
+      }
     },
     formatDesc1(string) {
-      const regexp1 = /([^\.].[^\.]+)+/g;
-      const newString = [...string.matchAll(regexp1)][0][0];
-      const regexp2 = /([\d-T:+]{25})/g;
-      const date = new Date([...newString.match(regexp2)][0]);
-      const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
-      return newString.replace(regexp2, newDate) + ".";
+      try {
+        const regexp1 = /([^\.].[^\.]+)+/g;
+        const newString = [...string.matchAll(regexp1)][0][0];
+        const regexp2 = /([\d-T:+]{25})/g;
+        const date = new Date([...newString.match(regexp2)][0]);
+        const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
+        return newString.replace(regexp2, newDate) + ".";
+      } catch (e) {
+        return string;
+      }
     },
     formatTime(string) {
       return dayjs(string).format("HH:mm");

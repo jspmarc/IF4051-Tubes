@@ -12,9 +12,9 @@ export async function getAlerts(beUrl: string, timeRange: string) {
 
   const alerts = await (
     await fetch(`${url}`, {
-      //   headers: { ...xTokenHeader },
+      headers: { ...xTokenHeader },
     })
   ).json();
 
-  return alerts.reverse();
+  return alerts?.reverse();
 }

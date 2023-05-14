@@ -41,32 +41,21 @@ class PredictionService:
         """
         Returns True if window and door should be opened, else False
         """
-        classes = []
+        # gather information about the classes
+        classes = dict()
         if self.tskm_co2_model is not None:
-            classes.append(self.tskm_co2_model.predict(avg_co2_ppm))
+            classes["co2"] = self.tskm_co2_model.predict(avg_co2_ppm)
         if self.tskm_temperature_model is not None:
-            classes.append(self.tskm_temperature_model.predict(avg_temperature))
+            classes["temperature"] = self.tskm_temperature_model.predict(avg_temperature)
         if self.tskm_humidity_model is not None:
-            classes.append(self.tskm_humidity_model.predict(avg_humidity))
-        
-        print(f"{len(classes)} classes: {classes}")
+            classes["humidity"] = self.tskm_humidity_model.predict(avg_humidity)
 
-        if len(classes) == 0:
+        # it's verdict time
+        # co2 is the most important factor, if outside air is bad, don't fucking open the window
+        if classes.get("co2", 1) == 1:
             return False
-
-        # most_common results in list[(key, value)]; get the first key
-        majority_class = Counter(classes).most_common()[0][0] 
-        return majority_class
-
-        if avg_humidity >= 80 or avg_temperature >= 41 or avg_co2_ppm >= 800:
+    
+        # outside air is fine, but do we need to open?
+        if classes.get("temperature", 1) == 1 or classes.get("humidity", 1) == 1:
             return True
-
-        if avg_co2_ppm >= 400 and (avg_temperature >= 31 or avg_humidity >= 65):
-            return True
-
-        # ppm < 400
-        if avg_temperature >= 29 or avg_humidity >= 50:
-            return True
-
-        # temperature < 29 and ppm < 400 and humidity < 50
         return False

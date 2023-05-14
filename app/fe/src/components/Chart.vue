@@ -37,7 +37,7 @@ watch(
   }
 );
 
-const minAnnotation = getMinimumAnnotation(props.mean);
+const minAnnotation = getMinimumAnnotation(props.min);
 watch(
   () => props.min,
   (newState) => {
@@ -50,7 +50,7 @@ watch(
   }
 );
 
-const maxAnnotation = getMaximumAnnotation(props.mean);
+const maxAnnotation = getMaximumAnnotation(props.max);
 watch(
   () => props.max,
   (newState) => {

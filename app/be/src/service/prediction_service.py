@@ -26,6 +26,19 @@ class PredictionService:
         with open(join_path(Constants.ML_MODELS_DIR, humidity_filename), 'rb') as f:
             self.tskm_humidity_model = pickle.load(f)
     
+    @classmethod
+    def get_or_create_instance(cls) -> "PredictionService":
+        """
+        Singleton class, only one instance is allowed
+        """
+        instance = cls.__instance
+
+        if instance is None:
+            instance = PredictionService()
+            cls.__instance = instance
+
+        return instance
+
     def __new__(cls) -> "PredictionService":
         """
         Singleton class, only one instance is allowed

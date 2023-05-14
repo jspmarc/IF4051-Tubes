@@ -41,7 +41,7 @@ async def __consume_messages(
         MqttService.get_instance(get_settings()), state_service
     )
 
-    prediction_service = PredictionService()
+    prediction_service = PredictionService.get_or_create_instance()
     try:
         async for msg in consumer:
             print("Got kafka message", msg.topic, msg.value)

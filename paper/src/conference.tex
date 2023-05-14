@@ -15,7 +15,7 @@
 \def\authortwoemail{13519188@std.stei.itb.ac.id}
 \def\authorthreename{Josep Marcello}
 \def\authorthreeemail{13519164@std.stei.itb.ac.id}
-\def\citycountry{Bandung, Indonesia}
+\def\citycountry{Bandung City, Indonesia}
 \def\department{School of Electrical Engineering and Informatics}
 \def\organization{Institut Teknologi Bandung}
 
@@ -29,25 +29,39 @@ should not be used}
 \thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} \authoronename}
-    \IEEEauthorblockA{\textit{\department} \\
-        \textit{\organization}\\
-        \citycountry \\
-        \authoroneemail}
-    \and
-    \IEEEauthorblockN{2\textsuperscript{nd} \authortwoname}
-    \IEEEauthorblockA{\textit{\department} \\
-        \textit{\organization}\\
-        \citycountry \\
-        \authortwoemail}
-    \and
-    \IEEEauthorblockN{3\textsuperscript{rd} \authorthreename}
-    \IEEEauthorblockA{\textit{\department} \\
-        \textit{\organization}\\
-        \citycountry \\
-        \authorthreeemail}
-}
+% Template author block
+% \author{\IEEEauthorblockN{1\textsuperscript{st} \authoronename}
+%     \IEEEauthorblockA{\textit{\department} \\
+%         \textit{\organization}\\
+%         \citycountry \\
+%         \authoroneemail}
+%     \and
+%     \IEEEauthorblockN{2\textsuperscript{nd} \authortwoname}
+%     \IEEEauthorblockA{\textit{\department} \\
+%         \textit{\organization}\\
+%         \citycountry \\
+%         \authortwoemail}
+%     \and
+%     \IEEEauthorblockN{3\textsuperscript{rd} \authorthreename}
+%     \IEEEauthorblockA{\textit{\department} \\
+%         \textit{\organization}\\
+%         \citycountry \\
+%         \authorthreeemail}
+% }
 
+% More consise author block
+\author{
+    \IEEEauthorblockN{
+        \authoronename\IEEEauthorrefmark{1},
+        \authortwoname\IEEEauthorrefmark{2}, and \authorthreename\IEEEauthorrefmark{3}}
+    \IEEEauthorblockA{\department,
+        \organization\\
+        \citycountry\\
+        Email: \IEEEauthorrefmark{1}\authoroneemail,
+        \IEEEauthorrefmark{2}\authortwoemail,
+        \IEEEauthorrefmark{3}\authorthreeemail
+    }
+}
 \maketitle
 
 \input{chapters/abstract.tex}

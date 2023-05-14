@@ -22,7 +22,7 @@
         "-bibtex",
         "-outdir=..\\build",
         "-cd",
-        "%DIR_W32%\\thesis.tex"
+        "%DIR_W32%\\conference.tex"
       ],
       "env": {}
     },
@@ -31,15 +31,15 @@
       "command": "del",
       "args": [
         "/Q",
-        "%DIR_W32%\\..\\output\\thesis.pdf"
+        "%DIR_W32%\\..\\output\\conference.pdf"
       ]
     },
     {
       "name": "latex_itb_move",
       "command": "move",
       "args": [
-        "%DIR_W32%\\..\\build\\thesis.pdf",
-        "%DIR_W32%\\..\\output\\thesis.pdf"
+        "%DIR_W32%\\..\\build\\conference.pdf",
+        "%DIR_W32%\\..\\output\\conference.pdf"
       ]
     }
   ],

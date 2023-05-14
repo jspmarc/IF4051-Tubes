@@ -16,6 +16,7 @@ import type AppState from "./types/AppState";
 import HomeView from "./components/HomeView.vue";
 import Recommendation from "./components/Recommendation.vue";
 import AlertBox from "./components/AlertBox.vue";
+import passwordHelper from "./helpers/password";
 
 const AlertView = defineAsyncComponent(
   () => import("./components/AlertView.vue")
@@ -55,9 +56,11 @@ let appState: Ref<AppState> = ref({
   },
 });
 
-const beUrn = import.meta.env.VITE_BACKEND_URN;
-const wsBeUrl = `ws://${beUrn}/state/ws`;
-const httpBeUrl = `http://${beUrn}`;
+const beUrn: string = import.meta.env.VITE_BACKEND_URN;
+const wsBeUrl: string =
+  (import.meta.env.VITE_IS_SECURE ? "wss://" : "ws://") + `${beUrn}/state/ws`;
+const httpBeUrl: string =
+  (import.meta.env.VITE_IS_SECURE ? "https://" : "http://") + beUrn;
 const wsConnection = new WebSocket(wsBeUrl);
 
 wsConnection.onmessage = (event) => {
@@ -68,9 +71,34 @@ wsConnection.onmessage = (event) => {
 const currentView: Ref<"home" | "stats" | "alert"> = ref("home");
 const isRecommending: Ref<boolean> = ref(true);
 const isAlerting: Ref<boolean> = ref(true);
+
+const loginDialogRef: Ref<HTMLDialogElement | undefined | null> = ref(null);
+const savePasswordForm: Ref<HTMLFormElement | undefined | null> = ref(null);
+const password: Ref<string | null> = ref(passwordHelper.getPassword());
+
+function savePassword(e: Event) {
+  if (savePasswordForm.value == null || password.value == null) {
+    e.preventDefault();
+    return;
+  }
+
+  passwordHelper.savePassword(password.value);
+}
 </script>
 
 <template>
+  <dialog ref="loginDialogRef" class="bg-black" @submit="savePassword">
+    <button @click="loginDialogRef?.close">X</button>
+    <h2 class="font-bold">Insert password</h2>
+    <form method="dialog" ref="savePasswordForm">
+      <input
+        type="password"
+        placeholder="Insert password here"
+        v-model="password"
+      />
+      <button type="submit" class="font-normal">Save password</button>
+    </form>
+  </dialog>
   <header
     class="flex lg:w-2/6 md:w-3/6 sm:w-4/6 w-full mx-auto min-w-[450px] mb-6"
   >
@@ -134,6 +162,9 @@ const isAlerting: Ref<boolean> = ref(true);
             ></template>
             ALERTS
           </button>
+        </li>
+        <li>
+          <button @click="loginDialogRef?.showModal">Update password</button>
         </li>
       </ul>
     </nav>

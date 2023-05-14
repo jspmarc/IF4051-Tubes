@@ -6,6 +6,9 @@ services:
     build:
       context: ..
       dockerfile: ./docker/app.Dockerfile
+      args:
+        - BE_URN=${APP_BE_URN}
+        - IS_SECURE=${APP_IS_SECURE}
     environment:
       API_TOKEN: ${APP_API_TOKEN}
       MQTT_HOST: ${MQTT_HOST}
@@ -17,15 +20,16 @@ services:
       DB_ORG: ${INFLUXDB_ORG}
       DB_BUCKET: ${INFLUXDB_BUCKET}
       KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
-      REDIS_HOST: redis
+      REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     restart: unless-stopped
     ports:
       - "8080:8080"
 
-  pyspark:
-    container_name: pyspark
+  pyspark-mq135:
+    container_name: pyspark-mq135
+    image: if4051-pyspark
     build:
       context: ..
       dockerfile: ./docker/pyspark.Dockerfile
@@ -36,6 +40,7 @@ services:
       - ../data-pipeline/pyspark/:/pyspark:rw
     working_dir: /pyspark
     environment:
+      SENSOR: mq135
       MQTT_HOST: ${MQTT_HOST}
       MQTT_PORT: ${MQTT_PORT}
       MQTT_USER: ${MQTT_USER}
@@ -44,6 +49,26 @@ services:
       KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
     restart: unless-stopped
     # depends_on:
+    #   - mosquitto
+    #   - kafka
+
+  pyspark-dht22:
+    container_name: pyspark-dht22
+    image: if4051-pyspark
+    volumes:
+      - ../data-pipeline/pyspark/:/pyspark:rw
+    working_dir: /pyspark
+    environment:
+      SENSOR: dht22
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USER: ${MQTT_USER}
+      MQTT_PASS: ${MQTT_PASS}
+      DB_URI: ${DB_URI}
+      KAFKA_BOOTSTRAP_SERVER: ${KAFKA_BOOTSTRAP_SERVER}
+    restart: unless-stopped
+    depends_on:
+      - pyspark-mq135
     #   - mosquitto
     #   - kafka
 
@@ -74,13 +99,15 @@ services:
     environment:
       DOCKER_API_VERSION: 1.22
       KAFKA_LISTENERS: INSIDE://kafka:29092,OUTSIDE://kafka:9092
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://127.0.0.1:9092
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://${KAFKA_OUTSIDE_HOST}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       # KAFKA_LISTENERS: INSIDE://kafka:29092
       # KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092
       # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "dht22:1:1,mq135:1:1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:

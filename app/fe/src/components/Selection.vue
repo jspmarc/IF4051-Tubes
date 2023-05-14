@@ -2,6 +2,7 @@
 import { onMounted, reactive, watch } from "vue";
 import slugify from "slugify";
 import type AppState from "../types/AppState";
+import { getPassword } from "../helpers/password";
 /**
  * Selection component properties
  * @type SelectionProps
@@ -109,8 +110,15 @@ async function sendData(selectedIdx: number) {
   if (props.url != null) {
     const propertyName = props.propertyName ?? slugify(props.label!); // use slugified label if propertyName is not set
     const value = props.options[selectedIdx];
+    const password = getPassword();
+    const xTokenHeader = password
+      ? {
+          "X-Token": password,
+        }
+      : null;
     const response = await fetch(props.url!, {
       headers: {
+        ...xTokenHeader,
         "Content-Type": "application/json",
       },
       method: "POST",

@@ -1,0 +1,21 @@
+\section{Introduction}
+One's room air quality is an important factor in one's health and productivity.
+According to \cite{productivity_air_quality_wargocki_2000}, the air quality affects productivity in offices. Furthermore, Wargocki et al. also concluded that the performance is estimated to increase on average by 1.5\% per 10\% decrease of dissatisfaction with the air quality and 1.9\% increase for every two-fold pollution load decrease. This shows the importance of regulating the air quality of a room.
+Not only that, according to \cite{indoor_air_quality_stafford_2015}, we spend around 90\% of our time indoors, thus the room/building we are in has the ability to influence our health and productivity.
+Combined with the current post-pandemic situation, where some of the works are done from home, the air quality of one's room is more important than ever.
+
+In this paper, we present a system that monitors the air quality of a room and the outside, and uses those informations to make decision about when to open and close doors/windows.
+For ease of use, in this paper, we will use the term "door" to refer to both doors and windows.
+This system should work well, especially with majority of college students, especially Indonesia, live in boarding houses, which usually have small rooms with only one door and one window. This condition affects the circulation of the air quality, and thus may also impacts in their academic performance, as stated in \cite{indoor_air_quality_stafford_2015}.
+
+In this paper, we will use humidity and temperature as indicators of indoor air quality while CO2 (\textit{carbon dioxide}) as indicators of outdoor air quality.
+Humidity and temperature are chosen as the indicators of the indoor air quality due to their significance in impacting it's inhabitant's comfort in the room, while also considering the outdoor quality, as the outdoor air quality may not be any better than the indoor air.
+To measure these indicators, we will use DHT22 sensor to measure both humidity and temperature, and MQ135 sensor to measure CO2. We will also use a servo motor to open and close the door.
+
+To implement the system, we will utilize the Internet of Things (IoT) technology.
+The microprocessor, ESP32, that monitors and control the room will be connected to the internet via WiFi, and will be connected to a web application.
+
+The web application acts as the interface for the user to interact with the system.
+The web application will be able to display the current air quality of the room and the outside, and the status of the door; send commands to open and close the door manually; and send notifications to the user's phone about the state of the system.
+
+We will use KMeans algorithm to cluster the data from the sensors to determine whether the door should be opened or closed. This algorithm is chosen because it is simple and easy to implement, and it is also suitable for this use case, as we will explain in the next section.

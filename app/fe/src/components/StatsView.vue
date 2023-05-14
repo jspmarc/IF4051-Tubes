@@ -53,7 +53,7 @@ async function updateTimeRange(e: Event, newRange: string) {
 }
 
 const currentInterval: Ref<"1h" | "30m" | "5m" | "1m" | "30s"> = ref("30s");
-const intervals = [
+const intervals: { label: string, value: "1h" | "30m" | "5m" | "1m" | "30s" }[] = [
   { label: "30 seconds", value: "30s" },
   { label: "1 minute", value: "1m" },
   { label: "5 minutes", value: "5m" },

@@ -10,27 +10,28 @@ export default defineComponent({
     },
   },
   methods: {
-    formatDesc2(string) {
-      try {
-        const regexp = /([^\.].[^\.]+)+/g;
-        return [...string.matchAll(regexp)][1][0];
-      } catch (e) {
-        return string;
-      }
+    // <<<<<<< HEAD
+    formatDesc2(string: string) {
+      const regexp = /([^\.].[^\.]+)+/g;
+      const regexpMatch = string.match(regexp);
+      if (!regexpMatch) return string;
+      return regexpMatch[1];
     },
-    formatDesc1(string) {
+    formatDesc1(string: string) {
       try {
         const regexp1 = /([^\.].[^\.]+)+/g;
         const newString = [...string.matchAll(regexp1)][0][0];
         const regexp2 = /([\d-T:+]{25})/g;
-        const date = new Date([...newString.match(regexp2)][0]);
+        const regexp2Match = newString.match(regexp2);
+        if (!regexp2Match) return newString;
+        const date = new Date(regexp2Match[0]);
         const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
         return newString.replace(regexp2, newDate) + ".";
       } catch (e) {
         return string;
       }
     },
-    formatTime(string) {
+    formatTime(string: string) {
       return dayjs(string).format("HH:mm");
     },
   },

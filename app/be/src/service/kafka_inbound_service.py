@@ -68,13 +68,6 @@ async def __consume_messages(
                 state.mq135_statistics.co2_avg,
             )
 
-<<<<<<< HEAD
-            if state.current_mode == AppMode.Ai.value:
-                state.servo_multiple = 2 if should_open else 0
-            else:
-                # send alert or notification
-                pass
-=======
             should_update = (should_open and state.servo_multiple == 0) or (
                 not should_open and state.servo_multiple != 0
             )
@@ -101,7 +94,6 @@ async def __consume_messages(
                     update_task = asyncio.create_task(
                         alert_service.alert(alert_type, alert_sensor_value, alert_ts)
                     )
->>>>>>> 7843a9a (feat(app): get, send (using email), and save alert (#58))
 
             update_state_task = asyncio.create_task(state_service.update_state(state))
             if update_task:

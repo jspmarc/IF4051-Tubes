@@ -1,4 +1,16 @@
-\section{Prepare Your Paper Before Styling}
+\section{System Architecture}
+
+The architecture of the system we proposed can be seen at \ref{system-architecture}. We can separate the deployment into 4 groups. The first one, the ESP32, are the physical device that gathers the air quality data and controls the door. Second, the Application Server are the primary brain of the whole system from collecting the data retrieved from the ESP32, saving the data, to managing the state of the system. Third, the SparkMachine, are the processor of data that processes the data into more meaningful informations for the user, such as minimum, maximum, and average values. Lastly, the User Device are users' devices that accesses the web application to interact with the system.
+
+\begin{figure}
+    \centerline{\includegraphics[scale=0.3]{resources/deployment-diagram.png}}
+    \caption{Deployment diagram of the smart room air conditioner}
+    \label{system-architecture}
+\end{figure}
+
+
+=====
+
 Before you begin to format your paper, first write and save the content as a
 separate text file. Complete all content and organizational editing before
 formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on
@@ -150,6 +162,7 @@ figures and tables after they are cited in the text. Use the abbreviation
     \caption{Example of a figure caption.}
     \label{fig}
 \end{figure}
+
 
 Figure Labels: Use 8 point Times New Roman for Figure labels. Use words
 rather than symbols or abbreviations when writing Figure axis labels to

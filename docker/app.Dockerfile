@@ -17,7 +17,7 @@ RUN pnpm install --frozen-lockfile
 
 RUN pnpm build
 
-FROM python:3.11.3-alpine3.16
+FROM python:3.11.3-slim
 
 COPY ./app/be/ /app/be
 COPY ./common-python /common-python

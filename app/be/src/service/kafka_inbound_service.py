@@ -32,6 +32,9 @@ async def __consume_messages(
     db: Annotated[Redis, Depends(get_state_db)],
     websocket_service: Annotated[WebsocketService, Depends()],
     alert_service: Annotated[AlertService, Depends()],
+    prediction_service: Annotated[
+        PredictionService, Depends(PredictionService.get_or_create_instance)
+    ],
 ):
     state_service = StateService(
         db,
@@ -40,8 +43,6 @@ async def __consume_messages(
     servo_service = ServoService(
         MqttService.get_instance(get_settings()), state_service
     )
-
-    prediction_service = PredictionService()
     try:
         async for msg in consumer:
             print("Got kafka message", msg.topic, msg.value)
@@ -140,6 +141,7 @@ def start_kafka_consumers():
     alert_service = AlertService(
         settings, EmailService.get_instance(settings), get_db()
     )
+    prediction_service = PredictionService.get_or_create_instance()
 
     __kafka_mq135_consume_task = create_task(
         __consume_messages(
@@ -148,6 +150,7 @@ def start_kafka_consumers():
             get_state_db(),
             WebsocketService(),
             alert_service,
+            prediction_service,
         ),
     )
     __kafka_dht22_consume_task = create_task(
@@ -157,6 +160,7 @@ def start_kafka_consumers():
             get_state_db(),
             WebsocketService(),
             alert_service,
+            prediction_service,
         )
     )
 

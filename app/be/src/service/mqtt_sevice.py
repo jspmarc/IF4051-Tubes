@@ -29,6 +29,8 @@ class MqttService:
 
     def publish_servo(self, multiple: int):
         topic = Constants.MQTT_SERVO_TOPIC
+        if not self.__client.is_connected():
+            self.__client.reconnect()
         self.__client.publish(topic, multiple, qos=1, retain=True)
 
     def disconnect(self):

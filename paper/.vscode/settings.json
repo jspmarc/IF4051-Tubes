@@ -3,7 +3,7 @@
   "latex-workshop.latex.recipe.default": "lastUsed",
   "latex-workshop.latex.recipes": [
     {
-      "name": "latex_itb_ta WINDOWS",
+      "name": "latex_itb_ta LINUX",
       "tools": [
         "latex_itb_make",
         "latex_itb_move"
@@ -20,31 +20,25 @@
         "-file-line-error",
         "-pdf",
         "-bibtex",
-        "-outdir=..\\build",
+        "-outdir=../build",
         "-cd",
-        "%DIR_W32%\\conference.tex"
+        "../src/conference.tex"
       ],
       "env": {}
     },
     {
-      "name": "latex_itb_del",
-      "command": "del",
-      "args": [
-        "/Q",
-        "%DIR_W32%\\..\\output\\conference.pdf"
-      ]
-    },
-    {
       "name": "latex_itb_move",
-      "command": "move",
+      "command": "mv",
       "args": [
-        "%DIR_W32%\\..\\build\\conference.pdf",
-        "%DIR_W32%\\..\\output\\conference.pdf"
-      ]
+        "%DIR%/../build/conference.pdf",
+        "%DIR%/../output/conference.pdf"
+      ],
+      "env": {}
     }
   ],
   "latex-workshop.synctex.afterBuild.enabled": true,
-  "latex-workshop.latex.outDir": "%DIR_W32%\\..\\output",
+  "latex-workshop.latex.outDir": "%DIR%/../output",
   "latex-workshop.latex.autoBuild.run": "onSave",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on"
 }

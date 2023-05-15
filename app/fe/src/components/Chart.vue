@@ -31,6 +31,7 @@ watch(
     const averageAnnotation =
       chartOptions.value.plugins.annotation.annotations.average;
     if (averageAnnotation && newState) {
+      console.log("update avg annotation");
       averageAnnotation.value = newState;
       chartOptions.value = { ...chartOptions.value };
     }
@@ -44,6 +45,7 @@ watch(
     const minAnnotation =
       chartOptions.value.plugins.annotation.annotations.minimum;
     if (minAnnotation && newState) {
+      console.log("update min annotation");
       minAnnotation.value = newState;
       chartOptions.value = { ...chartOptions.value };
     }
@@ -57,6 +59,7 @@ watch(
     const maxAnnotation =
       chartOptions.value.plugins.annotation.annotations.average;
     if (maxAnnotation && newState) {
+      console.log("update max annotation");
       maxAnnotation.value = newState;
       chartOptions.value = { ...chartOptions.value };
     }

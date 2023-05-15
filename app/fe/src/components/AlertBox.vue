@@ -33,10 +33,15 @@ export default defineComponent({
         const latestAlert = res[0];
         const regexp1 = /([^\.].[^\.]+)+/g;
         const regexp2 = /([\d-T:+]{25})/g;
-        const newString = [
+        const newString: string = [
           ...latestAlert.alert_description.matchAll(regexp1),
         ][0][0];
-        const date = new Date([...newString.match(regexp2)][0]);
+        const newStringMatch = newString.match(regexp2);
+        if (!newStringMatch || newStringMatch.length == 0) {
+          this.$emit("noAlerts");
+          return;
+        }
+        const date = new Date([...newStringMatch][0]);
         const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
 
         this.alert = {

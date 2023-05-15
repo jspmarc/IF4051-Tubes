@@ -1,4 +1,3 @@
-from ctypes import ArgumentError
 from enum import Enum, EnumMeta
 
 
@@ -38,3 +37,7 @@ class AlertType(str, Enum):
                 return "HIGH temperature warning"
             case AlertType.LowTemperature:
                 return "LOW temperature warning"
+            case AlertType.HighHumidity:
+                return "LOW humidity warning"
+            case AlertType.LowHumidity:
+                return "LOW humidity warning"

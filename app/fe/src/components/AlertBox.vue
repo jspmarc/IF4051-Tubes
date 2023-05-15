@@ -31,22 +31,24 @@ export default defineComponent({
         this.$emit("noAlerts");
       } else {
         const latestAlert = res[0];
-        const regexp1 = /([^\.].[^\.]+)+/g;
+        const regexp1 = /(.+\d{1,3}.\d{1,2}\S\.)(.+)/g;
         const regexp2 = /([\d-T:+]{25})/g;
+
         const newString: string = [
           ...latestAlert.alert_description.matchAll(regexp1),
-        ][0][0];
+        ][0][1];
+
         const newStringMatch = newString.match(regexp2);
         if (!newStringMatch || newStringMatch.length == 0) {
           this.$emit("noAlerts");
           return;
         }
+
         const date = new Date([...newStringMatch][0]);
         const newDate = dayjs(date).format("YYYY/MM/DD HH:mm:ss");
-
         this.alert = {
-          title: [...latestAlert.alert_description.matchAll(regexp1)][1][0],
-          body: newString.replace(regexp2, newDate) + ".",
+          title: [...latestAlert.alert_description.matchAll(regexp1)][0][2],
+          body: newString.replace(regexp2, newDate),
         };
       }
     },

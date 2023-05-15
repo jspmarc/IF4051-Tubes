@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pickle
 from os.path import join as join_path
+from typing import Literal, Tuple
 import numpy as np
 
 from util.constants import Constants
@@ -44,7 +45,7 @@ class PredictionService:
 
     def predict(
         self, avg_humidity: float, avg_temperature: float, avg_co2_ppm: float
-    ) -> bool:
+    ) -> Tuple[bool, Literal["temperature", "humidity", "co2"] | None]:
         """
         Returns True if window and door should be opened, else False
         """
@@ -66,9 +67,12 @@ class PredictionService:
         # it's verdict time
         # co2 is the most important factor, if outside air is bad, don't fucking open the window
         if classes.get("co2", 0) == 0:
-            return False
+            return False, "co2"
 
         # outside air is fine, but do we need to open?
-        if classes.get("temperature", 0) == 0 or classes.get("humidity", 0) == 0:
-            return True
-        return False
+        if classes.get("temperature", 0) == 0:
+            return True, "temperature"
+        if classes.get("humidity", 0) == 0:
+            return True, "humidity"
+
+        return False, None

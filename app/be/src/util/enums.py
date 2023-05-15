@@ -23,6 +23,8 @@ class AppMode(Enum, metaclass=AppModeMeta):
 class AlertType(str, Enum):
     HighTemperature = "HighTemp"
     LowTemperature = "LowTemp"
+    HighHumidity = "HighHumid"
+    LowHumidity = "LowHumid"
     HighCo2Ppm = "HighCo2"
     LowCo2Ppm = "LowCo2"
 

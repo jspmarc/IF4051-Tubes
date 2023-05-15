@@ -120,9 +120,14 @@ from(bucket: "{self._db_bucket}")
     async def alert(self, alert_type: AlertType, sensor_value: float, timestamp: int):
         alert_time = datetime.fromtimestamp(timestamp)
         time_iso_format = alert_time.replace(microsecond=0).astimezone().isoformat()
+        if alert_type == AlertType.HighCo2Ppm or alert_type == AlertType.LowCo2Ppm:
+            alert_text = "CO2 PPM"
+        elif alert_type == AlertType.HighTemperature or alert_type == AlertType.LowTemperature:
+            alert_text = "temperature (°C)"
+        else:
+            alert_text = "humidity (%)"
         alert_description = (
-            "Recorded a"
-            + (" CO2 PPM" if alert_type == AlertType.HighCo2Ppm or alert_type == AlertType.LowCo2Ppm else " temperature (°C)")  # noqa
+            f"Recorded a {alert_text}"
             + f" value of {sensor_value} at {time_iso_format}."
             + f" Please {'close' if alert_type.value.lower().startswith('low') else 'open'}"
             + " your window/door."

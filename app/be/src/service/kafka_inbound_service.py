@@ -63,7 +63,7 @@ async def __consume_messages(
                 alert_ts = state.mq135_statistics.created_timestamp
 
             # predict
-            should_open = prediction_service.predict(
+            should_open, alert_source = prediction_service.predict(
                 state.dht22_statistics.humidity_avg,
                 state.dht22_statistics.temperature_avg,
                 state.mq135_statistics.co2_avg,
@@ -75,16 +75,24 @@ async def __consume_messages(
             update_task = None
             if should_update:
                 if state.current_mode == AppMode.Ai.value:
+                    print("Changing door/window state")
                     state.servo_multiple = 2 if should_open else 0
                     update_task = servo_service.update_rotation(
                         state.servo_multiple, save_to_db=False
                     )
                 else:
-                    if sensor == "dht22":
+                    print("Alerting user...")
+                    if alert_source == "temperature":
                         alert_type = (
                             AlertType.LowTemperature
                             if not should_open
                             else AlertType.HighTemperature
+                        )
+                    elif alert_source == "humidity":
+                        alert_type = (
+                            AlertType.LowHumidity
+                            if not should_open
+                            else AlertType.HighHumidity
                         )
                     else:
                         alert_type = (

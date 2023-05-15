@@ -42,6 +42,7 @@ class EmailService:
         loop = asyncio.get_event_loop()
         msg = MIMEText(content, _charset="UTF-8")
         msg["Subject"] = Header(subject, "utf-8")
+        print(f"Sending an email to {recipient}")
         return await loop.run_in_executor(
             None,
             partial(

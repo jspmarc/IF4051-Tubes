@@ -52,13 +52,17 @@ async function updateTimeRange(e: Event, newRange: string) {
   realtimeData.value = { ...tmp };
 }
 
-const currentInterval: Ref<"1h" | "30m" | "5m" | "1m" | "30s"> = ref("30s");
-const intervals: { label: string, value: "1h" | "30m" | "5m" | "1m" | "30s" }[] = [
+type Interval = "1d" | "12h" | "6h" | "1h" | "30m" | "5m" | "1m" | "30s";
+const currentInterval: Ref<Interval> = ref("30s");
+const intervals: { label: string; value: Interval }[] = [
   { label: "30 seconds", value: "30s" },
   { label: "1 minute", value: "1m" },
   { label: "5 minutes", value: "5m" },
   { label: "30 minutes", value: "30m" },
   { label: "1 hour", value: "1h" },
+  { label: "6 hours", value: "6h" },
+  { label: "12 hours", value: "12h" },
+  { label: "1 day", value: "1d" },
 ];
 </script>
 
@@ -97,11 +101,11 @@ const intervals: { label: string, value: "1h" | "30m" | "5m" | "1m" | "30s" }[] 
     </div>
 
     <ul
-      class="selection gray-1 flex flex-row gap-6 p-2 mb-2 rounded-full bg-gray-1"
+      class="selection gray-1 flex flex-row gap-x-8 p-2 mx-2 mb-2 rounded-2xl flex-wrap bg-gray-1 justify-around"
     >
       <li v-for="i in intervals" :key="i.label" class="rounded-full">
         <button
-          class="px-3 py-1 rounded-full"
+          class="px-3 py-1 rounded-full text-sm"
           @click="
             (ev) => {
               updateTimeRange(ev, i.value);

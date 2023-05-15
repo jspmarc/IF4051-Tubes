@@ -55,11 +55,9 @@ async def __consume_messages(
 
             if sensor == "dht22":
                 state.dht22_statistics = KafkaDht22.parse_raw(msg.value)
-                alert_sensor_value = state.dht22_statistics.temperature_avg
                 alert_ts = state.dht22_statistics.created_timestamp
             else:
                 state.mq135_statistics = KafkaMq135.parse_raw(msg.value)
-                alert_sensor_value = state.mq135_statistics.co2_avg
                 alert_ts = state.mq135_statistics.created_timestamp
 
             # predict
@@ -88,18 +86,21 @@ async def __consume_messages(
                             if not should_open
                             else AlertType.HighTemperature
                         )
+                        alert_sensor_value = state.dht22_statistics.temperature_avg
                     elif alert_source == "humidity":
                         alert_type = (
                             AlertType.LowHumidity
                             if not should_open
                             else AlertType.HighHumidity
                         )
+                        alert_sensor_value = state.dht22_statistics.humidity_avg
                     else:
                         alert_type = (
                             AlertType.LowCo2Ppm
                             if not should_open
                             else AlertType.HighCo2Ppm
                         )
+                        alert_sensor_value = state.dht22_statistics.co2_avg
                     update_task = asyncio.create_task(
                         alert_service.alert(alert_type, alert_sensor_value, alert_ts)
                     )

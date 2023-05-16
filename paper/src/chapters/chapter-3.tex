@@ -2,30 +2,31 @@
 
 \subsection{System Architecture}
 
-The architecture of the system we proposed can be seen at
-\ref{system-architecture}.
+The architecture of the system we proposed can be seen in
+figure \ref{system-architecture}.
 We can separate the deployment into 4 groups.
 \begin{enumerate}
-      \item The first one, the ESP32, are the physical device
-            that gathers the air quality data and controls the door.
-      \item Second, the Application Server are the primary brain
-            of the whole system from collecting the data
-            retrieved from the ESP32, saving the data, to
-            managing the state of the system.
-      \item Third, the SparkMachine, are the processor of data
-            that processes the data into more meaningful
-            informations for the user, such as minimum, maximum,
-            and average values.
-      \item Lastly, the User Device are users' devices that
-            accesses the web application to interact with the
-            system.
+    \item The first one, the ESP32, are the physical device
+          that gathers the air quality data and controls the door.
+    \item Second, the Application Server are the primary brain
+          of the whole system from collecting the data
+          retrieved from the ESP32, saving the data, to
+          managing the state of the system.
+    \item Third, the SparkMachine, are the processor of data
+          that processes the data into more meaningful
+          informations for the user, such as minimum, maximum,
+          and average values.
+    \item Lastly, the User Device are users' devices that
+          accesses the web application to interact with the
+          system.
 \end{enumerate}
 
-\begin{figure}
-      \centerline{\includegraphics[scale=0.3]{resources/deployment-diagram.png}}
-      \caption{Deployment diagram of the smart room air conditioner}
-      \label{system-architecture}
-\end{figure}
+\begin{figure*}
+    \centering
+    \includegraphics[scale=0.5]{resources/deployment-diagram.png}
+    \caption{Deployment diagram of the smart room air conditioner}
+    \label{system-architecture}
+\end{figure*}
 
 Flow-wise, the data gathered by the MQ135 and DHT22, in the
 ESP32, are sent to the mosquitto, the MQTT broker, in the
@@ -67,7 +68,7 @@ clusters for the model, as we only need to separate the data
 into ``good'' and ``bad'' air quality.
 
 The result of the training can be seen in
-\ref{kmeans}. Due to use of clustering algorithm, we could not
+figure \ref{kmeans}. Due to use of clustering algorithm, we could not
 determine the exact value of each indicators that is the
 discriminant point that separates the ``good'' and ``bad''
 air quality, but we can see that the ``good'' air quality is
@@ -80,22 +81,22 @@ the current air quality level of the room. The result of the
 model is then used to determine whether the door should be
 opened or closed using the following rules:
 \begin{enumerate}
-      \item If the CO2 level is ``bad'', the door will not be
-            opened, since we don't want any toxic particles to
-            get in the room.
-      \item If the CO2 level is ``good'', we will check the
-            next indicators, temperature and humidity. If
-            either temperature or humidity is ``bad'', then the
-            door will be opened, since we want to get fresh
-            air into the room.
-      \item If both temperature and humidity are ``good'',
-            then the door will not be opened, since the air
-            quality is already good.
+    \item If the CO2 level is ``bad'', the door will not be
+          opened, since we don't want any toxic particles to
+          get in the room.
+    \item If the CO2 level is ``good'', we will check the
+          next indicators, temperature and humidity. If
+          either temperature or humidity is ``bad'', then the
+          door will be opened, since we want to get fresh
+          air into the room.
+    \item If both temperature and humidity are ``good'',
+          then the door will not be opened, since the air
+          quality is already good.
 \end{enumerate}
 
 
 \begin{figure}
-      \centerline{\includegraphics[scale=0.65]{resources/iot-clustering.png}}
-      \caption{Time Series KMeans clustering result visualization}
-      \label{kmeans}
+    \centerline{\includegraphics[scale=0.65]{resources/iot-clustering.png}}
+    \caption{Time Series KMeans clustering result visualization}
+    \label{kmeans}
 \end{figure}

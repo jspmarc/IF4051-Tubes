@@ -1,20 +1,172 @@
 \section{Literature Review}
 
-This section presents a literature review of the concepts/components/modules that is used by the proposed system.
+This section presents a literature review and definitions of key concepts and
+components that is used by the proposed system.
+
+\subsection{Air Quality}
+
+Air quality refers to how healthy and comfortable the air is. In this paper, the
+quality level is determined by:
+\begin{itemize}
+	\item the parts per million (ppm) of CO$_2$,
+	\item temperature, and
+	\item humidity level (in percent)
+\end{itemize}
+of the air.
+
+In 2020, the Water and Air Quality Bureau of Health Canada proposed a long-term
+exposure limit for CO$_2$ should not exceed 1000 ppm (based on 24 hours
+average). Exposure to high CO$_2$ ppm can lead to health issues, such as dry
+eyes and tight chest, and also neurological effects that affect cognitive
+perofrmance. Some studies have shown that decrease in CO$_2$ ppm leads to better
+better task performance and decrease in sick building syndrome
+symptoms\cite{co2_ppm_max}.
+
+The comfortable temperature and humidity in this paper is determined by the
+average temperature range and average humidity of Bandung City, West Java,
+Indonesia. According to weather-and-climate.com, the temperature in Bandung
+usually ranges from 22\textdegree C to 30\textdegree C\cite{temperature_max}.
+For humidity, the same source is used but the city is in Bogor, West Java
+because there's no humidity data in Bandung and Bogor has geographic similarity
+to Bandung which includes the humidity. According to said source, Bogor has an
+average humidity of 80\%\cite{humidity_max}.
+
+%% JOSEP: MIGHT NOT FIT FOR CHAPTER 2
+% Based on the proposed maximum CO$_2$ ppm by Water and Air Quality Bureau of
+% Health Canada, to have a good air quality, the CO$_2$ ppm has to be as low as
+% possible. It is also observed to have a good air quality, the humidity and
+% temperature should be a ``perfect'' value which is not be too high.
 
 \subsection{Internet of Things}
-Internet of Things (``IoT'' for short) are interconnections of physical objects that has the ability to transfer data over a network \cite{iot}.
 
+Internet of Things (``IoT'') are interconnections of physical objects that has
+the ability to transfer data over a network, might it be wired or wireless
+\cite{iot}. IoT usually consists of edge devices connected with sensors to collect
+data and then transmit them over internet. Data collected by sensors are usually
+transmitted over internet to be processed by stronger computers or servers.
+
+\subsection{K-means Clustering}
+
+K-means clustering is one of the algorithms that can be used for
+unsupervised learning in machine learning. With unsupervised learning,
+the engineer doesn't have to label each data sample, instead the machine will
+learn from the data and apply label in its own. This is very helpful when
+the given dataset is unlabeled and comes in high quantity.
+
+K-means clustering is also known as squared-error clustering because the
+objective is to obtain a partition which, for a fixed number of clusters,
+minimizes the square-error \cite*{clustering_fariska}. Square-error is the sum
+of the Euclidean distance between each data sample in a cluster and its cluster
+center.
+
+In k-means clustering, clusters will be created and using the means of each
+samples in the cluster. Then, the machine learning algorithm will label a data
+sample with a cluster where the mean of said cluster is the to the sample's
+data.
+
+The alogrithm of training an ML model using k-means clustering to create a model
+with $k$ clusters is as follows\cite{clustering_fariska}:
+\begin{enumerate}
+	\item randomly choose $k$ data points from the dataset $D$,
+	\item repeat until convergence (no change in cluster):
+	      \begin{enumerate}
+		      \item assign (or reassign if needed) each data point to a cluster
+		            where it is the most similar (based on the value).
+		      \item update the cluster means.
+	      \end{enumerate}
+\end{enumerate}
 
 \subsection{ESP32}
 
+ESP32 is a family of chips with low-cost and low-power SoC (system on a chip)
+with Wi-Fi and Bluetooth by Espressif systems \cite{esp32_net}. ESP32 has a single
+32-bit processor with up 2 cores and clock speed of up to 240 MHz. This results
+in a performance of up to 600 DMIPS. Additionally, all ESP32 models have 448 KiB
+of ROM and 520 KiB of SRAM\cite{esp32_datasheet}.
 
-\subsection{DHT22 Sensor}
+ESP32 systems can be connected wirelessly using Bluetooth or Wi-Fi. For Wi-Fi,
+ESP32 fully supports TCP/IP and 802.11 b/g/n Wi-Fi MAC protocol. While on the
+Bluetooth side, ESP32 supports Bluetooth V4.2 BR/EDR and Bluetooth LE (low energy).
+ESP32 can also be connected using USB through serial port\cite{esp32_datasheet}.
 
-\subsection{MQ135 Sensor}
+Programming and flashing ESP32 can be done using ESP-IDF (Espressif IoT
+Development Framework). ESP-IDF the official IoT development framework for ESP32
+created by Espressif Systems. Although other frameworks and IDE, such as
+platform.io and Arduino IDE, also supports creating and loading programs for and
+to ESP32.
 
-\subsection{Servo}
+\subsection{Message Queuing Telemetry Transport Broker (MQTT)}
 
-\subsection{KMeans Algorithm}
+MQTT is an OASIS standard messaging protocol that's usually used for IoT
+development. It is also known as ISO/IEC 20922:2016. MQTT is designed to be
+light-weight, open, simple, and easy to implement\cite{mqtt_iso}. MQTT runs over
+TCP/IP or other networking protocol which provides the same characteristics as
+TCP/IP (e.g. TLS).
 
-\subsection{Air Quality}
+MQTT has the following features:
+\begin{itemize}
+	\item uses pub/sub messaging pattern which provides one-to-many message
+	      distribution,
+	\item a messaging transport that's agnotic to the content payload,
+	\item has the three qualities of message delivery: at-most-once,
+	      at-least-once, exactly-once, and
+	\item uses broker and topics.
+\end{itemize}
+The features and characteristics of MQTT makes it suitable for IoT usage
+where the embedded computer is usually low-powered and might have unreliable
+network.
+
+MQTT also has some additional security features, such as the use of TLS
+for transport protocol. MQTT also supports modern authentication protocols, such
+as OAuth\cite{mqtt_org}.
+
+\subsection{Apache Kafka}
+
+Apache Kafka is an open-source message queue system by Apache Software
+Foundation. Its usage is similar to MQTT where it has a broker and topics and
+the clients send messages in a pub/sub manner. The difference between Kafka and
+MQTT lies in the implementation. MQTT is a standard, Kafka is already
+the implementation. Kafka brokers store message logs which means client can
+consume it later (i.e. not realtime) as long as the message log still exists.
+Also, Kafka can have multiple brokers, whereas MQTT really depends on the
+implementation.
+
+\subsection{Redis}
+
+Redis is a NoSql database that uses a key-value schema. Redis saves its data
+in-memory\footnote{Redis has Redis Persistance to periodically save data to
+	secondary memory as backup}, which means it's perfect to be used for
+caching. Other than for caching, Redis can also used to save state between
+application. Because it has a fast I/O (when ignoring network), multiple
+instances of an application can connect to the same Redis instance and share
+their state through Redis.
+
+\subsection{InfluxDB and Telegraf}
+
+InfluxDB is a NoSql database with high read and write performance. Data can be
+written and read in realtime. It is also included ETL (extract, transform, and
+load), monitoring, user dashboard, and data visualization tools out of the box.
+The features of InfluxDB makes it a perfect DB for saving IoT sensor data which
+is captured at a fast rate. In InfluxDB, tables are similar to measurements and
+databases are similar to buckets.
+
+InfluxDB also has features for security. It includes authentication where user
+needs to login before they can access the dashboard. It also has authorization
+to access its buckets in the form of API token.
+
+To insert data to InfluxDB buckets, its user can use the InfluxDB API, SDK, or
+Telegraf. Telegraf is a server agent to collect data from systems and sensors.
+Telegraf can be attached to MQTT to retrieve data from MQTT and then save them
+directly to InfluxDB.
+
+\subsection{Apache Spark}
+
+Apache Spark is a product of Apache Software Foundation. Apache Spark is mostly
+used for big data processing. Spark is usually used for ETL processes for big
+data. Apache Spark can also be used to train machine learning models in real
+time.
+
+Apache Spark is able to process large amount of data in relatively short time
+because it uses primary memory to save temporary data instead of writing them to
+a file. Apache Spark can also be distributed accross machines spread all over
+the world or be run in a multiprocess configuration in a single machine.

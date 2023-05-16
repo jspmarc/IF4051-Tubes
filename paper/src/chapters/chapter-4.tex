@@ -1,56 +1,62 @@
-\section{Machine Learning Model}
+\section{Result and Discussion}
+This section presents the results of the system,
+and discusses the results.
 
-Since the data gathered by the sensors are time
-series data, we will use Time Series KMeans (TSKM)
-algorithm to cluster the data, that is provided in
-python by
-\href{https://tslearn.readthedocs.io/en/stable/}{\texttt{tslearn}} library.
-KMeans algorithm are chosen because it is simple and
-easy to implement, and it is also one of the most
-popular clustering technique.
+\subsection{Result}
+The results of the system can be seen in the web
+application.
 
-To train the model, we used the data gathered by the
-sensors for 3 days, as the InfluxDB database stores,
-from 2021-05-01 to 2021-05-03. Since the data,
-especially from the MQ135 sensor were not too
-accurate, we ``smoothened'' the data by using the
-\href{https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html}{\texttt{rolling}} mean, which saves
-the mean of the current rolling window of 120 data. The number
-120 is chosen arbitarily to ensure the data is smooth enough,
-but not too smooth that it loses its meaning. We also used 2
-clusters for the model, as we only need to separate the data
-into ``good'' and ``bad'' air quality.
+The system successfully gathers the data from the
+MQ135 and DHT22 sensors, and displays the data in
+the web application.
+% as seen in \ref{webapp-stats-view}.
+The system successfully open and close the door by
+determining the current average of the indicators,
+and act accordingly.
 
-The result of the training can be seen in
-\ref{kmeans}. Due to use of clustering algorithm, we could not
-determine the exact value of each indicators that is the
-discriminant point that separates the ``good'' and ``bad''
-air quality, but we can see that the ``good'' air quality is
-represented by the lower part, and the ``bad'' air quality is
-represented by the upper part.
-
-We then implement the model into the system by passing each
-indicators' current average value to the model to determine
-the current air quality level of the room. The result of the
-model is then used to determine whether the door should be
-opened or closed using the following rules:
-\begin{enumerate}
-      \item If the CO2 level is ``bad'', the door will not be
-            opened, since we don't want any toxic particles to
-            get in the room.
-      \item If the CO2 level is ``good'', we will check the
-            next indicators, temperature and humidity. If
-            either temperature or humidity is ``bad'', then the
-            door will be opened, since we want to get fresh
-            air into the room.
-      \item If both temperature and humidity are ``good'',
-            then the door will not be opened, since the air
-            quality is already good.
-\end{enumerate}
-
+As seen in \ref{webapp-home-view}, the web application
+could be used as the interface to control the system,
+changing system mode, and opening and closing the door
+remotely.
 
 \begin{figure}
-      \centerline{\includegraphics[scale=0.65]{resources/iot-clustering.png}}
-      \caption{Time Series KMeans clustering result visualization}
-      \label{kmeans}
+      \centerline{\includegraphics[scale=0.2]{resources/webapp-home-view.png}}
+      \caption{Home view of the web application of the smart room air conditioner}
+      \label{webapp-home-view}
 \end{figure}
+
+\textcolor{red}{
+      \textbf{
+            \emph{TODO: add more detail and/
+                  or screenshot of the web application.}
+      }
+}
+
+\subsection{Discussion}
+\subsubsection{Sensors}
+The sensors used in the system could detect the
+indicators of the air quality, but the accuracy
+of the sensors are still questionable.
+Specifically, the MQ135 sensor, which is used to
+detect the carbon dioxide (CO2) ppm, is not
+accurate enough to be used as a reference for.
+The MQ135 sensor's base resistance (RZERO) is
+not stable, thus affecting the sensor's
+reading of the CO2 ppm.
+
+\subsubsection{Machine Learning}
+Although the system could already determine to open
+or close the door, the system is still far from
+perfect. The decision making of opening and closing
+the door is merely based on the data from the
+sensors and the clustering model. While the actual
+air quality of the room related to the health,
+comfort, and productivity of the inhabitant are not
+considered.
+
+\subsubsection{System Architecture}
+Other issues is that, architeturally, the machine
+learning model is deployed in the same server with
+the application backend, thus lowering the
+performance of the application backend, when the
+machine learning model is being used.

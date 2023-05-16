@@ -6,13 +6,43 @@ below.
 \begin{table}[htbp]
 	\caption{Division of Tasks}
 	\begin{center}
-		\begin{tabular}{|c c|c|}
+		\begin{tabular}{|c|c|p{3cm}|}
 			\hline
-			\textbf{Name}    & \textbf{Student ID} & \textbf{Task list} \\
+			\textbf{Name}    & \textbf{Student ID} & \textbf{Task list}                                                        \\
 			\hline
-			Josep Marcello   & 13519164            & c                  \\
-			Jeremia Bachtera & 13519188            & c                  \\
-			Jeane Erwansyah  & 13519116            & c                  \\
+			Josep Marcello   & 13519164            & \begin{enumerate}[leftmargin=*]
+				                                         \item Basically everything (MVP)
+				                                         \item Bayar server
+				                                         \item Define system architecture
+				                                         \item Calibrate sensors
+				                                         \item Setup infrastructure (including MQTT, InfluxDB, Telegraf, and Redis)
+				                                         \item Develop data processing (Kafka and PySpark)
+				                                         \item Send and receive data from ESP32 to backend
+				                                         \item Develop (realtime)statistic feature
+				                                         \item Develop app e-email notification
+				                                         \item Develop simple app password
+				                                         \item Integrate ML model to web app
+			                                         \end{enumerate}
+			\\
+			\hline
+			Jeremia Bachtera & 13519188            & \begin{enumerate}[leftmargin=*]
+				                                         \item Define early data pipeline architecture
+				                                         \item Develop MQTT-PySpark
+				                                         \item Develop mode toggle feature
+				                                         \item Develop servo toggle feature
+				                                         \item Develop websocket to update mode and servo
+				                                         \item Develop, train, and integrate ML model
+				                                         \item Initiate paper template (with sliced components)
+			                                         \end{enumerate}
+			\\
+			\hline
+			Jeane Erwansyah  & 13519116            & \begin{enumerate}[leftmargin=*]
+				                                         \item Determine ML model
+				                                         \item Design UI/UX of the web app
+				                                         \item Enhance UI/UX of the web app
+				                                         \item Develop alerts page
+			                                         \end{enumerate}
+			\\
 			\hline
 		\end{tabular}
 		\label{tab-divsion-of-task}

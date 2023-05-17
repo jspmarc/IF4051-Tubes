@@ -72,16 +72,16 @@ The Application Server then consumes the data from
 the InfluxDB and the Kafka. The figure
 \ref{flowchart-fe-connects} shows the flow when the
 front-end connects to the back-end. When the
-front-end calls the realtime data API, the backend
+front-end calls the realtime data API, the back-end
 will receive the requests, then queries and parses
 the data that have been saved into the InfluxDB to
 be displayed by the front-end.
 So does the flow when the front-end calls the
-alerts API, the backend will receive the requests,
+alerts API, the back-end will receive the requests,
 then queries and parses the data from InfluxDB, but this time to get alerts data.
 
 In the event of the front-end calls the state
-websocket, the backend will parses the data,
+websocket, the back-end will parses the data,
 queries the current state from the Redis, and
 publishes the current state to the connected
 front-end client.
@@ -89,15 +89,15 @@ front-end client.
 Still in the Web Application part, the figure
 \ref{flowchart-fe-change-servo} shows the flow when
 the front-end calls the change servo API. When the
-front-end calls the change servo API, the backend
+front-end calls the change servo API, the back-end
 will receive the requests, then queries the current
 state from the Redis, and publishes the new state
 to the MQTT to be consumed by the ESP32. The back-end will then publishes the new state to all connected front-end clients via websocket.
 
 The figure \ref{flowchart-apply-ml} shows the flow
 of the implementation of the machine learning
-model in the system. Every time the backend receives
-the aggregate values from the Kafka, the backend
+model in the system. Every time the back-end receives
+the aggregate values from the Kafka, the back-end
 will then parses and passes the data to the machine
 learning models. The machine learning models will
 then determine the current air quality level of

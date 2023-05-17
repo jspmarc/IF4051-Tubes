@@ -1,0 +1,26 @@
+\section{Conclusion and Suggestions}
+
+\subsection{Conclusion}
+In this paper, we have presented a system that can be
+used to monitor and control the air quality of a room.
+The system is able to monitor the air quality of a room,
+with temperature and humidity as the indicators; and
+the outside, with carbon dioxide (CO$_2$) ppm as the indicator;
+and uses those informations to make decision about when to
+open and close doors/windows.
+The system is also able to be controlled manually via a web
+application, and sends notifications to the user's phone
+about the state of the system.
+
+\subsection{Suggestions}
+The system we proposed is still far from perfect.
+There are still many things that can be improved, such as
+\begin{enumerate}
+      \item more accurate sensors should be used,
+      \item health, comfort, and productivity should be used as parameters in
+            the machine learning algorithm, and
+      \item the machine learning model should be deployed in a separate service,
+            so that the application back-end is decoupled by the prediction
+            service by the machine learning model and to improve back-end service
+            build time.
+\end{enumerate}

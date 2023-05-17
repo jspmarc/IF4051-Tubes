@@ -27,22 +27,88 @@ We can separate the deployment into 4 groups.
     \label{system-architecture}
 \end{figure*}
 
-Flow-wise, the data gathered by the MQ135 and DHT22, in the
-ESP32, are sent to the mosquitto, the MQTT broker, in the
-Application Server.
-There, the data are consumed by both Telegraf in the
-Application Server to be saved into the InfluxDB, and
-PySparkScript in the SparkMachine to be processed into
-minimum, maximum, average, and median values.
+\begin{figure}
+      \centering
+      \includegraphics[scale=0.44]{resources/flowchart-data-collection.png}
+      \caption{Flowchart of the data collection in the system}
+      \label{flowchart-data-collection}
+\end{figure}
 
-The sensor data in InfluxDB and the processed data are then
-used to be displayed as a statistic of the web application.
-The sensor data are also used as training data for the KMeans
-algorithm to determine the air quality level of each
-indicators. The current average of each indicators are then
-passed to the KMeans model to determine the current air
-quality level of the room, thus determining whether the door
-should be opened or closed.
+\begin{figure}
+      \centering
+      \includegraphics[scale=0.44]{resources/flowchart-fe-connects.png}
+      \caption{Flowchart of the system when the front-end connects to the back-end}
+      \label{flowchart-fe-connects}
+\end{figure}
+
+\begin{figure}
+      \centering
+      \includegraphics[scale=0.44]{resources/flowchart-fe-change-servo.png}
+      \caption{Flowchart of the system when the front-end hits the change servo API}
+      \label{flowchart-fe-change-servo}
+\end{figure}
+
+\begin{figure}
+      \centering
+      \includegraphics[scale=0.44]{resources/flowchart-apply-ml.png}
+      \caption{Flowchart of the machine learning application in the system}
+      \label{flowchart-apply-ml}
+\end{figure}
+
+Flow-wise, as we can see in the figure
+\ref{flowchart-data-collection} the data gathered
+by the MQ135 and DHT22, in the ESP32, are emitted
+to the mosquitto, the MQTT broker. There, the data
+are captured by both Telegraf and by PySpark
+pipeline. The Telegraf then parses the data and
+saves the data into the InfluxDB. While the PySpark
+pipeline parses the data and applies aggregation
+functions to get aggregate values such as minimum,
+maximum, median, and average values. The aggregate
+values are then published into the Kafka, to be
+consumed by the Application Server.
+
+The Application Server then consumes the data from
+the InfluxDB and the Kafka. The figure
+\ref{flowchart-fe-connects} shows the flow when the
+front-end connects to the back-end. When the
+front-end calls the realtime data API, the backend
+will receive the requests, then queries and parses
+the data that have been saved into the InfluxDB to
+be displayed by the front-end.
+So does the flow when the front-end calls the
+alerts API, the backend will receive the requests,
+then queries and parses the data from InfluxDB, but this time to get alerts data.
+
+In the event of the front-end calls the state
+websocket, the backend will parses the data,
+queries the current state from the Redis, and
+publishes the current state to the connected
+front-end client.
+
+Still in the Web Application part, the figure
+\ref{flowchart-fe-change-servo} shows the flow when
+the front-end calls the change servo API. When the
+front-end calls the change servo API, the backend
+will receive the requests, then queries the current
+state from the Redis, and publishes the new state
+to the MQTT to be consumed by the ESP32. The back-end will then publishes the new state to all connected front-end clients via websocket.
+
+The figure \ref{flowchart-apply-ml} shows the flow
+of the implementation of the machine learning
+model in the system. Every time the backend receives
+the aggregate values from the Kafka, the backend
+will then parses and passes the data to the machine
+learning models. The machine learning models will
+then determine the current air quality level of
+each indicators. The system then determines whether
+the door should be opened or closed based on the
+current air quality level of each indicators and
+the rules defined. If the CO$_2$ ppm is high, the
+door should be closed. If the CO$_2$ ppm is low,
+and the temperature or humidity are high, the door
+should be opened. If all the indicators are low,
+the door should be closed.
 
 \subsection{Experimental Setup}
 In this section, we will describe the experimental setup of the proposed system.

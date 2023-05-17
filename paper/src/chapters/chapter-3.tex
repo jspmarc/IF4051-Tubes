@@ -1,7 +1,6 @@
 \section{Implementation}
 
 \subsection{System Architecture}
-
 The architecture of the system we proposed can be seen in
 figure \ref{system-architecture}.
 We can separate the deployment into 4 groups.
@@ -45,6 +44,39 @@ passed to the KMeans model to determine the current air
 quality level of the room, thus determining whether the door
 should be opened or closed.
 
+\subsection{Experimental Setup}
+In this section, we will describe the experimental setup of the proposed system.
+There are two main spaces, which are a closed room and the outside of the room.
+These two spaces are partitioned by a door and/or a window. Inside the room,
+DHT22 sensor is placed to measure the temperature and humidity of the room.
+Outside the room, MQ135 sensor is placed to measure the CO$_2$ ppm outside the room.
+A servo motor is placed to open and close the door/window.
+Experimental setup of the system can be seen in figure \ref{setup}.
+
+\begin{figure}
+    \centerline{\includegraphics[scale=0.2]{resources/setup.png}}
+    \caption{Experimental setup of the smart room air conditioner}
+    \label{setup}
+\end{figure}
+
+Control setup of the system is when the door is open and all sensors are
+indicating normal values or within an acceptable range. This system is will be
+tested in the following scenarios:
+\begin{enumerate}
+    \item Using auto mode, a match will be lit and placed near the MQ135 sensor
+          in order to increase the CO$_2$ ppm outside the room. The door should
+          be closed to prevent bad air from coming in.
+    \item Using auto mode, a match will be lit and placed near the DHT22 sensor
+          to increase the temperature/humidity inside the room. The door should
+          should be opened to let fresh air in.
+    \item Using override mode, a match will be lit and placed near the MQ135
+          sensor in order to increase the CO$_2$ ppm outside the room. If the door
+          is opened, an email will be sent to warn the user to close the door.
+    \item Using override mode, a match will be lit and placed near the DHT22
+          sensor to increase the temperature/humidity inside the room. If the door
+          is closed, an email will be sent to warn the user to open the door.
+\end{enumerate}
+
 \subsection{Machine Learning Model}
 Since the data gathered by the sensors are time
 series data, we will use Time Series KMeans (TSKM)
@@ -76,7 +108,7 @@ represented by the lower part, and the ``bad'' air quality is
 represented by the upper part.
 
 We then implement the model into the system by passing each
-indicators' current average value to the model to determine
+indicator's current average value to the model to determine
 the current air quality level of the room. The result of the
 model is then used to determine whether the door should be
 opened or closed using the following rules:
@@ -93,7 +125,6 @@ opened or closed using the following rules:
           then the door will not be opened, since the air
           quality is already good.
 \end{enumerate}
-
 
 \begin{figure}
     \centerline{\includegraphics[scale=0.65]{resources/iot-clustering.png}}

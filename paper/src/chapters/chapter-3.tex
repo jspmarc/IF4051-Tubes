@@ -2,29 +2,27 @@
 
 \subsection{System Architecture}
 The architecture of the system we proposed can be seen in
-figure \ref{system-architecture}.
-We can separate the deployment into 4 groups.
-\begin{enumerate}
-      \item The first one, the ESP32, are the physical device
-            that gathers the air quality data and controls the door.
-      \item Second, the Application Server are the primary brain
-            of the whole system from collecting the data
-            retrieved from the ESP32, saving the data, to
-            managing the state of the system.
-      \item Third, the SparkMachine, are the processor of data
-            that processes the data into more meaningful
-            informations for the user, such as minimum, maximum,
-            and average values.
-      \item Lastly, the User Device are users' devices that
-            accesses the web application to interact with the
-            system.
-\end{enumerate}
+figure \ref{iot-diagram}.
+The system collects sensors data and sent them into the MQTT
+to be saved into the database. The sensor data also aggregated
+by the Data Aggregator to get the current minimum, maximum,
+and average values. These data then consumed by the Server to
+be sent to the Web Application for the user to see the
+statistic. The Web Application also sends user's command to
+open/close the door manually to the Server.
+
+The aggregated values are also consumed by the ML model to
+determine whether the door should open or close, and this
+value are sent back to the server. This command, just like
+the user's command, will be translated into servo rotation
+angle command, and sent to the MQTT to then be consumed by
+the Servo.
 
 \begin{figure*}
       \centering
-      \includegraphics[scale=0.5]{resources/deployment-diagram.png}
-      \caption{Deployment diagram of the smart room air conditioner}
-      \label{system-architecture}
+      \includegraphics[scale=0.5]{resources/iot-diagram.png}
+      \caption{Diagram of the smart room air conditioner}
+      \label{iot-diagram}
 \end{figure*}
 
 \begin{figure}
@@ -55,7 +53,7 @@ We can separate the deployment into 4 groups.
       \label{flowchart-apply-ml}
 \end{figure}
 
-Flow-wise, as we can see in the figure
+For more detailed data flow, as we can see in the figure
 \ref{flowchart-data-collection} the data gathered
 by the MQ135 and DHT22, in the ESP32, are emitted
 to the mosquitto, the MQTT broker. There, the data

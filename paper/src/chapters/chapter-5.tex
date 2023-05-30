@@ -19,22 +19,37 @@ The alerts shown are alerts that sent within the last 12 hours.
 A token must be inputted in the web application to be able to control the system,
 to view statistics, and to view alerts.
 
+Unfortunately, the sensors were not accurate. For the MQ135 CO$_2$ sensor, we
+couldn't accruately measure the sensor because we don't have other reference
+sensor to accurately measure CO$_2$ ppm. As for the DHT22 sensors, we had about
+2\textdegree C of error for the temperature. Lastly, for the servo motor when
+writing to the servo motor, an equation has to be followed as it had a bit of an
+error. The formula can be seen in equation \ref{eq:servo}.
+\begin{equation}\label{eq:servo}
+  y = \frac{46x}{45} + 18
+\end{equation}
+Where:
+\begin{itemize}[label=]
+  \item $y$: the degree written to the servo
+  \item $x$: the ``real'' or wanted degree of the servo with $x \geq 0$
+\end{itemize}
+
 \begin{figure}
-      \centerline{\includegraphics[scale=0.2]{resources/webapp-home-view.png}}
-      \caption{Home view of the web application of the smart room air conditioner}
-      \label{webapp-home-view}
+  \centerline{\includegraphics[scale=0.2]{resources/webapp-home-view.png}}
+  \caption{Home view of the web application of the smart room air conditioner}
+  \label{webapp-home-view}
 \end{figure}
 
 \begin{figure}
-      \centerline{\includegraphics[scale=0.4]{resources/webapp-stats-view.png}}
-      \caption{Statistics view of the web application of the smart room air conditioner}
-      \label{webapp-stats-view}
+  \centerline{\includegraphics[scale=0.4]{resources/webapp-stats-view.png}}
+  \caption{Statistics view of the web application of the smart room air conditioner}
+  \label{webapp-stats-view}
 \end{figure}
 
 \begin{figure}
-      \centerline{\includegraphics[scale=0.5]{resources/webapp-alerts-view.png}}
-      \caption{Alerts view of the web application of the smart room air conditioner}
-      \label{webapp-alerts-view}
+  \centerline{\includegraphics[scale=0.5]{resources/webapp-alerts-view.png}}
+  \caption{Alerts view of the web application of the smart room air conditioner}
+  \label{webapp-alerts-view}
 \end{figure}
 
 \subsection{Discussion}
@@ -44,10 +59,11 @@ indicators of the air quality, but the accuracy
 of the sensors are still questionable.
 Specifically, the MQ135 sensor, which is used to
 detect the carbon dioxide (CO$_2$) ppm, is not
-accurate enough to be used as a reference for.
+accurate enough to be used as a reference.
 The MQ135 sensor's base resistance (RZERO) is
 not stable, thus affecting the sensor's
-reading of the CO$_2$ ppm.
+reading of the CO$_2$ ppm. Fortunately, the other
+sensors' error can be measured.
 
 \subsubsection{Machine Learning}
 Although the system could already determine to open

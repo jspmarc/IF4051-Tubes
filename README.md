@@ -1,9 +1,11 @@
 # IF4051 Final Project 
 Air quality is an important aspect of a room. It affects the health, comfort, and productivity of the occupants. This paper presents an Internet-of-Things based system that can be used to monitor the air quality of a room and the outside air, and control the door/window of the room in hope of achieving a better air quality. The system will be able to monitor the air quality of a room, with temperature and humidity as the indicators, using DHT22 sensor; and the outside, with carbon dioxide (CO<sub>2</sub>) ppm as the indicator, using MQ135 sensor; and ESP32 as the microprocessor. The system also utilizes Time Series KMeans (TSKM) to determine the quality of the indicators, to decide whether to open or close the door.
 
-<strong> TL;DR\
-IoT System that make a room's air condition better by controlling the door(s)/window(s). \
-Utilizes machine learning (TimeSeriesKMeans) to determine the door(s)/window(s)'s open/close. \
+<strong> TL;DR
+
+IoT System that make a room's air condition better by controlling the door(s)/window(s).
+Utilizes machine learning (TimeSeriesKMeans) to determine the door(s)/window(s)'s open/close.
+
 Indicator(s):
 1. Inside: Temperature and Humidity, uses DHT22 sensor
 2. Outside: Carbon dioxide, uses MQ135 sensor   
@@ -16,11 +18,13 @@ System control: change AI/manual mode, remote control.
 <img src="paper/src/resources/webapp-home-view.png" width="500" height="auto">
 
 ### 2. Stats View
-See realtime statistic of air condition. \
+See realtime statistic of air condition.
+
 <img src="paper/src/resources/webapp-stats-view.png" width="500" height="auto">
 
 ### 3. Alerts View
-See alerts from AI of the air condition. \
+See alerts from AI of the air condition.
+
 <img src="paper/src/resources/webapp-alerts-view.png" width="500" height="auto">
 
 ## Technologies Used:
@@ -43,7 +47,8 @@ See alerts from AI of the air condition. \
 | Jeane Mikha E. | 13519116 | 1. Determine ML algorithm to use<br>2. Design wireframe for web app's UI/UX<br>3. Enhance UI/UX of the web app<br>4. Develop alerts page<br>5. Edit demo video<br>6. Create poster |
 
 ## Diagram(s)
-1. IoT Diagram \
-    <img src="paper/src/resources/iot-diagram.png" width="500" height="auto">
-2. Deployment Diagram \
-    <img src="paper/src/resources/deployment-diagram.png" width="500" height="auto">
+1. IoT Diagram
+<img src="paper/src/resources/iot-diagram.png">
+
+2. Deployment Diagram
+<img src="paper/src/resources/deployment-diagram.png">
